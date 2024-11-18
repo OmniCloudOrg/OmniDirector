@@ -1,0 +1,108 @@
+{
+    "name": "my_aws_cpi",
+    "type": "cloud",
+    "actions": {
+        "create_vm": {
+            "command": "aws ec2 run-instances --image-id {ami_id} --instance-type {instance_type} --subnet-id {subnet_id}",
+            "params": ["ami_id", "instance_type", "subnet_id"],
+            "optional_params": {
+                "security_groups": "--security-group-ids {security_group_ids}",
+                "key_name": "--key-name {key_name}",
+                "user_data": "--user-data {user_data}",
+                "iam_role": "--iam-instance-profile Name={iam_role}"
+            },
+            "post_create": [
+                "aws ec2 create-tags --resources {instance_id} --tags Key=Name,Value={vm_name}"
+            ]
+        },
+        "delete_vm": {
+            "command": "aws ec2 terminate-instances --instance-ids {instance_id}",
+            "params": ["instance_id"]
+        },
+        "has_vm": {
+            "command": "aws ec2 describe-instances --instance-ids {instance_id}",
+            "params": ["instance_id"],
+            "success_exit_code": 0
+        },
+        "configure_networks": {
+            "command": "aws ec2 modify-instance-attribute --instance-id {instance_id} --groups {security_group_ids}",
+            "params": ["instance_id", "security_group_ids"]
+        },
+        "create_disk": {
+            "command": "aws ec2 create-volume --size {size_gb} --availability-zone {availability_zone} --volume-type {volume_type}",
+            "params": ["size_gb", "availability_zone"],
+            "optional_params": {
+                "iops": "--iops {iops}",
+                "encrypted": "--encrypted",
+                "kms_key": "--kms-key-id {kms_key_id}"
+            }
+        },
+        "delete_disk": {
+            "command": "aws ec2 delete-volume --volume-id {volume_id}",
+            "params": ["volume_id"]
+        },
+        "attach_disk": {
+            "command": "aws ec2 attach-volume --volume-id {volume_id} --instance-id {instance_id} --device {device_name}",
+            "params": ["volume_id", "instance_id", "device_name"]
+        },
+        "detach_disk": {
+            "command": "aws ec2 detach-volume --volume-id {volume_id}",
+            "params": ["volume_id"]
+        },
+        "has_disk": {
+            "command": "aws ec2 describe-volumes --volume-ids {volume_id}",
+            "params": ["volume_id"],
+            "success_exit_code": 0
+        },
+        "set_vm_metadata": {
+            "command": "aws ec2 create-tags --resources {instance_id} --tags Key={key},Value={value}",
+            "params": ["instance_id", "key", "value"]
+        },
+        "create_snapshot": {
+            "command": "aws ec2 create-snapshot --volume-id {volume_id} --description {description}",
+            "params": ["volume_id", "description"]
+        },
+        "delete_snapshot": {
+            "command": "aws ec2 delete-snapshot --snapshot-id {snapshot_id}",
+            "params": ["snapshot_id"]
+        },
+        "has_snapshot": {
+            "command": "aws ec2 describe-snapshots --snapshot-ids {snapshot_id}",
+            "params": ["snapshot_id"],
+            "success_exit_code": 0
+        },
+        "get_disks": {
+            "command": "aws ec2 describe-volumes --filters Name=tag:Owner,Values={owner}",
+            "params": ["owner"]
+        },
+        "get_vm": {
+            "command": "aws ec2 describe-instances --instance-ids {instance_id}",
+            "params": ["instance_id"]
+        },
+        "reboot_vm": {
+            "command": "aws ec2 reboot-instances --instance-ids {instance_id}",
+            "params": ["instance_id"]
+        },
+        "snapshot_disk": {
+            "command": "aws ec2 create-snapshot --volume-id {volume_id} --description {description}",
+            "params": ["volume_id", "description"]
+        },
+        "get_snapshots": {
+            "command": "aws ec2 describe-snapshots --owner-ids {owner_id}",
+            "params": ["owner_id"]
+        }
+    },
+    "default_settings": {
+        "instance_type": "t3.micro",
+        "volume_type": "gp3",
+        "region": "us-east-1"
+    },
+    "authentication": {
+        "env_vars": [
+            "AWS_ACCESS_KEY_ID",
+            "AWS_SECRET_ACCESS_KEY",
+            "AWS_DEFAULT_REGION"
+        ],
+        "profile_support": true
+    }
+}

@@ -1,12 +1,13 @@
-use std::{fs, io};
-use std::collections::{HashMap, HashSet};
+use std::{ fs, io };
+use std::collections::{ HashMap, HashSet };
 use std::fs::DirEntry;
 use std::path::Path;
 use std::sync::Mutex;
 use lazy_static::lazy_static;
-use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
+use rayon::prelude::{ IntoParallelRefIterator, ParallelIterator };
 use thiserror::Error;
-use phf::{phf_map,Map};
+use phf::{ phf_map, Map };
+use std::arch::global_asm;
 
 lazy_static! {
     static ref IS_READY: Mutex<bool> = Mutex::new(false);
@@ -14,7 +15,13 @@ lazy_static! {
         file_types: HashSet::new(),
     });
 }
-static RECOGNIZED_FILE_TYPES: phf::Map<&'static str, &'static str> = phf_map! {
+global_asm!("
+
+");
+static RECOGNIZED_FILE_TYPES: phf::Map<
+    &'static str,
+    &'static str
+> = phf_map! {
     // General-purpose programming languages
     "rs" => "rust",
     "py" => "python",
@@ -124,7 +131,7 @@ static RECOGNIZED_FILE_TYPES: phf::Map<&'static str, &'static str> = phf_map! {
 //     "zsh", "bash", "fish",
 
 //     // Web technologies and domain-specific
-//     "html", "css", "scss", "sass", "json", "yaml", "yml", "xml", 
+//     "html", "css", "scss", "sass", "json", "yaml", "yml", "xml",
 //     "jsx", "tsx", "astro", "svelte", "vue", "mdx",
 
 //     // Text processing and markup
@@ -142,22 +149,48 @@ static RECOGNIZED_FILE_TYPES: phf::Map<&'static str, &'static str> = phf_map! {
 
 const COMPILED_FILE_TYPES: [&'static str; 32] = [
     // General-purpose compiled languages
-    "rs", "c", "cpp", "swift", "go", "kt", "kts", "cs", "vb", "fs", "scala", "dart",
+    "rs",
+    "c",
+    "cpp",
+    "swift",
+    "go",
+    "kt",
+    "kts",
+    "cs",
+    "vb",
+    "fs",
+    "scala",
+    "dart",
 
     // Functional programming languages (compiled)
-    "hs", "ml",
+    "hs",
+    "ml",
 
     // Low-level and systems programming
-    "asm", "s", "zig", "nim", "cr",
+    "asm",
+    "s",
+    "zig",
+    "nim",
+    "cr",
 
     // Hardware description languages
-    "v", "sv", "vhdl", "ada",
+    "v",
+    "sv",
+    "vhdl",
+    "ada",
 
     // Scientific/numerical computing
-    "f90", "f95", "f03", "f08",
+    "f90",
+    "f95",
+    "f03",
+    "f08",
 
     // Web technologies that require compilation or preprocessing
-    "jsx", "tsx", "astro", "svelte", "vue"
+    "jsx",
+    "tsx",
+    "astro",
+    "svelte",
+    "vue",
 ];
 
 pub struct ImageInfo {
@@ -166,21 +199,19 @@ pub struct ImageInfo {
 
 #[derive(Debug, Error)]
 enum CompileError {
-    #[error("could not read path: {0}")]
-    InvalidPath(String),
-    #[error("IO error occurred: {0}")]
-    IoError(#[from] io::Error),
+    #[error("could not read path: {0}")] InvalidPath(String),
+    #[error("IO error occurred: {0}")] IoError(#[from] io::Error),
 }
 
-fn main() {
-    let input_dir: &str = "/users/chance/downloads";
+fn main() { 
+    let input_dir: &str = "./";
     try_compile(input_dir).expect("Could not compile");
 }
 
 fn try_compile(input_dir: &str) -> Result<(), CompileError> {
     let path = Path::new(input_dir);
     if path.exists() {
-        walk_dir(path, test_callback)?;
+        walk_dir(path, most_common)?;
         if let Ok(filetypes) = FILETYPES.lock() {
             println!("Collected file types: {:#?}", filetypes.file_types);
         } else {
@@ -198,12 +229,15 @@ fn walk_dir(input_dir: &Path, callback: fn(&DirEntry)) -> Result<(), CompileErro
         return Ok(());
     }
 
-    let entries: Vec<_> = fs::read_dir(input_dir)?
-        .filter_map(|entry| match entry {
-            Ok(e) => Some(e),
-            Err(err) => {
-                eprintln!("Error reading entry: {}", err);
-                None
+    let entries: Vec<_> = fs
+        ::read_dir(input_dir)?
+        .filter_map(|entry| {
+            match entry {
+                Ok(e) => Some(e),
+                Err(err) => {
+                    eprintln!("Error reading entry: {}", err);
+                    None
+                }
             }
         })
         .collect();
@@ -212,7 +246,7 @@ fn walk_dir(input_dir: &Path, callback: fn(&DirEntry)) -> Result<(), CompileErro
         let path = entry.path();
         if path.is_dir() {
             if let Err(err) = walk_dir(&path, callback) {
-                //eprintln!("Error walking directory {}: {}", path.display(), err);
+                eprintln!("Error walking directory {}: {}", path.display(), err);
             }
         } else {
             callback(entry);
@@ -237,7 +271,9 @@ fn most_common(foo: &DirEntry) {
     use std::collections::HashMap;
 
     thread_local! {
-        static LOCAL_COUNTS: std::cell::RefCell<HashMap<String, usize>> = std::cell::RefCell::new(HashMap::new());
+        static LOCAL_COUNTS: std::cell::RefCell<HashMap<String, usize>> = std::cell::RefCell::new(
+            HashMap::new()
+        );
     }
 
     if let Some(extension) = foo.path().extension() {

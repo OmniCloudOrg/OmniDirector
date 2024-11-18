@@ -1,0 +1,109 @@
+{
+    "name": "my_openstack_cpi",
+    "type": "cloud",
+    "actions": {
+        "create_vm": {
+            "command": "openstack server create --name {vm_name} --image {image_id} --flavor {flavor_id} --network {network_id}",
+            "params": ["vm_name", "image_id", "flavor_id", "network_id"],
+            "optional_params": {
+                "security_groups": "--security-group {security_group}",
+                "key_name": "--key-name {key_name}",
+                "availability_zone": "--availability-zone {zone}"
+            }
+        },
+        "delete_vm": {
+            "command": "openstack server delete {vm_name}",
+            "params": ["vm_name"]
+        },
+        "has_vm": {
+            "command": "openstack server show {vm_name} -f json",
+            "params": ["vm_name"],
+            "success_exit_code": 0
+        },
+        "configure_networks": {
+            "command": "openstack server add network {vm_name} {network_id}",
+            "params": ["vm_name", "network_id"],
+            "remove_network": "openstack server remove network {vm_name} {network_id}"
+        },
+        "create_disk": {
+            "command": "openstack volume create --size {size_gb} --description '{description}' {disk_name}",
+            "params": ["size_gb", "disk_name"],
+            "optional_params": {
+                "type": "--type {volume_type}",
+                "availability_zone": "--availability-zone {zone}"
+            }
+        },
+        "delete_disk": {
+            "command": "openstack volume delete {disk_id}",
+            "params": ["disk_id"]
+        },
+        "attach_disk": {
+            "command": "openstack server add volume {vm_name} {volume_id} --device {device_path}",
+            "params": ["vm_name", "volume_id", "device_path"]
+        },
+        "detach_disk": {
+            "command": "openstack server remove volume {vm_name} {volume_id}",
+            "params": ["vm_name", "volume_id"]
+        },
+        "has_disk": {
+            "command": "openstack volume show {volume_id} -f json",
+            "params": ["volume_id"],
+            "success_exit_code": 0
+        },
+        "set_vm_metadata": {
+            "command": "openstack server set --property {key}={value} {vm_name}",
+            "params": ["vm_name", "key", "value"]
+        },
+        "create_snapshot": {
+            "command": "openstack server snapshot create --name {snapshot_name} {vm_name}",
+            "params": ["vm_name", "snapshot_name"]
+        },
+        "delete_snapshot": {
+            "command": "openstack image delete {snapshot_id}",
+            "params": ["snapshot_id"]
+        },
+        "has_snapshot": {
+            "command": "openstack image show {snapshot_id} -f json",
+            "params": ["snapshot_id"],
+            "success_exit_code": 0
+        },
+        "get_disks": {
+            "command": "openstack volume list -f json",
+            "format": "json"
+        },
+        "get_vm": {
+            "command": "openstack server show {vm_name} -f json",
+            "params": ["vm_name"],
+            "format": "json"
+        },
+        "reboot_vm": {
+            "command": "openstack server reboot --hard {vm_name}",
+            "params": ["vm_name"]
+        },
+        "snapshot_disk": {
+            "command": "openstack volume snapshot create --volume {volume_id} {snapshot_name}",
+            "params": ["volume_id", "snapshot_name"]
+        },
+        "get_snapshots": {
+            "command": "openstack image list --property owner={project_id} -f json",
+            "params": ["project_id"],
+            "format": "json"
+        }
+    },
+    "default_settings": {
+        "flavor_id": "m1.small",
+        "network_id": "default",
+        "security_group": "default",
+        "volume_type": "standard"
+    },
+    "authentication": {
+        "env_vars": [
+            "OS_AUTH_URL",
+            "OS_USERNAME",
+            "OS_PASSWORD",
+            "OS_PROJECT_NAME",
+            "OS_USER_DOMAIN_NAME",
+            "OS_PROJECT_DOMAIN_NAME"
+        ]
+    }
+}
