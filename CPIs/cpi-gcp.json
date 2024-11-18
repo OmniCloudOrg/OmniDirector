@@ -2,6 +2,10 @@
     "name": "my_gcp_cpi",
     "type": "cloud",
     "actions": {
+        "test_install": {
+            "command": "gcloud --version",
+            "params": []
+        },
         "create_vm": {
             "command": "gcloud compute instances create {vm_name} --machine-type {machine_type} --image {image} --zone {zone}",
             "params": ["vm_name", "machine_type", "image", "zone"],

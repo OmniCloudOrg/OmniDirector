@@ -55,6 +55,13 @@ impl DockerFile {
 
 impl OpenStackDevContainerBuilder {
     pub fn new(work_dir: impl AsRef<Path>) -> Self {
-        let features_dir = work_dir.
+        let features_dir = work_dir.as_ref().join("features");
+        std::fs::create_dir_all(&features_dir).expect("Failed to create features directory");
+
+        Self {
+            dockerfile: DockerFile::new("mcr.microsoft.com/vscode/devcontainers/python:3"),
+            features: Vec::new(),
+            
+        }
     }
-}
+}p

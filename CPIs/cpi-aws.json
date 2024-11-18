@@ -2,6 +2,10 @@
     "name": "my_aws_cpi",
     "type": "cloud",
     "actions": {
+        "test_install": {
+            "command": "aws --version",
+            "params": []
+        },
         "create_vm": {
             "command": "aws ec2 run-instances --image-id {ami_id} --instance-type {instance_type} --subnet-id {subnet_id}",
             "params": ["ami_id", "instance_type", "subnet_id"],

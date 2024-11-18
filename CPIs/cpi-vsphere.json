@@ -2,6 +2,10 @@
     "name": "my_vsphere_cpi",
     "type": "cloud",
     "actions": {
+        "test_install": {
+            "command": "govc --version",
+            "params": []
+        },
         "create_vm": {
             "command": "govc vm.create -g {guest_id} -m {memory_mb} -c {num_cpus} -pool {resource_pool} -ds {datastore} {vm_name}",
             "params": ["vm_name", "guest_id", "memory_mb", "num_cpus", "resource_pool", "datastore"],

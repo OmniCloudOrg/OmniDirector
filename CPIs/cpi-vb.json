@@ -2,6 +2,10 @@
     "name": "my_virtualbox_cpi",
     "type": "virt",
     "actions": {
+        "test_install": {
+            "command": "VBoxManage --version",
+            "params": []
+        },
         "create_vm": {
             "command": "VBoxManage createvm --name {vm_name} --ostype {os_type} --register",
             "params": ["vm_name", "os_type"],
