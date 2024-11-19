@@ -1,16 +1,19 @@
-use serde::{ Deserialize, Serialize };
-use serde_json::Value;
+use anyhow::Context;
+use anyhow::Result;
+use anyhow::{anyhow, Error};
+use colored::Colorize;
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
 use std::collections::HashMap;
-use std::error::Error;
-use std::process::Command;
 use std::fs;
+use std::process::{Command, Output};
 
 pub struct CpiCommand {
     pub config: String,
 }
 
 impl CpiCommand {
-    pub fn new() -> Result<Self, Box<dyn Error>> {
+    pub fn new() -> Result<Self> {
         let config_str = fs::read_to_string("./CPIs/cpi-vb.json")?;
         let config_json: Value = serde_json::from_str(&config_str)?;
 
@@ -19,70 +22,133 @@ impl CpiCommand {
         })
     }
 
-    pub fn execute(&self, command: CpiCommandType) -> Result<Value, Box<dyn Error>> {
-        let config_json: Value = serde_json::from_str(&self.config)?;
-        let actions = config_json.get("actions").ok_or("actions not found")?;
-        let command_type = actions.get(command.to_string()).ok_or("command type not found")?;
+    // Execute a CPI command by fetching the template from the CPI,
+    // filling the params, and returning the output
+    pub fn execute(&self, command: CpiCommandType) -> Result<Value> {
+        let config_json: Value =
+            serde_json::from_str(&self.config).context("failed to deserialize json")?;
+        let actions = config_json
+            .get("actions")
+            .context("'actions' was not defined in the config")?;
+        let command_type = actions.get(command.to_string()).context(format!(
+            "Command type not found for '{}'",
+            command.to_string()
+        ))?;
+
+        // Get the command template from the CPI
         let command_template = command_type
             .get("command")
-            .ok_or("command not found")?
+            .context("'command field not found for command type'")?
             .as_str()
             .unwrap();
-    
+
+        // Get the post-exec command templates
+        let post_exec_templates = command_type
+            .get("post_exec")
+            .context("no post exec commands found")?
+            .as_array()
+            .context("Post exec commands found but were not an array")?
+            .iter()
+            .map(|v| {
+                v.as_str()
+                    .context("post exec command was not a valid string")
+                    .map(|s| s.to_string())
+            })
+            .collect::<Result<Vec<String>>>()?;
+
         // Serialize the enum variant to a JSON Value
-        let params: Value = serde_json::to_value(&command)?;
-        
+        let params: Value =
+            serde_json::to_value(&command).context("failed to serialize command")?;
+
         // Extract the inner object from the enum variant
-        let params = params.as_object()
+        let params = params
+            .as_object()
             .and_then(|obj| obj.values().next())
             .and_then(|v| v.as_object())
-            .unwrap_or_else(|| panic!("Failed to get params from command"));
+            .context("failed to extract params from command")?;
 
         println!("Params: {:?}", params);
-    
-        // Replace all parameters in the template
-        let mut command_str = command_template.to_string();
-        
-        // Iterate through parameters and perform replacements
-        for (key, value) in params {
-            let placeholder = format!("{{{}}}", key);  // Creates {key} format
-            let replacement = match value {
-                Value::String(s) => s.to_owned(),
-                Value::Number(n) => n.to_string(),
-                Value::Bool(b) => b.to_string(),
-                Value::Object(obj) => serde_json::to_string(&obj)
-                    .unwrap_or_default()
-                    .trim_matches(|c| c == '{' || c == '}')
-                    .to_string(),
-                Value::Array(arr) => serde_json::to_string(&arr)
-                    .unwrap_or_default()
-                    .trim_matches(|c| c == '[' || c == ']')
-                    .to_string(),
-                Value::Null => "null".to_string(),
-            };
-        
-            command_str = command_str.replace(&placeholder, &replacement);
+
+        let mut command_str = replace_template_params(params, &mut command_template.to_string());
+
+        // Execute the command
+        println!(
+            "Executing command: {}",
+            command_str.green().bold().underline().italic()
+        );
+
+        let output = execute_shell_cmd(&mut command_str)?;
+
+        // Check if the command was successful
+
+        // Run post-exec commands
+        for post_exec_template in post_exec_templates {
+            let mut post_exec_command =
+                replace_template_params(params, &mut post_exec_template.to_string());
+            println!(
+                "Executing post-exec command: {}",
+                post_exec_command.green().bold().underline().italic()
+            );
+            let post_exec_output = execute_shell_cmd(&mut post_exec_command)?;
+
+            if !post_exec_output.status.success() {
+                let error_msg = String::from_utf8(post_exec_output.stderr)
+                    .context("failed to convert stderr to string from utf-8")?;
+                return Err(anyhow::anyhow!(error_msg));
+            }
         }
 
-        println!("Executing command: {}", command_str);
-    
-        // Execute the command
-        let output = Command::new("sh")
-            .arg("-c")
-            .arg(&command_str)
-            .output()?;
-    
         if output.status.success() {
             // Parse the output as JSON and return
-            let output_str = String::from_utf8(output.stdout)?;
-            let json_output: Value = serde_json::from_str(&output_str)?;
+            let output_str = String::from_utf8(output.stdout)
+                .context("failed to parse stdout of inital command")?;
+            let json_output: Value =
+                serde_json::from_str(&output_str).context("failed to parse output as json")?;
             Ok(json_output)
         } else {
-            let error_msg = String::from_utf8(output.stderr)?;
-            Err(error_msg.into())
+            let error_msg = String::from_utf8(output.stderr).context("idfk")?;
+            Err(anyhow!(error_msg))
         }
     }
-    
+}
+fn execute_shell_cmd(command_str: &mut String) -> Result<Output> {
+    // Execute the command (Linux)
+    #[cfg(target_os = "linux")]
+    let output = Command::new("sh").arg("-c").arg(&command_str).output()?;
+
+    // Execute the command (MacOSX)
+    #[cfg(target_os = "macos")]
+    let output = Command::new("sh").arg("-c").arg(&command_str).output()?;
+
+    // Execute the command (Windows)
+    #[cfg(target_os = "windows")]
+    let output = Command::new("cmd").arg("/C").arg(&command_str).output()?;
+
+    return Ok(output);
+}
+
+fn replace_template_params(params: &Map<String, Value>, command_str: &mut String) -> String {
+    // Iterate through parameters and perform replacements
+    for (key, value) in params {
+        let placeholder = format!("{{{}}}", key); // Creates {key} format
+        let replacement = match value {
+            Value::String(s) => s.to_owned(),
+            Value::Number(n) => n.to_string(),
+            Value::Bool(b) => b.to_string(),
+            Value::Object(obj) => serde_json::to_string(&obj)
+                .unwrap_or_default()
+                .trim_matches(|c| c == '{' || c == '}')
+                .to_string(),
+            Value::Array(arr) => serde_json::to_string(&arr)
+                .unwrap_or_default()
+                .trim_matches(|c| c == '[' || c == ']')
+                .to_string(),
+            Value::Null => "null".to_string(),
+        };
+
+        *command_str = command_str.replace(&placeholder, &replacement);
+    }
+    command_str.to_string()
 }
 
 // Helper trait to handle special types
@@ -106,42 +172,79 @@ pub enum CpiCommandType {
     CreateVM {
         guest_id: String,
         memory_mb: i32,
-        num_cpus: i32,
+        os_type: String,
         resource_pool: String,
         datastore: String,
         vm_name: String,
+        cpu_count: i32,
     },
     DeleteVM {
-        vm_id: String,
+        vm_name: String,
     },
     HasVM {
-        vm_id: String,
+        vm_name: String,
     },
     ConfigureNetworks {
-        vm_id: String,
-        networks: HashMap<String, String>,
-        net_adapter: String,
+        vm_name: String,
+        network_index: i32,
+        network_type: String,
     },
     CreateDisk {
-        size_gb: i32,
-        datastore: String,
-        disk_type: String,
-        iops: i32,
-        thin_provisioned: bool,
-        kms_key_id: String,
+        size_mb: i32,
+        disk_path: String,
     },
-    AttachDisk(),
-    DetachDisk(),
-    HasDisk(),
-    SetVMMetadata(),
-    CreateSnapshot(),
-    DeleteSnapshot(),
-    HasSnapshot(),
-    GetDisks(),
-    GetVM(),
-    RebootVM(),
-    SnapshotDisk(),
-    GetSnapshots(),
+    AttachDisk{
+        vm_name: String,
+        controller_name: String,
+        port: i32,
+        disk_path: String,
+    },
+    DeleteDisk{
+        vm_name: String,
+        disk_path: String,
+    },
+    DetachDisk{
+        vm_name: String,
+        controller_name: String,
+        port: i32,
+    },
+    HasDisk{
+        vm_name: String,
+        disk_path: String,
+    },
+    SetVMMetadata{
+        vm_name: String,
+        key: String,
+        value: String,
+    },
+    CreateSnapshot{
+        vm_name: String,
+        snapshot_name: String,
+    },
+    DeleteSnapshot{
+        vm_name: String,
+        snapshot_name: String,
+    },
+    HasSnapshot{
+        vm_name: String,
+        snapshot_name: String,
+    },
+    GetDisks{
+        vm_name: String,
+    },
+    GetVM{
+        vm_name: String,
+    },
+    RebootVM{
+        vm_name: String,
+    },
+    SnapshotDisk{
+        disk_path: String,
+        snapshot_name: String,
+    },
+    GetSnapshots{
+        vm_name: String,
+    },
 }
 
 impl ToString for CpiCommandType {
@@ -149,21 +252,22 @@ impl ToString for CpiCommandType {
         match self {
             CpiCommandType::CreateVM { .. } => "create_vm".to_string(),
             CpiCommandType::DeleteVM { .. } => "delete_vm".to_string(),
-            CpiCommandType::HasVM{ .. } => "has_vm".to_string(),
-            CpiCommandType::ConfigureNetworks{ .. } => "configure_networks".to_string(),
-            CpiCommandType::CreateDisk{ .. } => "create_disk".to_string(),
-            CpiCommandType::AttachDisk{ .. } => "attach_disk".to_string(),
-            CpiCommandType::DetachDisk{ .. } => "detach_disk".to_string(),
-            CpiCommandType::HasDisk{ .. } => "has_disk".to_string(),
-            CpiCommandType::SetVMMetadata{ .. } => "set_vm_metadata".to_string(),
-            CpiCommandType::CreateSnapshot{ .. } => "create_snapshot".to_string(),
-            CpiCommandType::DeleteSnapshot{ .. } => "delete_snapshot".to_string(),
-            CpiCommandType::HasSnapshot{ .. } => "has_snapshot".to_string(),
-            CpiCommandType::GetDisks{ .. } => "get_disks".to_string(),
-            CpiCommandType::GetVM{ .. } => "get_vm".to_string(),
-            CpiCommandType::RebootVM{ .. } => "reboot_vm".to_string(),
-            CpiCommandType::SnapshotDisk{ .. } => "snapshot_disk".to_string(),
-            CpiCommandType::GetSnapshots{ .. } => "get_snapshots".to_string(),
+            CpiCommandType::HasVM { .. } => "has_vm".to_string(),
+            CpiCommandType::ConfigureNetworks { .. } => "configure_networks".to_string(),
+            CpiCommandType::CreateDisk { .. } => "create_disk".to_string(),
+            CpiCommandType::AttachDisk { .. } => "attach_disk".to_string(),
+            CpiCommandType::DeleteDisk { .. } => "delete_disk".to_string(),
+            CpiCommandType::DetachDisk { .. } => "detach_disk".to_string(),
+            CpiCommandType::HasDisk { .. } => "has_disk".to_string(),
+            CpiCommandType::SetVMMetadata { .. } => "set_vm_metadata".to_string(),
+            CpiCommandType::CreateSnapshot { .. } => "create_snapshot".to_string(),
+            CpiCommandType::DeleteSnapshot { .. } => "delete_snapshot".to_string(),
+            CpiCommandType::HasSnapshot { .. } => "has_snapshot".to_string(),
+            CpiCommandType::GetDisks { .. } => "get_disks".to_string(),
+            CpiCommandType::GetVM { .. } => "get_vm".to_string(),
+            CpiCommandType::RebootVM { .. } => "reboot_vm".to_string(),
+            CpiCommandType::SnapshotDisk { .. } => "snapshot_disk".to_string(),
+            CpiCommandType::GetSnapshots { .. } => "get_snapshots".to_string(),
         }
     }
 }
@@ -202,19 +306,53 @@ pub struct CpiApi {
 
 pub fn test() {
     let cpi = CpiCommand::new().unwrap();
-    // let vm = cpi.execute(CpiCommandType::CreateVM {
-    //     guest_id: "ubuntu".to_string(),
-    //     memory_mb: 1024,
-    //     num_cpus: 2,
-    //     resource_pool: "default".to_string(),
-    //     datastore: "datastore1".to_string(),
-    //     vm_name: "test-vm".to_string(),
-    // }).unwrap();
-    // println!("Created VM: {:?}", vm);
+    let vm = cpi.execute(CpiCommandType::CreateVM {
+        guest_id: "ubuntu".to_string(),
+        memory_mb: 4096,
+        cpu_count: 8,
+        os_type: "Linux".to_string(),
+        resource_pool: "default".to_string(),
+        datastore: "datastore1".to_string(),
+        vm_name: "test-vm".to_string(),
+    });
+    println!("Created VM: {:?}", vm);
 
+    // Was the VM really created??
     let vm = cpi.execute(CpiCommandType::HasVM {
         vm_id: "test-vm".to_string(),
-    }).unwrap_err();
+    });
 
     println!("VM exists: {:?}", vm);
+
+    // Configure networks for the VM
+    let network_config = cpi.execute(CpiCommandType::ConfigureNetworks {
+        vm_name: "test-vm".to_string(),
+        network_index: 0,
+        network_type: "VM Network".to_string(),
+    });
+    println!("Configured Networks: {:?}", network_config);
+    
+    // Set metadata for the VM
+    let metadata = cpi.execute(CpiCommandType::SetVMMetadata {
+        vm_name: "test-vm".to_string(),
+        key: "environment".to_string(),
+        value: "development".to_string(),
+    });
+    println!("Set VM Metadata: {:?}", metadata);
+    
+    // Create a disk for the VM
+    let disk = cpi.execute(CpiCommandType::CreateDisk {
+        size_mb: 10240,
+        disk_path: "/vmfs/volumes/datastore1/test-vm/test-disk.vmdk".to_string(),
+    });
+    println!("Created Disk: {:?}", disk);
+    
+    // Attach the disk to the VM
+    let attach_disk = cpi.execute(CpiCommandType::AttachDisk {
+        vm_name: "test-vm".to_string(),
+        controller_name: "SCSI Controller 0".to_string(),
+        port: 0,
+        disk_path: "/vmfs/volumes/datastore1/test-vm/test-disk.vmdk".to_string(),
+    });
+    println!("Attached Disk: {:?}", attach_disk);
 }

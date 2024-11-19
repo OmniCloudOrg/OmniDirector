@@ -1,0 +1,92 @@
+{
+    "name": "my_virtualbox_cpi",
+    "type": "virt",
+    "actions": {
+        "test_install": {
+            "command": "",
+            "params": []
+        },
+        "create_vm": {
+            "command": "",
+            "params": [""],
+            "post_exec": [
+                "",
+                ""
+            ]
+        },
+        "delete_vm": {
+            "command": "",
+            "params": [""]
+        },
+        "has_vm": {
+            "command": "",
+            "params": [""],
+            "success_exit_code": 0
+        },
+        "configure_networks": {
+            "command": "",
+            "params": [""]
+        },
+        "create_disk": {
+            "command": "",
+            "params": [""]
+        },
+        "delete_disk": {
+            "command": "",
+            "params": [""]
+        },
+        "attach_disk": {
+            "command": "",
+            "params": [""],
+            "pre_exec": [
+                ""
+            ]
+        },
+        "detach_disk": {
+            "command": "",
+            "params": [""]
+        },
+        "has_disk": {
+            "command": "",
+            "params": [""],
+            "success_exit_code": 0
+        },
+        "set_vm_metadata": {
+            "command": "",
+            "params": [""]
+        },
+        "create_snapshot": {
+            "command": "",
+            "params": [""]
+        },
+        "delete_snapshot": {
+            "command": "",
+            "params": [""]
+        },
+        "has_snapshot": {
+            "command": "",
+            "params": [""],
+            "parse_output": "grep {snapshot_name}"
+        },
+        "get_disks": {
+            "command": "",
+            "parse_output": "grep -A 3 'UUID:'"
+        },
+        "get_vm": {
+            "command": "",
+            "params": [""]
+        },
+        "reboot_vm": {
+            "command": "",
+            "params": [""]
+        },
+        "snapshot_disk": {
+            "command": "",
+            "params": [""]
+        },
+        "get_snapshots": {
+            "command": "",
+            "params": [""]
+        }
+    }
+}

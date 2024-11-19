@@ -275,6 +275,8 @@ fn test_callback(foo: &DirEntry) {
         }
     }
 }
+
+// Used for testing code scanning system
 fn most_common(foo: &DirEntry) {
     use std::collections::HashMap;
 

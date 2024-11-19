@@ -9,8 +9,8 @@
         "create_vm": {
             "command": "VBoxManage createvm --name {vm_name} --ostype {os_type} --register",
             "params": ["vm_name", "os_type"],
-            "post_create": [
-                "VBoxManage modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count} --boot1 disk --boot2 none --boot3 none --boot4 none",
+            "post_exec": [
+                "VBoxManage modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
                 "VBoxManage modifyvm {vm_name} --nic1 nat"
             ]
         },
@@ -26,11 +26,11 @@
         "configure_networks": {
             "command": "VBoxManage modifyvm {vm_name} --nic{network_index} {network_type}",
             "params": ["vm_name", "network_index", "network_type"],
-            "network_types": {
-                "nat": "nat",
-                "hostonly": "hostonly",
-                "bridged": "bridged"
-            }
+//            "network_types": {
+//                "nat": "nat",
+//                "hostonly": "hostonly",
+//                "bridged": "bridged"
+//            }
         },
         "create_disk": {
             "command": "VBoxManage createmedium disk --filename {disk_path} --size {size_mb} --format VDI",
