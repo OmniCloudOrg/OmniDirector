@@ -32,7 +32,7 @@
             "success_exit_code": 0
         },
         "configure_networks": {
-            "command": "govc vm.network.add -vm {vm_name} -net {network} -net.adapter {adapter_type}",
+            "command": "govc vm.network.add -vm {vm_name} -net {networks} -net.adapter {adapter_type}",
             "params": ["vm_name", "network"],
             "optional_params": {
                 "adapter_type": "vmxnet3"

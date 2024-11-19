@@ -1,13 +1,17 @@
 use std::{ fs, io };
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashSet;
 use std::fs::DirEntry;
 use std::path::Path;
 use std::sync::Mutex;
 use lazy_static::lazy_static;
 use rayon::prelude::{ IntoParallelRefIterator, ParallelIterator };
 use thiserror::Error;
-use phf::{ phf_map, Map };
+use phf::phf_map;
 use std::arch::global_asm;
+
+mod cpi_actions;
+#[cfg(test)]
+mod tests;
 
 lazy_static! {
     static ref IS_READY: Mutex<bool> = Mutex::new(false);
@@ -147,7 +151,7 @@ static RECOGNIZED_FILE_TYPES: phf::Map<
 //     "dart", "nim", "zig", "cr", "groovy"
 // ];
 
-const COMPILED_FILE_TYPES: [&'static str; 32] = [
+const COMPILED_FILE_TYPES: [&str; 32] = [
     // General-purpose compiled languages
     "rs",
     "c",
