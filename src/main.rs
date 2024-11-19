@@ -208,8 +208,12 @@ enum CompileError {
 }
 
 fn main() { 
-    let input_dir: &str = "./";
-    try_compile(input_dir).expect("Could not compile");
+
+    cpi_actions::test();
+
+
+    //let input_dir: &str = "./";
+    //try_compile(input_dir).expect("Could not compile");
 }
 
 fn try_compile(input_dir: &str) -> Result<(), CompileError> {

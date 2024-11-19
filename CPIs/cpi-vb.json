@@ -19,8 +19,8 @@
             "params": ["vm_name"]
         },
         "has_vm": {
-            "command": "VBoxManage showvminfo {vm_name}",
-            "params": ["vm_name"],
+            "command": "VBoxManage showvminfo {vm_id}",
+            "params": ["vm_id"],
             "success_exit_code": 0
         },
         "configure_networks": {
