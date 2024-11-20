@@ -9,8 +9,9 @@ use thiserror::Error;
 use phf::phf_map;
 use std::arch::global_asm;
 
+mod logging;
 mod cpi_actions;
-mod api;
+//mod api;
 
 #[cfg(test)]
 mod tests;
@@ -209,10 +210,8 @@ enum CompileError {
     #[error("IO error occurred: {0}")] IoError(#[from] io::Error),
 }
 
-fn main() { 
-
+fn main() {
     cpi_actions::test();
-
 
     //let input_dir: &str = "./";
     //try_compile(input_dir).expect("Could not compile");

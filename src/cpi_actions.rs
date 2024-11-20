@@ -7,6 +7,7 @@ use serde_json::{Map, Value};
 use std::collections::HashMap;
 use std::fs;
 use std::process::{Command, Output};
+use crate::logging::Logger;
 
 pub struct CpiCommand {
     pub config: String,
@@ -25,8 +26,15 @@ impl CpiCommand {
     // Execute a CPI command by fetching the template from the CPI,
     // filling the params, and returning the output
     pub fn execute(&self, command: CpiCommandType) -> Result<Value> {
+        let logger = Logger::new(true);
+        
+        // Parse config
         let config_json: Value =
             serde_json::from_str(&self.config).context("failed to deserialize json")?;
+        
+        logger.debug("Parsed configuration:");
+        logger.json("Config", &config_json);
+
         let actions = config_json
             .get("actions")
             .context("'actions' was not defined in the config")?;
@@ -35,79 +43,58 @@ impl CpiCommand {
             command.to_string()
         ))?;
 
-        // Get the command template from the CPI
+        // Get command template
         let command_template = command_type
             .get("command")
             .context("'command field not found for command type'")?
             .as_str()
             .unwrap();
 
-        // Get the post-exec command templates
-        let post_exec_templates = command_type
-            .get("post_exec")
-            .context("no post exec commands found")?
-            .as_array()
-            .context("Post exec commands found but were not an array")?
-            .iter()
-            .map(|v| {
-                v.as_str()
-                    .context("post exec command was not a valid string")
-                    .map(|s| s.to_string())
-            })
-            .collect::<Result<Vec<String>>>()?;
+        // Log command parameters
+        let params: Value = serde_json::to_value(&command)?;
+        logger.debug("Command parameters:");
+        logger.json("Params", &params);
 
-        // Serialize the enum variant to a JSON Value
-        let params: Value =
-            serde_json::to_value(&command).context("failed to serialize command")?;
-
-        // Extract the inner object from the enum variant
+        // Extract and process parameters
         let params = params
             .as_object()
             .and_then(|obj| obj.values().next())
             .and_then(|v| v.as_object())
             .context("failed to extract params from command")?;
 
-        println!("Params: {:?}", params);
-
         let mut command_str = replace_template_params(params, &mut command_template.to_string());
 
-        // Execute the command
-        println!(
-            "Executing command: {}",
-            command_str.green().bold().underline().italic()
-        );
+        // Execute command
+        logger.info(format!("Executing command: {}", command_str.green().bold()));
 
-        let output = execute_shell_cmd(&mut command_str)?;
-
-        // Check if the command was successful
-
-        // Run post-exec commands
-        for post_exec_template in post_exec_templates {
-            let mut post_exec_command =
-                replace_template_params(params, &mut post_exec_template.to_string());
-            println!(
-                "Executing post-exec command: {}",
-                post_exec_command.green().bold().underline().italic()
-            );
-            let post_exec_output = execute_shell_cmd(&mut post_exec_command)?;
-
-            if !post_exec_output.status.success() {
-                let error_msg = String::from_utf8(post_exec_output.stderr)
-                    .context("failed to convert stderr to string from utf-8")?;
-                return Err(anyhow::anyhow!(error_msg));
+        match execute_shell_cmd(&mut command_str) {
+            Ok(output) => {
+                if output.status.success() {
+                    let output_str = String::from_utf8(output.stdout)
+                        .context("failed to parse stdout as UTF-8")?;
+                    
+                    match serde_json::from_str(&output_str) {
+                        Ok(json_output) => {
+                            logger.success("Command executed successfully");
+                            logger.json("Output", &json_output);
+                            Ok(json_output)
+                        }
+                        Err(e) => {
+                            logger.error(format!("Failed to parse command output as JSON: {}", e));
+                            Err(anyhow::anyhow!(e))
+                        }
+                    }
+                } else {
+                    let error_msg = String::from_utf8(output.stderr)
+                        .context("failed to parse stderr as UTF-8")?;
+                    logger.error(format!("Command failed: {}", error_msg));
+                    Err(anyhow::anyhow!(error_msg))
+                }
             }
-        }
-
-        if output.status.success() {
-            // Parse the output as JSON and return
-            let output_str = String::from_utf8(output.stdout)
-                .context("failed to parse stdout of inital command")?;
-            let json_output: Value =
-                serde_json::from_str(&output_str).context("failed to parse output as json")?;
-            Ok(json_output)
-        } else {
-            let error_msg = String::from_utf8(output.stderr).context("idfk")?;
-            Err(anyhow!(error_msg))
+            Err(e) => {
+                logger.error_chain(&e);
+                Err(e)
+            }
         }
     }
 }
