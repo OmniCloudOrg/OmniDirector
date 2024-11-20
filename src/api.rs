@@ -1,10 +1,13 @@
-
-use std::env;
-use warp::Filter;
-use tokio;
 use crate::cpi_actions::{CpiCommand, CpiCommandType};
+use debug_print::{
+    debug_eprint as deprint, debug_eprintln as deprintln, debug_print as dprint,
+    debug_println as dprintln,
+};
+use ez_logging::println;
+use std::env;
+use tokio;
 use warp::reject::Reject;
-
+use warp::Filter;
 #[derive(Debug)]
 struct CustomError(anyhow::Error);
 
@@ -20,11 +23,20 @@ pub async fn main() {
     println!("Server running at http://{}:{}", host, &port);
 
     // Combine all routes
-    let routes = 
-    warp::path("vms")
-        .and(
-            warp::post()
-                .and(warp::path("create"))
+    let routes = warp::path("vms").and(
+        warp::post()
+            .and(warp::path("create"))
+            .and(warp::body::json())
+            .and_then(|params: CpiCommandType| async move {
+                let cpi = CpiCommand::new().unwrap();
+                let result = cpi.execute(params);
+                match result {
+                    Ok(output) => Ok(warp::reply::json(&output)),
+                    Err(err) => Err(warp::reject::custom(CustomError(err))),
+                }
+            })
+            .or(warp::post()
+                .and(warp::path("delete"))
                 .and(warp::body::json())
                 .and_then(|params: CpiCommandType| async move {
                     let cpi = CpiCommand::new().unwrap();
@@ -33,66 +45,58 @@ pub async fn main() {
                         Ok(output) => Ok(warp::reply::json(&output)),
                         Err(err) => Err(warp::reject::custom(CustomError(err))),
                     }
-                })
-                .or(warp::post()
-                    .and(warp::path("delete"))
-                    .and(warp::body::json())
-                    .and_then(|params: CpiCommandType| async move {
-                        let cpi = CpiCommand::new().unwrap();
-                        let result = cpi.execute(params);
-                        match result {
-                            Ok(output) => Ok(warp::reply::json(&output)),
-                            Err(err) => Err(warp::reject::custom(CustomError(err))),
-                        }
-                    }))
-                .or(warp::post()
-                    .and(warp::path("configure_networks"))
-                    .and(warp::body::json())
-                    .and_then(|params: CpiCommandType| async move {
-                        let cpi = CpiCommand::new().unwrap();
-                        let result = cpi.execute(params);
-                        match result {
-                            Ok(output) => Ok(warp::reply::json(&output)),
-                            Err(err) => Err(warp::reject::custom(CustomError(err))),
-                        }
-                    }))
-                .or(warp::post()
-                    .and(warp::path("set_metadata"))
-                    .and(warp::body::json())
-                    .and_then(|params: CpiCommandType| async move {
-                        let cpi = CpiCommand::new().unwrap();
-                        let result = cpi.execute(params);
-                        match result {
-                            Ok(output) => Ok(warp::reply::json(&output)),
-                            Err(err) => Err(warp::reject::custom(CustomError(err))),
-                        }
-                    }))
-                .or(warp::post()
-                    .and(warp::path("create_disk"))
-                    .and(warp::body::json())
-                    .and_then(|params: CpiCommandType| async move {
-                        let cpi = CpiCommand::new().unwrap();
-                        let result = cpi.execute(params);
-                        match result {
-                            Ok(output) => Ok(warp::reply::json(&output)),
-                            Err(err) => Err(warp::reject::custom(CustomError(err))),
-                        }
-                    }))
-                .or(warp::post()
-                    .and(warp::path("attach_disk"))
-                    .and(warp::body::json())
-                    .and_then(|params: CpiCommandType| async move {
-                        let cpi = CpiCommand::new().unwrap();
-                        let result = cpi.execute(params);
-                        match result {
-                            Ok(output) => Ok(warp::reply::json(&output)),
-                            Err(err) => Err(warp::reject::custom(CustomError(err))),
-                        }
-                    }))
-                );
+                }))
+            .or(warp::post()
+                .and(warp::path("configure_networks"))
+                .and(warp::body::json())
+                .and_then(|params: CpiCommandType| async move {
+                    let cpi = CpiCommand::new().unwrap();
+                    let result = cpi.execute(params);
+                    match result {
+                        Ok(output) => Ok(warp::reply::json(&output)),
+                        Err(err) => Err(warp::reject::custom(CustomError(err))),
+                    }
+                }))
+            .or(warp::post()
+                .and(warp::path("set_metadata"))
+                .and(warp::body::json())
+                .and_then(|params: CpiCommandType| async move {
+                    let cpi = CpiCommand::new().unwrap();
+                    let result = cpi.execute(params);
+                    match result {
+                        Ok(output) => Ok(warp::reply::json(&output)),
+                        Err(err) => Err(warp::reject::custom(CustomError(err))),
+                    }
+                }))
+            .or(warp::post()
+                .and(warp::path("create_disk"))
+                .and(warp::body::json())
+                .and_then(|params: CpiCommandType| async move {
+                    let cpi = CpiCommand::new().unwrap();
+                    let result = cpi.execute(params);
+                    match result {
+                        Ok(output) => Ok(warp::reply::json(&output)),
+                        Err(err) => Err(warp::reject::custom(CustomError(err))),
+                    }
+                }))
+            .or(warp::post()
+                .and(warp::path("attach_disk"))
+                .and(warp::body::json())
+                .and_then(|params: CpiCommandType| async move {
+                    let cpi = CpiCommand::new().unwrap();
+                    let result = cpi.execute(params);
+                    match result {
+                        Ok(output) => Ok(warp::reply::json(&output)),
+                        Err(err) => Err(warp::reject::custom(CustomError(err))),
+                    }
+                })),
+    );
 
     warp::serve(routes)
-        .run((host.parse::<std::net::IpAddr>().unwrap(), port.parse::<u16>().unwrap()))
+        .run((
+            host.parse::<std::net::IpAddr>().unwrap(),
+            port.parse::<u16>().unwrap(),
+        ))
         .await;
 }
 
@@ -104,7 +108,7 @@ struct AuthToken;
 
 impl AuthToken {
     fn new() -> Self {
-        AuthToken { }
+        AuthToken {}
     }
     fn new_preset(expected_token: &str) -> Self {
         AuthToken::new()

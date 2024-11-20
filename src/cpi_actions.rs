@@ -8,6 +8,13 @@ use std::collections::HashMap;
 use std::fs;
 use std::process::{Command, Output};
 use crate::logging::Logger;
+use ez_logging::println;
+use debug_print::{
+    debug_print as dprint,
+    debug_println as dprintln,
+    debug_eprint as deprint,
+    debug_eprintln as deprintln,
+};
 
 pub struct CpiCommand {
     pub config: String,
@@ -192,6 +199,7 @@ impl<K: ToString, V: ToString> TemplateValue for HashMap<K, V> {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum CpiCommandType {
+    #[serde(rename = "create_vm")]
     CreateVM {
         guest_id: String,
         memory_mb: i32,
@@ -201,9 +209,11 @@ pub enum CpiCommandType {
         vm_name: String,
         cpu_count: i32,
     },
+    #[serde(rename = "delete_vm")]
     DeleteVM {
         vm_name: String,
     },
+    #[serde(rename = "has_vm")]
     HasVM {
         vm_name: String,
     },
@@ -235,6 +245,7 @@ pub enum CpiCommandType {
         vm_name: String,
         disk_path: String,
     },
+    #[serde(rename = "set_vm_metadata")]
     SetVMMetadata{
         vm_name: String,
         key: String,
@@ -342,7 +353,7 @@ pub fn test() {
 
     
 
-    println!("VM exists: {:?}", vm);
+    dprintln!("VM exists: {:?}", vm);
 
     // Configure networks for the VM
     let network_config = cpi.execute(CpiCommandType::ConfigureNetworks {

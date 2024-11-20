@@ -1,0 +1,24 @@
+[2024-11-20 16:59:17] Logging system initialized
+[2024-11-20 16:59:17] Created VM: Err('VBoxManage' is not recognized as an internal or external command,
+operable program or batch file.
+)
+[2024-11-20 16:59:17] VM exists: Err('VBoxManage' is not recognized as an internal or external command,
+operable program or batch file.
+)
+[2024-11-20 16:59:17] Configured Networks: Err(no post exec commands found)
+[2024-11-20 16:59:17] Set VM Metadata: Err(no post exec commands found)
+[2024-11-20 16:59:17] Created Disk: Err(no post exec commands found)
+[2024-11-20 16:59:17] Attached Disk: Err(no post exec commands found)
+[2024-11-20 16:59:17] Server running at http://127.0.0.1:8080
+[2024-11-20 17:06:42] Logging system initialized
+[2024-11-20 17:06:42] Created VM: Err('VBoxManage' is not recognized as an internal or external command,
+operable program or batch file.
+)
+[2024-11-20 17:06:42] VM exists: Err('VBoxManage' is not recognized as an internal or external command,
+operable program or batch file.
+)
+[2024-11-20 17:06:42] Configured Networks: Err(no post exec commands found)
+[2024-11-20 17:06:42] Set VM Metadata: Err(no post exec commands found)
+[2024-11-20 17:06:42] Created Disk: Err(no post exec commands found)
+[2024-11-20 17:06:42] Attached Disk: Err(no post exec commands found)
+[2024-11-20 17:06:42] Server running at http://127.0.0.1:8080
