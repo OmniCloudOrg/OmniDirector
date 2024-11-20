@@ -25,12 +25,7 @@
         },
         "configure_networks": {
             "command": "VBoxManage modifyvm {vm_name} --nic{network_index} {network_type}",
-            "params": ["vm_name", "network_index", "network_type"],
-//            "network_types": {
-//                "nat": "nat",
-//                "hostonly": "hostonly",
-//                "bridged": "bridged"
-//            }
+            "params": ["vm_name", "network_index", "network_type"]
         },
         "create_disk": {
             "command": "VBoxManage createmedium disk --filename {disk_path} --size {size_mb} --format VDI",

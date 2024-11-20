@@ -10,6 +10,8 @@ use phf::phf_map;
 use std::arch::global_asm;
 
 mod cpi_actions;
+mod api;
+
 #[cfg(test)]
 mod tests;
 

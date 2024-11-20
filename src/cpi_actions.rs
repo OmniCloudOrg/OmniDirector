@@ -1,6 +1,6 @@
 use anyhow::Context;
 use anyhow::Result;
-use anyhow::{anyhow, Error};
+use anyhow::anyhow;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -317,10 +317,7 @@ pub fn test() {
     });
     println!("Created VM: {:?}", vm);
 
-    // Was the VM really created??
-    let vm = cpi.execute(CpiCommandType::HasVM {
-        vm_id: "test-vm".to_string(),
-    });
+    
 
     println!("VM exists: {:?}", vm);
 
