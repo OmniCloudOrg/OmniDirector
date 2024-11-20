@@ -11,7 +11,7 @@ use std::arch::global_asm;
 
 mod logging;
 mod cpi_actions;
-//mod api;
+mod api;
 
 #[cfg(test)]
 mod tests;
@@ -215,6 +215,7 @@ fn main() {
 
     //let input_dir: &str = "./";
     //try_compile(input_dir).expect("Could not compile");
+    api::main();
 }
 
 fn try_compile(input_dir: &str) -> Result<(), CompileError> {
