@@ -9,6 +9,7 @@ use thiserror::Error;
 use phf::phf_map;
 use std::arch::global_asm;
 
+mod api;
 mod cpi_actions;
 #[cfg(test)]
 mod tests;
@@ -210,6 +211,7 @@ enum CompileError {
 fn main() { 
 
     cpi_actions::test();
+    api::init();
 
 
     //let input_dir: &str = "./";
