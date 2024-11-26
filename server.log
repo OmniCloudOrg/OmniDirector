@@ -22,3 +22,39 @@ operable program or batch file.
 [2024-11-20 17:06:42] Created Disk: Err(no post exec commands found)
 [2024-11-20 17:06:42] Attached Disk: Err(no post exec commands found)
 [2024-11-20 17:06:42] Server running at http://127.0.0.1:8080
+[2024-11-20 17:08:16] Logging system initialized
+[2024-11-20 17:08:16] Created VM: Err('VBoxManage' is not recognized as an internal or external command,
+operable program or batch file.
+)
+[2024-11-20 17:08:16] VM exists: Err('VBoxManage' is not recognized as an internal or external command,
+operable program or batch file.
+)
+[2024-11-20 17:08:16] Configured Networks: Err(no post exec commands found)
+[2024-11-20 17:08:16] Set VM Metadata: Err(no post exec commands found)
+[2024-11-20 17:08:16] Created Disk: Err(no post exec commands found)
+[2024-11-20 17:08:16] Attached Disk: Err(no post exec commands found)
+[2024-11-20 17:08:16] Server running at http://127.0.0.1:8080
+[2024-11-25 14:33:15] Logging system initialized
+[2024-11-25 14:33:15] Created VM: Err(sh: 1: VBoxManage: not found
+)
+[2024-11-25 14:33:15] VM exists: Err(sh: 1: VBoxManage: not found
+)
+[2024-11-25 14:33:15] Configured Networks: Err(no post exec commands found)
+[2024-11-25 14:33:15] Set VM Metadata: Err(no post exec commands found)
+[2024-11-25 14:33:15] Created Disk: Err(no post exec commands found)
+[2024-11-25 14:33:15] Attached Disk: Err(no post exec commands found)
+[2024-11-25 14:33:15] Server running at http://127.0.0.1:8080
+[2024-11-25 14:35:05] Logging system initialized
+[2024-11-25 14:35:06] Created VM: Err(VBoxManage.exe: error: Machine settings file 'C:\Users\redst\VirtualBox VMs\test-vm\test-vm.vbox' already exists
+VBoxManage.exe: error: Details: code VBOX_E_FILE_ERROR (0x80bb0004), component MachineWrap, interface IMachine, callee IUnknown
+VBoxManage.exe: error: Context: "CreateMachine(bstrSettingsFile.raw(), bstrName.raw(), ComSafeArrayAsInParam(groups), bstrOsTypeId.raw(), createFlags.raw(), bstrCipher.raw(), bstrPasswordId.raw(), Bstr(strPassword).raw(), machine.asOutParam())" at line 406 of file VBoxManageMisc.cpp
+)
+[2024-11-25 14:35:06] VM exists: Err(VBoxManage.exe: error: Machine settings file 'C:\Users\redst\VirtualBox VMs\test-vm\test-vm.vbox' already exists
+VBoxManage.exe: error: Details: code VBOX_E_FILE_ERROR (0x80bb0004), component MachineWrap, interface IMachine, callee IUnknown
+VBoxManage.exe: error: Context: "CreateMachine(bstrSettingsFile.raw(), bstrName.raw(), ComSafeArrayAsInParam(groups), bstrOsTypeId.raw(), createFlags.raw(), bstrCipher.raw(), bstrPasswordId.raw(), Bstr(strPassword).raw(), machine.asOutParam())" at line 406 of file VBoxManageMisc.cpp
+)
+[2024-11-25 14:35:06] Configured Networks: Err(no post exec commands found)
+[2024-11-25 14:35:06] Set VM Metadata: Err(no post exec commands found)
+[2024-11-25 14:35:06] Created Disk: Err(no post exec commands found)
+[2024-11-25 14:35:06] Attached Disk: Err(no post exec commands found)
+[2024-11-25 14:35:06] Server running at http://127.0.0.1:8080

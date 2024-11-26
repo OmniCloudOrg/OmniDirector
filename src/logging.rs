@@ -1,5 +1,5 @@
 use colored::Colorize;
-use serde_json::{Value, Error as JsonError};
+use serde_json::Value;
 use std::fmt::Display;
 use anyhow::{Result, Error};
 use chrono::Local;
