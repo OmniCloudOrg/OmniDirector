@@ -1,0 +1,99 @@
+{
+    "name": "my_virtualbox_cpi",
+    "type": "virt",
+    "actions": {
+        "test_install": {
+            "command": "VBoxManage.exe --version",
+            "params": []
+        },
+        "create_vm": {
+            "command": "VBoxManage.exe createvm --name {vm_name} --ostype {os_type} --register",
+            "params": ["vm_name", "os_type"],
+            "post_exec": [
+                "VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
+                "VBoxManage.exe modifyvm {vm_name} --nic1 nat"
+            ]
+        },
+        "delete_vm": {
+            "command": "VBoxManage.exe unregistervm {vm_name} --delete",
+            "params": ["vm_name"]
+        },
+        "has_vm": {
+            "command": "VBoxManage.exe showvminfo {vm_id}",
+            "params": ["vm_id"],
+            "success_exit_code": 0
+        },
+        "configure_networks": {
+            "command": "VBoxManage.exe modifyvm {vm_name} --nic{network_index} {network_type}",
+            "params": ["vm_name", "network_index", "network_type"]
+        },
+        "create_disk": {
+            "command": "VBoxManage.exe createmedium disk --filename {disk_path} --size {size_mb} --format VDI",
+            "params": ["disk_path", "size_mb"]
+        },
+        "delete_disk": {
+            "command": "VBoxManage.exe closemedium disk {disk_path} --delete",
+            "params": ["disk_path"]
+        },
+        "attach_disk": {
+            "command": "VBoxManage.exe storageattach {vm_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}",
+            "params": ["vm_name", "controller_name", "port", "disk_path"],
+            "pre_attach": [
+                "VBoxManage.exe storagectl {vm_name} --name {controller_name} --add sata --controller IntelAhci --portcount 30"
+            ]
+        },
+        "detach_disk": {
+            "command": "VBoxManage.exe storageattach {vm_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium none",
+            "params": ["vm_name", "controller_name", "port"]
+        },
+        "has_disk": {
+            "command": "VBoxManage.exe showmediuminfo disk {disk_path}",
+            "params": ["disk_path"],
+            "success_exit_code": 0
+        },
+        "set_vm_metadata": {
+            "command": "VBoxManage.exe setextradata {vm_name} {key} {value}",
+            "params": ["vm_name", "key", "value"]
+        },
+        "create_snapshot": {
+            "command": "VBoxManage.exe snapshot {vm_name} take {snapshot_name}",
+            "params": ["vm_name", "snapshot_name"]
+        },
+        "delete_snapshot": {
+            "command": "VBoxManage.exe snapshot {vm_name} delete {snapshot_name}",
+            "params": ["vm_name", "snapshot_name"]
+        },
+        "has_snapshot": {
+            "command": "VBoxManage.exe snapshot {vm_name} list",
+            "params": ["vm_name"],
+            "parse_output": "grep {snapshot_name}"
+        },
+        "get_disks": {
+            "command": "VBoxManage.exe list hdds",
+            "parse_output": "grep -A 3 'UUID:'"
+        },
+        "get_vm": {
+            "command": "VBoxManage.exe showvminfo {vm_name}",
+            "params": ["vm_name"]
+        },
+        "reboot_vm": {
+            "command": "VBoxManage.exe controlvm {vm_name} reset",
+            "params": ["vm_name"]
+        },
+        "snapshot_disk": {
+            "command": "VBoxManage.exe clonemedium disk {source_disk_path} {target_disk_path}",
+            "params": ["source_disk_path", "target_disk_path"]
+        },
+        "get_snapshots": {
+            "command": "VBoxManage.exe snapshot {vm_name} list",
+            "params": ["vm_name"]
+        }
+    },
+    "default_settings": {
+        "os_type": "Ubuntu_64",
+        "memory_mb": 2048,
+        "cpu_count": 2,
+        "controller_name": "SATA Controller",
+        "network_type": "nat"
+    }
+}

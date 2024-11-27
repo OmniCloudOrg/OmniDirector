@@ -4,113 +4,95 @@ use debug_print::{
     debug_println as dprintln,
 };
 use ez_logging::println;
+use rocket::{self, launch, post, response::Responder, routes, serde::json::Json, State};
 use std::env;
-use tokio;
-use warp::reject::Reject;
-use warp::Filter;
-#[derive(Debug)]
-struct CustomError(anyhow::Error);
 
-impl Reject for CustomError {}
+// Custom error handling
+#[derive(Debug, Responder)]
+enum ApiError {
+    #[response(status = 500)]
+    Internal(String),
+}
 
-#[tokio::main]
-pub async fn main() {
+impl From<anyhow::Error> for ApiError {
+    fn from(err: anyhow::Error) -> Self {
+        ApiError::Internal(err.to_string())
+    }
+}
+
+type ApiResult<T> = Result<Json<T>, ApiError>;
+
+// Route handlers
+#[post("/vms/create", format = "json", data = "<params>")]
+async fn create(params: Json<CpiCommandType>) -> ApiResult<String> {
+    println!("attempted to create vm. received params: {params:?}");
+    let cpi = CpiCommand::new()?;
+    let result = cpi.execute(params.into_inner())?.to_string();
+    
+    Ok(Json(result.to_string()))
+}
+
+#[post("/vms/delete", format = "json", data = "<params>")]
+async fn delete(params: Json<CpiCommandType>) -> ApiResult<String> {
+    println!("attempted to delete vm. received params: {params:?}");
+    let cpi = CpiCommand::new()?;
+    let result = cpi.execute(params.into_inner())?;
+    Ok(Json(result.to_string()))
+}
+
+#[post("/vms/configure_networks", format = "json", data = "<params>")]
+async fn configure_networks(params: Json<CpiCommandType>) -> ApiResult<String> {
+    let cpi = CpiCommand::new()?;
+    let result = cpi.execute(params.into_inner())?;
+    Ok(Json(result.to_string()))
+}
+
+#[post("/vms/set_metadata", format = "json", data = "<params>")]
+async fn set_metadata(params: Json<CpiCommandType>) -> ApiResult<String> {
+    let cpi = CpiCommand::new()?;
+    let result = cpi.execute(params.into_inner())?;
+    Ok(Json(result.to_string()))
+}
+
+#[post("/vms/create_disk", format = "json", data = "<params>")]
+async fn create_disk(params: Json<CpiCommandType>) -> ApiResult<String> {
+    let cpi = CpiCommand::new()?;
+    let result = cpi.execute(params.into_inner())?;
+    Ok(Json(result.to_string()))
+}
+
+#[post("/vms/attach_disk", format = "json", data = "<params>")]
+async fn attach_disk(params: Json<CpiCommandType>) -> ApiResult<String> {
+    let cpi = CpiCommand::new()?;
+    let result = cpi.execute(params.into_inner())?;
+    Ok(Json(result.to_string()))
+}
+
+pub async fn rocket() -> rocket::Rocket<rocket::Build> {
     // Load environment variables
-
-    let host = env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
-    let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string());
+    let host = env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+    let port = env::var("PORT").unwrap_or_else(|_| "8081".to_string());
 
     println!("Server running at http://{}:{}", host, &port);
 
-    // Combine all routes
-    let routes = warp::path("vms").and(
-        warp::post()
-            .and(warp::path("create"))
-            .and(warp::body::json())
-            .and_then(|params: CpiCommandType| async move {
-                let cpi = CpiCommand::new().unwrap();
-                let result = cpi.execute(params);
-                match result {
-                    Ok(output) => Ok(warp::reply::json(&output)),
-                    Err(err) => Err(warp::reject::custom(CustomError(err))),
-                }
-            })
-            .or(warp::post()
-                .and(warp::path("delete"))
-                .and(warp::body::json())
-                .and_then(|params: CpiCommandType| async move {
-                    let cpi = CpiCommand::new().unwrap();
-                    let result = cpi.execute(params);
-                    match result {
-                        Ok(output) => Ok(warp::reply::json(&output)),
-                        Err(err) => Err(warp::reject::custom(CustomError(err))),
-                    }
-                }))
-            .or(warp::post()
-                .and(warp::path("configure_networks"))
-                .and(warp::body::json())
-                .and_then(|params: CpiCommandType| async move {
-                    let cpi = CpiCommand::new().unwrap();
-                    let result = cpi.execute(params);
-                    match result {
-                        Ok(output) => Ok(warp::reply::json(&output)),
-                        Err(err) => Err(warp::reject::custom(CustomError(err))),
-                    }
-                }))
-            .or(warp::post()
-                .and(warp::path("set_metadata"))
-                .and(warp::body::json())
-                .and_then(|params: CpiCommandType| async move {
-                    let cpi = CpiCommand::new().unwrap();
-                    let result = cpi.execute(params);
-                    match result {
-                        Ok(output) => Ok(warp::reply::json(&output)),
-                        Err(err) => Err(warp::reject::custom(CustomError(err))),
-                    }
-                }))
-            .or(warp::post()
-                .and(warp::path("create_disk"))
-                .and(warp::body::json())
-                .and_then(|params: CpiCommandType| async move {
-                    let cpi = CpiCommand::new().unwrap();
-                    let result = cpi.execute(params);
-                    match result {
-                        Ok(output) => Ok(warp::reply::json(&output)),
-                        Err(err) => Err(warp::reject::custom(CustomError(err))),
-                    }
-                }))
-            .or(warp::post()
-                .and(warp::path("attach_disk"))
-                .and(warp::body::json())
-                .and_then(|params: CpiCommandType| async move {
-                    let cpi = CpiCommand::new().unwrap();
-                    let result = cpi.execute(params);
-                    match result {
-                        Ok(output) => Ok(warp::reply::json(&output)),
-                        Err(err) => Err(warp::reject::custom(CustomError(err))),
-                    }
-                })),
-    );
+    // Configure Rocket
+    let config = rocket::Config::figment()
+        .merge(("address", host))
+        .merge(("port", port.parse::<u16>().unwrap()));
 
-    warp::serve(routes)
-        .run((
-            host.parse::<std::net::IpAddr>().unwrap(),
-            port.parse::<u16>().unwrap(),
-        ))
-        .await;
+    rocket::custom(config).mount(
+        "/",
+        routes![
+            create,
+            delete,
+            configure_networks,
+            set_metadata,
+            create_disk,
+            attach_disk
+        ],
+    )
 }
 
-fn auth() -> impl warp::Filter<Extract = ((),), Error = std::convert::Infallible> + Clone {
-    warp::any().map(|| ())
-}
-
-struct AuthToken;
-
-impl AuthToken {
-    fn new() -> Self {
-        AuthToken {}
-    }
-    fn new_preset(expected_token: &str) -> Self {
-        AuthToken::new()
-    }
+pub async fn launch_rocket() {
+    rocket().await.launch().await.unwrap();
 }

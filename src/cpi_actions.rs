@@ -22,7 +22,7 @@ pub struct CpiCommand {
 
 impl CpiCommand {
     pub fn new() -> Result<Self> {
-        let config_str = fs::read_to_string("./CPIs/cpi-vb.json")?;
+        let config_str = fs::read_to_string("./CPIs/cpi-vb-wsl.json")?;
         let config_json: Value = serde_json::from_str(&config_str)?;
 
         Ok(Self {
@@ -54,19 +54,22 @@ impl CpiCommand {
             .as_str()
             .unwrap();
     
-        // Get the post-exec command templates
-        let post_exec_templates = command_type
-            .get("post_exec")
-            .context("no post exec commands found")?
-            .as_array()
-            .context("Post exec commands found but were not an array")?
-            .iter()
-            .map(|v| {
-                v.as_str()
-                    .context("post exec command was not a valid string")
-                    .map(|s| s.to_string())
-            })
-            .collect::<Result<Vec<String>>>()?;
+        // Get the post-exec command templates if they exist
+        let post_exec_templates = match command_type.get("post_exec") {
+            Some(post_exec) => {
+                post_exec
+                    .as_array()
+                    .context("Post exec commands found but were not an array")?
+                    .iter()
+                    .map(|v| {
+                        v.as_str()
+                            .context("post exec command was not a valid string")
+                            .map(|s| s.to_string())
+                    })
+                    .collect::<Result<Vec<String>>>()?
+            }
+            None => Vec::new(),
+        };
     
         // Serialize the enum variant to a JSON Value and extract params
         let params: Value = serde_json::to_value(&command).context("failed to serialize command")?;
@@ -96,45 +99,36 @@ impl CpiCommand {
         // Parse the output of the main command
         let output_str = String::from_utf8(output.stdout)
             .context("failed to parse stdout as UTF-8")?;
+    
+        // Execute post-exec commands if they exist
+        if !post_exec_templates.is_empty() {
+            logger.info("Executing post-exec commands...");
+            for (index, post_exec_template) in post_exec_templates.iter().enumerate() {
+                let mut post_exec_command = replace_template_params(params, &mut post_exec_template.to_string());
+                logger.debug(format!("Post-exec command {}/{}: {}", 
+                    index + 1, 
+                    post_exec_templates.len(),
+                    post_exec_command.green().bold()
+                ));
         
-        //  let json_output = match serde_json::from_str(&output_str) {
-        //      Ok(json) => {
-        //          logger.success("Main command executed successfully");
-        //          logger.json("Output", &json);
-        //          json
-        //      }
-        //      Err(e) => {
-        //          logger.error(format!("Failed to parse command output as JSON: {}", e));
-        //          return Err(anyhow::anyhow!(e));
-        //      }
-        //  };
-    
-        // Execute post-exec commands
-        logger.info("Executing post-exec commands...");
-        for (index, post_exec_template) in post_exec_templates.iter().enumerate() {
-            let mut post_exec_command = replace_template_params(params, &mut post_exec_template.to_string());
-            logger.debug(format!("Post-exec command {}/{}: {}", 
-                index + 1, 
-                post_exec_templates.len(),
-                post_exec_command.green().bold()
-            ));
-    
-            let post_exec_output = execute_shell_cmd(&mut post_exec_command)?;
-    
-            if !post_exec_output.status.success() {
-                let error_msg = String::from_utf8(post_exec_output.stderr)
-                    .context("failed to parse post-exec stderr as UTF-8")?;
-                logger.error(format!("Post-exec command failed: {}", error_msg));
-                return Err(anyhow::anyhow!(error_msg));
+                let post_exec_output = execute_shell_cmd(&mut post_exec_command)?;
+        
+                if !post_exec_output.status.success() {
+                    let error_msg = String::from_utf8(post_exec_output.stderr)
+                        .context("failed to parse post-exec stderr as UTF-8")?;
+                    logger.error(format!("Post-exec command failed: {}", error_msg));
+                    return Err(anyhow::anyhow!(error_msg));
+                }
+                
+                logger.success(format!("Post-exec command {}/{} completed successfully", 
+                    index + 1, 
+                    post_exec_templates.len()
+                ));
             }
-            
-            logger.success(format!("Post-exec command {}/{} completed successfully", 
-                index + 1, 
-                post_exec_templates.len()
-            ));
+            logger.success("All commands completed successfully");
+        } else {
+            logger.success("Main command completed successfully");
         }
-    
-        logger.success("All commands completed successfully");
 
         let json_output = serde_json::from_str("NULL")?;
         Ok(json_output)
@@ -160,7 +154,7 @@ fn execute_shell_cmd(command_str: &mut String) -> Result<Output> {
 fn replace_template_params(params: &Map<String, Value>, command_str: &mut String) -> String {
     // Iterate through parameters and perform replacements
     for (key, value) in params {
-        let placeholder = format!("{{{}}}", key); // Creates {key} format
+        let placeholder = format!("{{{}}}", key); // Creates {key} format 
         let replacement = match value {
             Value::String(s) => s.to_owned(),
             Value::Number(n) => n.to_string(),
@@ -350,8 +344,6 @@ pub fn test() {
         vm_name: "test-vm".to_string(),
     });
     println!("Created VM: {:?}", vm);
-
-    
 
     dprintln!("VM exists: {:?}", vm);
 
