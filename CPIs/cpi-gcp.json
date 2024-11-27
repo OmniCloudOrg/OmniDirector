@@ -96,25 +96,5 @@
             "command": "gcloud compute snapshots list --filter 'labels.owner:{owner}' --format json",
             "params": ["owner"]
         }
-    },
-    "default_settings": {
-        "machine_type": "e2-medium",
-        "disk_type": "pd-standard",
-        "region": "us-central1",
-        "zone": "us-central1-a"
-    },
-    "authentication": {
-        "methods": {
-            "service_account": {
-                "env_var": "GOOGLE_APPLICATION_CREDENTIALS",
-                "file_path": "/path/to/service-account.json"
-            },
-            "gcloud_config": {
-                "command": "gcloud auth application-default login"
-            }
-        },
-        "project_id": {
-            "env_var": "GOOGLE_CLOUD_PROJECT"
-        }
     }
 }
