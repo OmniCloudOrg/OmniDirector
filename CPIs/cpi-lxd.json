@@ -1,0 +1,66 @@
+{
+    "name": "my_lxd_cpi",
+    "type": "virt",
+    "actions": {
+        "test_install": {
+            "command": "lxd --version",
+            "params": []
+        },
+        "create_vm": {
+            "command": "lxc init {image}:{release} {vm_name} --vm -c limits.memory={memory_mb}MB -c limits.cpu={cpu_count}",
+            "params": ["image", "release", "vm_name", "memory_mb", "cpu_count"],
+            "post_exec": [
+                "lxc config device add {vm_name} root disk path=/ pool=default",
+                "lxc start {vm_name}"
+            ]
+        },
+        "delete_vm": {
+            "command": "lxc delete {vm_name} --force",
+            "params": ["vm_name"]
+        },
+        "has_vm": {
+            "command": "lxc info {vm_name}",
+            "params": ["vm_name"],
+            "success_exit_code": 0
+        },
+        "create_disk": {
+            "command": "lxc storage volume create default {disk_name} size={size_gb}GB",
+            "params": ["disk_name", "size_gb"]
+        },
+        "delete_disk": {
+            "command": "lxc storage volume delete default {disk_name}",
+            "params": ["disk_name"]
+        },
+        "attach_disk": {
+            "command": "lxc config device add {vm_name} {disk_name} disk source={disk_path} path=/mnt/{disk_name}",
+            "params": ["vm_name", "disk_name", "disk_path"]
+        },
+        "detach_disk": {
+            "command": "lxc config device remove {vm_name} {disk_name}",
+            "params": ["vm_name", "disk_name"]
+        },
+        "get_vm": {
+            "command": "lxc info {vm_name} --verbose",
+            "params": ["vm_name"]
+        },
+        "reboot_vm": {
+            "command": "lxc restart {vm_name}",
+            "params": ["vm_name"]
+        },
+        "create_snapshot": {
+            "command": "lxc snapshot {vm_name} {snapshot_name}",
+            "params": ["vm_name", "snapshot_name"]
+        },
+        "delete_snapshot": {
+            "command": "lxc delete {vm_name}/{snapshot_name}",
+            "params": ["vm_name", "snapshot_name"]
+        }
+    },
+    "default_settings": {
+        "image": "ubuntu",
+        "release": "20.04",
+        "memory_mb": 2048,
+        "cpu_count": 2,
+        "storage_pool": "default"
+    }
+}

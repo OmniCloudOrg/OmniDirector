@@ -1,0 +1,44 @@
+{
+    "name": "my_ibm_cpi",
+    "type": "cloud",
+    "actions": {
+        "test_install": {
+            "command": "ibmcloud --version",
+            "params": []
+        },
+        "create_vm": {
+            "command": "ibmcloud is instance-create {vm_name} {vpc} {zone} {profile} {image}",
+            "params": ["vm_name", "vpc", "zone", "profile", "image"]
+        },
+        "delete_vm": {
+            "command": "ibmcloud is instance-delete {instance_id} --force",
+            "params": ["instance_id"]
+        },
+        "has_vm": {
+            "command": "ibmcloud is instance {instance_id}",
+            "params": ["instance_id"],
+            "success_exit_code": 0
+        },
+        "create_disk": {
+            "command": "ibmcloud is volume-create {disk_name} {profile} --capacity {size_gb}",
+            "params": ["disk_name", "profile", "size_gb"]
+        },
+        "delete_disk": {
+            "command": "ibmcloud is volume-delete {volume_id} --force",
+            "params": ["volume_id"]
+        },
+        "attach_disk": {
+            "command": "ibmcloud is instance-volume-attachment-add {instance_id} {volume_id}",
+            "params": ["instance_id", "volume_id"]
+        },
+        "detach_disk": {
+            "command": "ibmcloud is instance-volume-attachment-remove {instance_id} {attachment_id}",
+            "params": ["instance_id", "attachment_id"]
+        }
+    },
+    "default_settings": {
+        "image": "ibm-ubuntu-20-04-minimal-amd64-2",
+        "profile": "bx2-2x8",
+        "zone": "us-south-1"
+    }
+}

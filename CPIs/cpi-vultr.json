@@ -1,0 +1,44 @@
+{
+    "name": "my_vultr_cpi",
+    "type": "cloud",
+    "actions": {
+        "test_install": {
+            "command": "vultr version",
+            "params": []
+        },
+        "create_vm": {
+            "command": "vultr instance create --name {vm_name} --os-id {os_type} --plan {plan_id} --region {region}",
+            "params": ["vm_name", "os_type", "plan_id", "region"]
+        },
+        "delete_vm": {
+            "command": "vultr instance delete {vm_id}",
+            "params": ["vm_id"]
+        },
+        "has_vm": {
+            "command": "vultr instance get {vm_id}",
+            "params": ["vm_id"],
+            "success_exit_code": 0
+        },
+        "create_disk": {
+            "command": "vultr block-storage create --size {size_gb} --region {region}",
+            "params": ["size_gb", "region"]
+        },
+        "delete_disk": {
+            "command": "vultr block-storage delete {disk_id}",
+            "params": ["disk_id"]
+        },
+        "attach_disk": {
+            "command": "vultr block-storage attach {disk_id} {instance_id}",
+            "params": ["disk_id", "instance_id"]
+        },
+        "detach_disk": {
+            "command": "vultr block-storage detach {disk_id}",
+            "params": ["disk_id"]
+        }
+    },
+    "default_settings": {
+        "os_type": "387",
+        "plan_id": "vc2-2c-4gb",
+        "region": "ewr"
+    }
+}

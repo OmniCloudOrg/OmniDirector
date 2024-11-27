@@ -1,0 +1,44 @@
+{
+    "name": "my_ovh_cpi",
+    "type": "cloud",
+    "actions": {
+        "test_install": {
+            "command": "ovhai version",
+            "params": []
+        },
+        "create_vm": {
+            "command": "ovhai instance create --name {vm_name} --flavor {flavor} --image {os_type} --region {region}",
+            "params": ["vm_name", "flavor", "os_type", "region"]
+        },
+        "delete_vm": {
+            "command": "ovhai instance delete {vm_name}",
+            "params": ["vm_name"]
+        },
+        "has_vm": {
+            "command": "ovhai instance show {vm_name}",
+            "params": ["vm_name"],
+            "success_exit_code": 0
+        },
+        "create_disk": {
+            "command": "ovhai volume create --name {disk_name} --size {size_gb}GB --region {region}",
+            "params": ["disk_name", "size_gb", "region"]
+        },
+        "delete_disk": {
+            "command": "ovhai volume delete {disk_name}",
+            "params": ["disk_name"]
+        },
+        "attach_disk": {
+            "command": "ovhai volume attach {disk_name} {instance_id}",
+            "params": ["disk_name", "instance_id"]
+        },
+        "detach_disk": {
+            "command": "ovhai volume detach {disk_name}",
+            "params": ["disk_name"]
+        }
+    },
+    "default_settings": {
+        "os_type": "Ubuntu 20.04",
+        "flavor": "d2-8",
+        "region": "GRA7"
+    }
+}

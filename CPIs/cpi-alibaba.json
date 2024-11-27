@@ -1,0 +1,44 @@
+{
+    "name": "my_alibaba_cpi",
+    "type": "cloud",
+    "actions": {
+        "test_install": {
+            "command": "aliyun version",
+            "params": []
+        },
+        "create_vm": {
+            "command": "aliyun ecs CreateInstance --InstanceName {vm_name} --ImageId {os_type} --InstanceType {instance_type} --RegionId {region}",
+            "params": ["vm_name", "os_type", "instance_type", "region"]
+        },
+        "delete_vm": {
+            "command": "aliyun ecs DeleteInstance --InstanceId {instance_id} --Force true",
+            "params": ["instance_id"]
+        },
+        "has_vm": {
+            "command": "aliyun ecs DescribeInstances --InstanceIds ['{instance_id}']",
+            "params": ["instance_id"],
+            "success_exit_code": 0
+        },
+        "create_disk": {
+            "command": "aliyun ecs CreateDisk --DiskName {disk_name} --Size {size_gb} --RegionId {region}",
+            "params": ["disk_name", "size_gb", "region"]
+        },
+        "delete_disk": {
+            "command": "aliyun ecs DeleteDisk --DiskId {disk_id}",
+            "params": ["disk_id"]
+        },
+        "attach_disk": {
+            "command": "aliyun ecs AttachDisk --InstanceId {instance_id} --DiskId {disk_id}",
+            "params": ["instance_id", "disk_id"]
+        },
+        "detach_disk": {
+            "command": "aliyun ecs DetachDisk --InstanceId {instance_id} --DiskId {disk_id}",
+            "params": ["instance_id", "disk_id"]
+        }
+    },
+    "default_settings": {
+        "os_type": "ubuntu_20_04_x64",
+        "instance_type": "ecs.t5-lc1m2.small",
+        "region": "cn-hangzhou"
+    }
+}

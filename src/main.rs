@@ -3,6 +3,7 @@ mod cpi_actions;
 mod api;
 pub mod proposal;
 use anyhow::Result;
+
 #[tokio::main]
 async fn main() -> Result<()>{
     ez_logging::init()?;

@@ -1,0 +1,61 @@
+{
+    "name": "my_kvm_cpi",
+    "type": "virt",
+    "actions": {
+        "test_install": {
+            "command": "virsh --version",
+            "params": []
+        },
+        "create_vm": {
+            "command": "virt-install --name {vm_name} --memory {memory_mb} --vcpus {cpu_count} --disk path={disk_path},size={size_gb} --os-variant {os_type} --network bridge=virbr0 --graphics none",
+            "params": ["vm_name", "memory_mb", "cpu_count", "disk_path", "size_gb", "os_type"]
+        },
+        "delete_vm": {
+            "command": "virsh destroy {vm_name} && virsh undefine {vm_name} --remove-all-storage",
+            "params": ["vm_name"]
+        },
+        "has_vm": {
+            "command": "virsh dominfo {vm_name}",
+            "params": ["vm_name"],
+            "success_exit_code": 0
+        },
+        "create_disk": {
+            "command": "qemu-img create -f qcow2 {disk_path} {size_gb}G",
+            "params": ["disk_path", "size_gb"]
+        },
+        "delete_disk": {
+            "command": "rm -f {disk_path}",
+            "params": ["disk_path"]
+        },
+        "attach_disk": {
+            "command": "virsh attach-disk {vm_name} {disk_path} {target_dev} --config --live",
+            "params": ["vm_name", "disk_path", "target_dev"]
+        },
+        "detach_disk": {
+            "command": "virsh detach-disk {vm_name} {target_dev} --config --live",
+            "params": ["vm_name", "target_dev"]
+        },
+        "get_vm": {
+            "command": "virsh dumpxml {vm_name}",
+            "params": ["vm_name"]
+        },
+        "reboot_vm": {
+            "command": "virsh reboot {vm_name}",
+            "params": ["vm_name"]
+        },
+        "create_snapshot": {
+            "command": "virsh snapshot-create-as {vm_name} {snapshot_name}",
+            "params": ["vm_name", "snapshot_name"]
+        },
+        "delete_snapshot": {
+            "command": "virsh snapshot-delete {vm_name} {snapshot_name}",
+            "params": ["vm_name", "snapshot_name"]
+        }
+    },
+    "default_settings": {
+        "os_type": "ubuntu20.04",
+        "memory_mb": 2048,
+        "cpu_count": 2,
+        "disk_format": "qcow2"
+    }
+}

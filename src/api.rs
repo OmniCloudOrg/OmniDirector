@@ -1,10 +1,6 @@
 use crate::cpi_actions::{CpiCommand, CpiCommandType};
-use debug_print::{
-    debug_eprint as deprint, debug_eprintln as deprintln, debug_print as dprint,
-    debug_println as dprintln,
-};
 use ez_logging::println;
-use rocket::{self, launch, post, response::Responder, routes, serde::json::Json, State};
+use rocket::{self, post, response::Responder, routes, serde::json::Json};
 use std::env;
 
 // Custom error handling

@@ -1,0 +1,44 @@
+{
+    "name": "my_huawei_cpi",
+    "type": "cloud",
+    "actions": {
+        "test_install": {
+            "command": "hcloud version",
+            "params": []
+        },
+        "create_vm": {
+            "command": "hcloud ecs create --name {vm_name} --image-id {os_type} --flavor-id {flavor} --vpc-id {vpc_id} --subnet-id {subnet_id}",
+            "params": ["vm_name", "os_type", "flavor", "vpc_id", "subnet_id"]
+        },
+        "delete_vm": {
+            "command": "hcloud ecs delete --server {server_id}",
+            "params": ["server_id"]
+        },
+        "has_vm": {
+            "command": "hcloud ecs show --server {server_id}",
+            "params": ["server_id"],
+            "success_exit_code": 0
+        },
+        "create_disk": {
+            "command": "hcloud evs create --volume-name {disk_name} --size {size_gb} --volume-type SATA",
+            "params": ["disk_name", "size_gb"]
+        },
+        "delete_disk": {
+            "command": "hcloud evs delete --volume-id {volume_id}",
+            "params": ["volume_id"]
+        },
+        "attach_disk": {
+            "command": "hcloud evs attach --server-id {server_id} --volume-id {volume_id}",
+            "params": ["server_id", "volume_id"]
+        },
+        "detach_disk": {
+            "command": "hcloud evs detach --server-id {server_id} --volume-id {volume_id}",
+            "params": ["server_id", "volume_id"]
+        }
+    },
+    "default_settings": {
+        "os_type": "Ubuntu 20.04 server 64bit",
+        "flavor": "s6.small.1",
+        "region": "cn-north-4"
+    }
+}
