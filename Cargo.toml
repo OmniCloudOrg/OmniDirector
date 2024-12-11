@@ -14,6 +14,7 @@ chrono = "0.4.38"
 debug_print = "1.0.0"
 ez_logging = "0.1.4"
 rocket = { version = "0.5.1", features = ["json"] }
+libomni = "0.1.0"
 
 [profile.dev]
 codegen-units = 32
