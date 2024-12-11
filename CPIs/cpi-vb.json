@@ -11,7 +11,9 @@
             "params": ["vm_name", "os_type"],
             "post_exec": [
                 "VBoxManage modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
-                "VBoxManage modifyvm {vm_name} --nic1 nat"
+                "VBoxManage modifyvm {vm_name} --nic1 nat",
+                "VBoxManage storagectl {vm_name} --name sata --add sata  IntelAhci",
+                "VBoxManage storagectl {vm_name} --name iso --add ide  IntelAhci"
             ]
         },
         "delete_vm": {
@@ -22,6 +24,9 @@
             "command": "VBoxManage showvminfo {vm_id}",
             "params": ["vm_id"],
             "success_exit_code": 0
+        },
+        "start_vm": {
+            "command": "VBoxManage startvm {vm_name} --type headless"
         },
         "configure_networks": {
             "command": "VBoxManage modifyvm {vm_name} --nic{network_index} {network_type}",

@@ -11,14 +11,20 @@ serde_json = "1.0.133"
 tempfile = "3.14.0"
 tokio = { version = "1.41.1", features = ["macros", "parking_lot", "rt", "rt-multi-thread"] }
 chrono = "0.4.38"
-debug_print = "1.0.0"
 ez_logging = "0.1.4"
 rocket = { version = "0.5.1", features = ["json"] }
+reqwest = "0.12.9"
 
 [profile.dev]
-codegen-units = 32
+codegen-units = 256
 incremental = true
 debug-assertions = false
 overflow-checks = false
+
 opt-level = 0
-lto = "thin"
+lto = "off"
+
+[profile.dev.package."*"]
+debug = false
+overflow-checks = false
+

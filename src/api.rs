@@ -23,11 +23,30 @@ type ApiResult<T> = Result<Json<T>, ApiError>;
 async fn create(params: Json<CpiCommandType>) -> ApiResult<String> {
     println!("attempted to create vm. received params: {params:?}");
     let cpi = CpiCommand::new()?;
-    let result = cpi.execute(params.into_inner())?.to_string();
-    
-    Ok(Json(result.to_string()))
-}
 
+    let result = match cpi.execute(params.into_inner()) {
+        Ok(result) => Ok(Json(result.to_string())),
+        Err(err) => Err(ApiError::Internal(err.to_string())),
+    };
+
+    println!("successfully created vm: {result:#?}");
+    
+    Ok(Json(result?.to_string()))
+}
+#[post("/vms/start", format = "json", data = "<params>")]
+async fn start(params: Json<CpiCommandType>) -> ApiResult<String> {
+    println!("attempted to start vm. received params: {params:?}");
+    let cpi = CpiCommand::new()?;
+
+    let result = match cpi.execute(params.into_inner()) {
+        Ok(result) => Ok(Json(result.to_string())),
+        Err(err) => Err(ApiError::Internal(err.to_string())),
+    };
+
+    println!("successfully created vm: {result:#?}");
+
+    Ok(Json(result?.to_string()))
+}
 #[post("/vms/delete", format = "json", data = "<params>")]
 async fn delete(params: Json<CpiCommandType>) -> ApiResult<String> {
     println!("attempted to delete vm. received params: {params:?}");
@@ -81,6 +100,7 @@ pub async fn rocket() -> rocket::Rocket<rocket::Build> {
         routes![
             create,
             delete,
+            start,
             configure_networks,
             set_metadata,
             create_disk,
