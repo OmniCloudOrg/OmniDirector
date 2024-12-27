@@ -1,6 +1,5 @@
 use anyhow::Context;
 use anyhow::Result;
-use anyhow::anyhow;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -430,7 +429,8 @@ pub struct Tag {
 pub struct CpiApi {
     cmd: CpiCommand,
 }
-pub async fn init() {}
+
+// TODO: Rename to init
 pub fn test() {
     let cpi = CpiCommand::new().unwrap();
     let vm = cpi.execute(CpiCommandType::CreateVM {

@@ -1,6 +1,7 @@
 mod logging;
 mod cpi_actions;
 mod api;
+
 pub mod proposal;
 
 use anyhow::Result;
