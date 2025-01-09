@@ -16,6 +16,7 @@ ez_logging = "0.1.4"
 rocket = { version = "0.5.1", features = ["json"] }
 libomni = "0.1.0"
 reqwest = "0.12.9"
+regex = "1.11.1"
 
 [profile.dev]
 codegen-units = 32
