@@ -1,13 +1,13 @@
-use anyhow::{Context, Result};
-use colored::Colorize;
-use regex::Regex;
-use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
-use std::collections::HashMap;
-use std::fs;
+use serde::{Deserialize, Serialize  };
 use std::process::{Command, Output};
+use anyhow::{Context, Result};
+use std::collections::HashMap;
+use serde_json::{Map, Value};
 use chrono::{DateTime, Utc};
 use ez_logging::println;
+use colored::Colorize;
+use regex::Regex;
+use std::fs; 
 
 #[derive(Debug, Deserialize)]
 struct OutputParser {
@@ -29,25 +29,25 @@ struct OutputParser {
 
 #[derive(Debug, Deserialize)]
 struct PatternConfig {
-    pattern: String,
-    capture_group: i32,
     #[serde(default)]
     transform: Option<String>,
+    capture_group: i32,
+    pattern: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct FieldConfig {
-    pattern: String,
-    capture_group: i32,
     #[serde(default)]
-    transform: Option<String>,
+    transform:     Option<String>,
+    capture_group: i32,
+    pattern:       String,
 }
 
 #[derive(Debug, Deserialize)]
 struct PostExecCommand {
-    command: String,
     #[serde(default)]
     output_parser: Option<OutputParser>,
+    command:       String,
 }
 
 pub struct CpiCommand {
@@ -284,9 +284,9 @@ fn parse_command_output(output: &Output, parser: &OutputParser) -> Result<Value>
 
 fn transform_value(value: &str, transform: &str) -> Result<Value> {
     match transform {
-        "int" => Ok(Value::Number(value.parse().context("failed to parse int")?)),
-        "float" => Ok(Value::Number(value.parse().context("failed to parse float")?)),
-        "boolean" => Ok(Value::Bool(value.to_lowercase() == "true")),
+        "int"      => Ok(Value::Number(value.parse().context("failed to parse int")?)),
+        "float"    => Ok(Value::Number(value.parse().context("failed to parse float")?)),
+        "boolean"  => Ok(Value::Bool(value.to_lowercase() == "true")),
         "datetime" => {
             let dt = DateTime::parse_from_rfc3339(value)
                 .or_else(|_| DateTime::parse_from_rfc2822(value))
@@ -331,8 +331,8 @@ pub enum CpiCommandType {
     TestInstall,
     #[serde(rename = "create_vm")]
     CreateVm {
-        vm_name: String,
-        os_type: String,
+        vm_name:   String,
+        os_type:   String,
         memory_mb: u32,
         cpu_count: u32,
     },
@@ -350,9 +350,9 @@ pub enum CpiCommandType {
     },
     #[serde(rename = "configure_networks")]
     ConfigureNetworks {
-        vm_name: String,
+        vm_name:       String,
         network_index: u32,
-        network_type: String,
+        network_type:  String,
     },
     #[serde(rename = "create_disk")]
     CreateDisk {
@@ -365,16 +365,16 @@ pub enum CpiCommandType {
     },
     #[serde(rename = "attach_disk")]
     AttachDisk {
-        vm_name: String,
+        vm_name:         String,
+        port:            u32,
+        disk_path:       String,
         controller_name: String,
-        port: u32,
-        disk_path: String,
     },
     #[serde(rename = "detach_disk")]
     DetachDisk {
-        vm_name: String,
+        vm_name:         String,
         controller_name: String,
-        port: u32,
+        port:            u32,
     },
     #[serde(rename = "has_disk")]
     HasDisk {
@@ -383,22 +383,22 @@ pub enum CpiCommandType {
     #[serde(rename = "set_vm_metadata")]
     SetVmMetadata {
         vm_name: String,
-        key: String,
-        value: String,
+        key:     String,
+        value:   String,
     },
     #[serde(rename = "create_snapshot")]
     CreateSnapshot {
-        vm_name: String,
+        vm_name:       String,
         snapshot_name: String,
     },
     #[serde(rename = "delete_snapshot")]
     DeleteSnapshot {
-        vm_name: String,
+        vm_name:       String,
         snapshot_name: String,
     },
     #[serde(rename = "has_snapshot")]
     HasSnapshot {
-        vm_name: String,
+        vm_name:       String,
         snapshot_name: String,
     },
     #[serde(rename = "get_disks")]
@@ -425,26 +425,26 @@ pub enum CpiCommandType {
 impl ToString for CpiCommandType {
     fn to_string(&self) -> String {
         match self {
-            CpiCommandType::TestInstall => "test_install".to_string(),
-            CpiCommandType::CreateVm { .. } => "create_vm".to_string(),
-            CpiCommandType::DeleteVm { .. } => "delete_vm".to_string(),
-            CpiCommandType::HasVm { .. } => "has_vm".to_string(),
-            CpiCommandType::StartVm { .. } => "start_vm".to_string(),
+            CpiCommandType::TestInstall       { .. } => "test_install".to_string(),
+            CpiCommandType::CreateVm          { .. } => "create_vm".to_string(),
+            CpiCommandType::DeleteVm          { .. } => "delete_vm".to_string(),
+            CpiCommandType::HasVm             { .. } => "has_vm".to_string(),
+            CpiCommandType::StartVm           { .. } => "start_vm".to_string(),
             CpiCommandType::ConfigureNetworks { .. } => "configure_networks".to_string(),
-            CpiCommandType::CreateDisk { .. } => "create_disk".to_string(),
-            CpiCommandType::DeleteDisk { .. } => "delete_disk".to_string(),
-            CpiCommandType::AttachDisk { .. } => "attach_disk".to_string(),
-            CpiCommandType::DetachDisk { .. } => "detach_disk".to_string(),
-            CpiCommandType::HasDisk { .. } => "has_disk".to_string(),
-            CpiCommandType::SetVmMetadata { .. } => "set_vm_metadata".to_string(),
-            CpiCommandType::CreateSnapshot { .. } => "create_snapshot".to_string(),
-            CpiCommandType::DeleteSnapshot { .. } => "delete_snapshot".to_string(),
-            CpiCommandType::HasSnapshot { .. } => "has_snapshot".to_string(),
-            CpiCommandType::GetDisks => "get_disks".to_string(),
-            CpiCommandType::GetVm { .. } => "get_vm".to_string(),
-            CpiCommandType::RebootVm { .. } => "reboot_vm".to_string(),
-            CpiCommandType::SnapshotDisk { .. } => "snapshot_disk".to_string(),
-            CpiCommandType::GetSnapshots { .. } => "get_snapshots".to_string(),
+            CpiCommandType::CreateDisk        { .. } => "create_disk".to_string(),
+            CpiCommandType::DeleteDisk        { .. } => "delete_disk".to_string(),
+            CpiCommandType::AttachDisk        { .. } => "attach_disk".to_string(),
+            CpiCommandType::DetachDisk        { .. } => "detach_disk".to_string(),
+            CpiCommandType::HasDisk           { .. } => "has_disk".to_string(),
+            CpiCommandType::SetVmMetadata     { .. } => "set_vm_metadata".to_string(),
+            CpiCommandType::CreateSnapshot    { .. } => "create_snapshot".to_string(),
+            CpiCommandType::DeleteSnapshot    { .. } => "delete_snapshot".to_string(),
+            CpiCommandType::HasSnapshot       { .. } => "has_snapshot".to_string(),
+            CpiCommandType::GetDisks          { .. } => "get_disks".to_string(),
+            CpiCommandType::GetVm             { .. } => "get_vm".to_string(),
+            CpiCommandType::RebootVm          { .. } => "reboot_vm".to_string(),
+            CpiCommandType::SnapshotDisk      { .. } => "snapshot_disk".to_string(),
+            CpiCommandType::GetSnapshots      { .. } => "get_snapshots".to_string(),
         }
     }
 }
@@ -452,34 +452,34 @@ impl ToString for CpiCommandType {
 // Return types for VirtualBox-specific operations
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VirtualMachine {
-    pub name: String,
-    pub uuid: String,
-    pub state: String,
-    pub os_type: String,
+    pub name:      String,
+    pub uuid:      String,
+    pub state:     String,
+    pub os_type:   String,
     pub memory_mb: u32,
     pub cpu_count: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VirtualDisk {
-    pub uuid: String,
+    pub uuid:     String,
     pub location: String,
-    pub state: String,
-    pub size_mb: u64,
+    pub state:    String,
+    pub size_mb:  u64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Snapshot {
-    pub name: String,
-    pub uuid: String,
+    pub name:      String,
+    pub uuid:      String,
     pub timestamp: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandResult<T> {
     pub success: bool,
-    pub data: Option<T>,
-    pub error: Option<String>,
+    pub data:    Option<T>,
+    pub error:   Option<String>,
 }
 
 pub struct CpiApi {
@@ -504,7 +504,7 @@ impl CpiApi {
     pub fn create_vm(
         &self,
         name: &str,
-        os_type: &str,
+        os_type:   &str,
         memory_mb: u32,
         cpu_count: u32,
     ) -> Result<VirtualMachine> {
