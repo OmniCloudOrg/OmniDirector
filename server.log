@@ -2406,3 +2406,10 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-02-25 13:33:20] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
 [2025-02-25 13:33:21] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
 [2025-02-25 13:33:21] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:40:14] Logging system initialized
+[2025-02-25 13:40:14] Server running at http://0.0.0.0:8081
+[2025-02-25 13:40:15] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:40:16] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:40:16] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:40:16] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:40:17] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })

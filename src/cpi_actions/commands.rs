@@ -8,6 +8,170 @@ use colored::Colorize;
 use super::parsers::{OutputParser, PostExecCommand, parse_command_output};
 use super::utils::{execute_shell_cmd, replace_template_params};
 
+/// Execute a sequence of commands and handle their output.
+///
+/// This macro simplifies the execution of multiple commands and standardizes 
+/// error handling across command sequences. It iterates through the provided commands,
+/// executes each one, and handles output parsing based on the command configuration.
+///
+/// # Parameters
+///
+/// * `$params` - A reference to a `Map<String, Value>` containing template parameters
+///   that will be used to replace placeholders in the command string.
+/// * `$commands` - A reference to a Vec or slice of `PostExecCommand` objects to execute.
+/// * `$error_context` - A string literal providing context for error messages (e.g., "pre-attach", "post-exec").
+///
+/// # Error Handling
+///
+/// The macro will:
+/// 1. Replace template parameters in the command string
+/// 2. Execute the command using `execute_shell_cmd`
+/// 3. If an output parser is provided, parse the command output using it
+/// 4. If no parser is provided and the command fails, return an error with the stderr content
+///
+/// # Example
+///
+/// ```rust
+/// // Execute pre-attach commands
+/// execute_command_sequence!(params, &pre_attach_commands, "pre-attach");
+///
+/// // Execute post-execution commands
+/// execute_command_sequence!(params, &post_exec_commands, "post-exec");
+/// ```
+///
+/// # Implementation Details
+///
+/// The macro expands to a `for` loop that processes each command and applies consistent
+/// error handling logic. This centralizes command execution logic and ensures consistent
+/// behavior across different command sequences.
+macro_rules! execute_command_sequence {
+    ($params:expr, $commands:expr, $error_context:expr) => {
+        for cmd in $commands {
+            let mut cmd_str = replace_template_params($params, &mut cmd.command.clone());
+            let output = execute_shell_cmd(&mut cmd_str)?;
+            
+            if let Some(ref parser) = cmd.output_parser {
+                parse_command_output(&output, parser)?;
+            } else if !output.status.success() {
+                let error_msg = String::from_utf8(output.stderr.clone())
+                    .context(format!("failed to parse {} stderr as UTF-8", $error_context))?;
+                return Err(anyhow::anyhow!(error_msg));
+            }
+        }
+    };
+}
+
+/// Declare all command types with their parameters in a concise, declarative style.
+///
+/// This macro generates both the `CpiCommandType` enum and its `ToString` implementation
+/// from a single, readable declaration. It dramatically reduces boilerplate and keeps
+/// command definitions centralized and consistent.
+///
+/// # Syntax
+///
+/// ```
+/// declare_command_types! {
+///     VariantName "serialized_name" {
+///         field_name: Type,
+///         another_field: AnotherType
+///     },
+///     
+///     AnotherVariant "another_name" {}  // Empty braces required for no-field variants
+/// }
+/// ```
+///
+/// # Generated Code
+///
+/// The macro expands to:
+///
+/// 1. A complete enum definition with:
+///    - Debug, Serialize, Deserialize, and Clone derives
+///    - snake_case renaming for all variants
+///    - Specific rename attributes for each variant
+///    - Struct-like variants with specified fields
+///
+/// 2. A ToString implementation that:
+///    - Maps each enum variant to its serialized name
+///    - Handles variants with fields using pattern matching
+///
+/// # Parameters
+///
+/// * `$variant` - The Rust identifier for the enum variant (e.g., `CreateVm`)
+/// * `$rename` - A string literal for the serialized name (e.g., `"create_vm"`)
+/// * `$field` - Field names for struct-like variants (e.g., `vm_name`)
+/// * `$type` - Rust types for each field (e.g., `String`, `u32`)
+///
+/// # Example
+///
+/// ```rust
+/// declare_command_types! {
+///     TestInstall "test_install" {},
+///     
+///     CreateVm "create_vm" {
+///         vm_name: String,
+///         os_type: String,
+///         memory_mb: u32,
+///         cpu_count: u32
+///     },
+///     
+///     DeleteVm "delete_vm" {
+///         vm_name: String
+///     }
+/// }
+/// ```
+///
+/// # Important Usage Note
+///
+/// All variants, including those without fields, must be instantiated with braces:
+/// - `CpiCommandType::TestInstall {}` (not just `CpiCommandType::TestInstall`)
+/// - `CpiCommandType::CreateVm { vm_name: "test".to_string(), ... }`
+///
+/// # Benefits
+///
+/// * **Maintainability**: Adding or modifying commands requires changing only one place
+/// * **Consistency**: Ensures serialized names always match in both enum definition and ToString impl
+/// * **Readability**: Presents command structure in a clean, tabular format
+/// * **Error Prevention**: Reduces the chance of mismatches between enum variants and their string representations
+///
+/// # Implementation Notes
+///
+/// The macro uses nested repetition to handle both the list of variants and the list of fields
+/// within each variant. Empty field lists are supported for commands that don't require parameters.
+macro_rules! declare_command_types {
+    (
+        $(
+            $variant:ident $rename:literal {
+                $(
+                    $field:ident: $type:ty
+                ),*
+            }
+        ),*
+    ) => {
+        #[derive(Debug, Serialize, Deserialize, Clone)]
+        #[serde(rename_all = "snake_case")]
+        pub enum CpiCommandType {
+            $(
+                #[serde(rename = $rename)]
+                $variant {
+                    $(
+                        $field: $type,
+                    )*
+                },
+            )*
+        }
+
+        impl ToString for CpiCommandType {
+            fn to_string(&self) -> String {
+                match self {
+                    $(
+                        CpiCommandType::$variant { .. } => $rename.to_string(),
+                    )*
+                }
+            }
+        }
+    }
+}
+
 /// Main struct for handling CPI commands
 pub struct CpiCommand {
     pub config: String,
@@ -92,18 +256,7 @@ impl CpiCommand {
         };
 
         // Execute pre-attach commands if they exist
-        for pre_attach_cmd in pre_attach_commands {
-            let mut cmd_str = replace_template_params(params, &mut pre_attach_cmd.command.clone());
-            let output = execute_shell_cmd(&mut cmd_str)?;
-            
-            if let Some(parser) = pre_attach_cmd.output_parser {
-                parse_command_output(&output, &parser)?;
-            } else if !output.status.success() {
-                let error_msg = String::from_utf8(output.stderr)
-                    .context("failed to parse pre-attach stderr as UTF-8")?;
-                return Err(anyhow::anyhow!(error_msg));
-            }
-        }
+        execute_command_sequence!(params, &pre_attach_commands, "pre-attach");
 
         // Execute main command
         let mut command_str = replace_template_params(params, &mut command_template.to_string());
@@ -126,164 +279,104 @@ impl CpiCommand {
         };
 
         // Execute post-exec commands
-        for post_exec_cmd in post_exec_commands {
-            let mut cmd_str = replace_template_params(params, &mut post_exec_cmd.command.clone());
-            let output = execute_shell_cmd(&mut cmd_str)?;
-            
-            if let Some(parser) = post_exec_cmd.output_parser {
-                parse_command_output(&output, &parser)?;
-            } else if !output.status.success() {
-                let error_msg = String::from_utf8(output.stderr)
-                    .context("failed to parse post-exec stderr as UTF-8")?;
-                return Err(anyhow::anyhow!(error_msg));
-            }
-        }
+        execute_command_sequence!(params, &post_exec_commands, "post-exec");
 
         Ok(result)
     }
 }
 
-/// Enum representing all possible CPI command types with their parameters
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "snake_case")]
-pub enum CpiCommandType {
-    #[serde(rename = "test_install")]
-    TestInstall,
+// Define command types using the macro
+declare_command_types! {
+    TestInstall "test_install" {},
     
-    #[serde(rename = "create_vm")]
-    CreateVm {
-        vm_name:   String,
-        os_type:   String,
+    CreateVm "create_vm" {
+        vm_name: String,
+        os_type: String,
         memory_mb: u32,
-        cpu_count: u32,
+        cpu_count: u32
     },
     
-    #[serde(rename = "delete_vm")]
-    DeleteVm {
+    DeleteVm "delete_vm" {
+        vm_name: String
+    },
+    
+    HasVm "has_vm" {
+        vm_id: String
+    },
+    
+    StartVm "start_vm" {
+        vm_name: String
+    },
+    
+    ConfigureNetworks "configure_networks" {
         vm_name: String,
-    },
-    
-    #[serde(rename = "has_vm")]
-    HasVm {
-        vm_id: String,
-    },
-    
-    #[serde(rename = "start_vm")]
-    StartVm {
-        vm_name: String,
-    },
-    
-    #[serde(rename = "configure_networks")]
-    ConfigureNetworks {
-        vm_name:       String,
         network_index: u32,
-        network_type:  String,
+        network_type: String
     },
     
-    #[serde(rename = "create_disk")]
-    CreateDisk {
+    CreateDisk "create_disk" {
         disk_path: String,
-        size_mb: u64,
+        size_mb: u64
     },
     
-    #[serde(rename = "delete_disk")]
-    DeleteDisk {
+    DeleteDisk "delete_disk" {
+        disk_path: String
+    },
+    
+    AttachDisk "attach_disk" {
+        vm_name: String,
+        port: u32,
         disk_path: String,
+        controller_name: String
     },
     
-    #[serde(rename = "attach_disk")]
-    AttachDisk {
-        vm_name:         String,
-        port:            u32,
-        disk_path:       String,
+    DetachDisk "detach_disk" {
+        vm_name: String,
         controller_name: String,
+        port: u32
     },
     
-    #[serde(rename = "detach_disk")]
-    DetachDisk {
-        vm_name:         String,
-        controller_name: String,
-        port:            u32,
+    HasDisk "has_disk" {
+        disk_path: String
     },
     
-    #[serde(rename = "has_disk")]
-    HasDisk {
-        disk_path: String,
-    },
-    
-    #[serde(rename = "set_vm_metadata")]
-    SetVmMetadata {
+    SetVmMetadata "set_vm_metadata" {
         vm_name: String,
-        key:     String,
-        value:   String,
+        key: String,
+        value: String
     },
     
-    #[serde(rename = "create_snapshot")]
-    CreateSnapshot {
-        vm_name:       String,
-        snapshot_name: String,
-    },
-    
-    #[serde(rename = "delete_snapshot")]
-    DeleteSnapshot {
-        vm_name:       String,
-        snapshot_name: String,
-    },
-    
-    #[serde(rename = "has_snapshot")]
-    HasSnapshot {
-        vm_name:       String,
-        snapshot_name: String,
-    },
-    
-    #[serde(rename = "get_disks")]
-    GetDisks,
-    
-    #[serde(rename = "get_vm")]
-    GetVm {
+    CreateSnapshot "create_snapshot" {
         vm_name: String,
+        snapshot_name: String
     },
     
-    #[serde(rename = "reboot_vm")]
-    RebootVm {
+    DeleteSnapshot "delete_snapshot" {
         vm_name: String,
+        snapshot_name: String
     },
     
-    #[serde(rename = "snapshot_disk")]
-    SnapshotDisk {
+    HasSnapshot "has_snapshot" {
+        vm_name: String,
+        snapshot_name: String
+    },
+    
+    GetDisks "get_disks" {},
+    
+    GetVm "get_vm" {
+        vm_name: String
+    },
+    
+    RebootVm "reboot_vm" {
+        vm_name: String
+    },
+    
+    SnapshotDisk "snapshot_disk" {
         source_disk_path: String,
-        target_disk_path: String,
+        target_disk_path: String
     },
     
-    #[serde(rename = "get_snapshots")]
-    GetSnapshots {
-        vm_name: String,
-    },
-}
-
-impl ToString for CpiCommandType {
-    fn to_string(&self) -> String {
-        match self {
-            CpiCommandType::TestInstall       { .. } => "test_install".to_string(),
-            CpiCommandType::CreateVm          { .. } => "create_vm".to_string(),
-            CpiCommandType::DeleteVm          { .. } => "delete_vm".to_string(),
-            CpiCommandType::HasVm             { .. } => "has_vm".to_string(),
-            CpiCommandType::StartVm           { .. } => "start_vm".to_string(),
-            CpiCommandType::ConfigureNetworks { .. } => "configure_networks".to_string(),
-            CpiCommandType::CreateDisk        { .. } => "create_disk".to_string(),
-            CpiCommandType::DeleteDisk        { .. } => "delete_disk".to_string(),
-            CpiCommandType::AttachDisk        { .. } => "attach_disk".to_string(),
-            CpiCommandType::DetachDisk        { .. } => "detach_disk".to_string(),
-            CpiCommandType::HasDisk           { .. } => "has_disk".to_string(),
-            CpiCommandType::SetVmMetadata     { .. } => "set_vm_metadata".to_string(),
-            CpiCommandType::CreateSnapshot    { .. } => "create_snapshot".to_string(),
-            CpiCommandType::DeleteSnapshot    { .. } => "delete_snapshot".to_string(),
-            CpiCommandType::HasSnapshot       { .. } => "has_snapshot".to_string(),
-            CpiCommandType::GetDisks          { .. } => "get_disks".to_string(),
-            CpiCommandType::GetVm             { .. } => "get_vm".to_string(),
-            CpiCommandType::RebootVm          { .. } => "reboot_vm".to_string(),
-            CpiCommandType::SnapshotDisk      { .. } => "snapshot_disk".to_string(),
-            CpiCommandType::GetSnapshots      { .. } => "get_snapshots".to_string(),
-        }
+    GetSnapshots "get_snapshots" {
+        vm_name: String
     }
 }

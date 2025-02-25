@@ -19,7 +19,8 @@ impl CpiApi {
 
     /// Test if VirtualBox is installed and get its version
     pub fn test_install(&self) -> Result<String> {
-        let result = self.cmd.execute(CpiCommandType::TestInstall)?;
+        // Note the empty braces {} for struct-variants with no fields
+        let result = self.cmd.execute(CpiCommandType::TestInstall {})?;
         Ok(result.get("version")
             .and_then(|v| v.as_str())
             .unwrap_or("unknown")
@@ -151,7 +152,8 @@ impl CpiApi {
 
     /// Get a list of all virtual disks
     pub fn get_disks(&self) -> Result<Vec<VirtualDisk>> {
-        let result = self.cmd.execute(CpiCommandType::GetDisks)?;
+        // Note the empty braces {} for struct-variants with no fields
+        let result = self.cmd.execute(CpiCommandType::GetDisks {})?;
         
         let disks: Vec<VirtualDisk> = serde_json::from_value(result)
             .context("failed to parse disk list")?;
@@ -271,7 +273,7 @@ mod tests {
         assert_eq!(vm.name, "test-vm");
         
         // Create and attach disk
-        let disk = api.create_disk("/tmp/test-disk.vdi", 10240)?;
+        let _disk = api.create_disk("/tmp/test-disk.vdi", 10240)?;
         
         // Start VM
         assert!(api.start_vm("test-vm")?);
