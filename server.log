@@ -2413,3 +2413,258 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-02-25 13:40:16] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
 [2025-02-25 13:40:16] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
 [2025-02-25 13:40:17] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:54:15] Logging system initialized
+[2025-02-25 13:54:15] Server running at http://0.0.0.0:8081
+[2025-02-25 13:54:26] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:54:26] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:54:26] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:54:26] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:56:57] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:56:57] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:56:57] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:56:57] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:56:58] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:56:58] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:56:58] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 13:59:50] Logging system initialized
+[2025-02-25 13:59:50] Server running at http://0.0.0.0:8081
+[2025-02-25 14:00:01] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:00:01] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:00:03] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:00:03] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:00:03] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:00:03] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:00:03] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:00:03] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:00:31] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:00:31] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:00:32] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:00:32] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:00:32] attempted to create vm. received params: Json(CreateVm { vm_name: "example", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:00:32] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:01:32] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:01:32] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:08:39] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:08:39] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:08:39] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:08:39] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:08:39] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:08:39] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:08:39] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:08:39] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:08:40] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:08:40] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:08:40] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:08:40] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:09:07] Logging system initialized
+[2025-02-25 14:09:07] Server running at http://0.0.0.0:8081
+[2025-02-25 14:10:11] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:10:11] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:10:12] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:10:12] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:10:13] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:10:13] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:10:13] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:10:13] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:10:14] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:10:14] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:10:14] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:10:14] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:10:14] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:10:14] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 14:10:14] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 14:10:14] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 15:50:47] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 15:50:47] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 15:50:48] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 15:50:48] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 15:50:48] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 15:50:48] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 15:50:48] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 15:50:48] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 15:50:49] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 15:50:49] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 15:50:49] attempted to create vm. received params: Json(CreateVm { vm_name: "example_vm", os_type: "Linux", memory_mb: 10000, cpu_count: 5 })
+[2025-02-25 15:50:49] successfully created vm: Err(
+    Internal(
+        "invalid type: string \"VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}\", expected struct PostExecCommand",
+    ),
+)
+[2025-02-25 15:53:00] Logging system initialized
+[2025-02-25 15:53:00] Server running at http://0.0.0.0:8081
+[2025-02-25 15:59:04] Logging system initialized
+[2025-02-25 15:59:04] Server running at http://0.0.0.0:8081
+[2025-02-25 15:59:05] received params: Json(
+    "{\n    \"create_vm\": {\n        \"vm_name\": \"example_vm\",\n        \"type\": \"vm\",\n        \"guest_id\": \"Ubuntu\",\n        \"memory_mb\": 10000,\n        \"os_type\": \"Linux\",\n        \"datastore\": \"\",\n        \"cpu_count\": 5,\n        \"resource_pool\": \"\"\n    }\n}",
+)
+[2025-02-25 15:59:05] received params: Json(
+    "{\n    \"create_vm\": {\n        \"vm_name\": \"example_vm\",\n        \"type\": \"vm\",\n        \"guest_id\": \"Ubuntu\",\n        \"memory_mb\": 10000,\n        \"os_type\": \"Linux\",\n        \"datastore\": \"\",\n        \"cpu_count\": 5,\n        \"resource_pool\": \"\"\n    }\n}",
+)
+[2025-02-25 15:59:05] received params: Json(
+    "{\n    \"create_vm\": {\n        \"vm_name\": \"example_vm\",\n        \"type\": \"vm\",\n        \"guest_id\": \"Ubuntu\",\n        \"memory_mb\": 10000,\n        \"os_type\": \"Linux\",\n        \"datastore\": \"\",\n        \"cpu_count\": 5,\n        \"resource_pool\": \"\"\n    }\n}",
+)
+[2025-02-25 15:59:05] received params: Json(
+    "{\n    \"create_vm\": {\n        \"vm_name\": \"example_vm\",\n        \"type\": \"vm\",\n        \"guest_id\": \"Ubuntu\",\n        \"memory_mb\": 10000,\n        \"os_type\": \"Linux\",\n        \"datastore\": \"\",\n        \"cpu_count\": 5,\n        \"resource_pool\": \"\"\n    }\n}",
+)
+[2025-02-25 15:59:06] received params: Json(
+    "{\n    \"create_vm\": {\n        \"vm_name\": \"example_vm\",\n        \"type\": \"vm\",\n        \"guest_id\": \"Ubuntu\",\n        \"memory_mb\": 10000,\n        \"os_type\": \"Linux\",\n        \"datastore\": \"\",\n        \"cpu_count\": 5,\n        \"resource_pool\": \"\"\n    }\n}",
+)
+[2025-02-25 15:59:47] Logging system initialized
+[2025-02-25 15:59:47] Server running at http://0.0.0.0:8081
+[2025-02-25 15:59:51] received params: {
+    "create_vm": {
+        "vm_name": "example_vm",
+        "type": "vm",
+        "guest_id": "Ubuntu",
+        "memory_mb": 10000,
+        "os_type": "Linux",
+        "datastore": "",
+        "cpu_count": 5,
+        "resource_pool": ""
+    }
+}
+[2025-02-25 16:04:18] Logging system initialized
+[2025-02-25 16:04:18] Server running at http://0.0.0.0:8081
+[2025-02-25 16:06:23] Logging system initialized
+[2025-02-25 16:06:23] Server running at http://0.0.0.0:8081
+[2025-02-25 16:06:24] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:25] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:26] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:26] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:47] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:48] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:48] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:48] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:48] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:48] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:06:49] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:07:01] Logging system initialized
+[2025-02-25 16:07:01] Server running at http://0.0.0.0:8081
+[2025-02-25 16:07:05] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:07:05] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:07:06] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:07:06] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:07:06] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:07:06] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:07:07] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:07:07] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:09:21] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:09:33] received params: Json(CreateVm { vm_name: "test", os_type: "linux", memory_mb: 1024, cpu_count: 1 })
+[2025-02-25 16:11:04] Logging system initialized
+[2025-02-25 16:11:04] Server running at http://0.0.0.0:8081
+[2025-02-25 16:12:22] Logging system initialized
+[2025-02-25 16:12:22] Server running at http://0.0.0.0:8081
+[2025-02-25 16:25:08] Logging system initialized
+[2025-02-25 16:25:08] Server running at http://0.0.0.0:8081
+[2025-02-25 16:25:12] Logging system initialized
+[2025-02-25 16:25:12] Server running at http://0.0.0.0:8081
+[2025-02-25 16:25:32] Logging system initialized
+[2025-02-25 16:25:32] Server running at http://0.0.0.0:8081

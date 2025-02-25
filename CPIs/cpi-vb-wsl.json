@@ -1,6 +1,6 @@
 {
     "name": "my_virtualbox_cpi",
-    "type": "virt",
+    "mode": "virt",
     "actions": {
         "test_install": {
             "command": "VBoxManage.exe --version",

@@ -45,11 +45,16 @@ pub struct FieldConfig {
 
 /// Command to be executed after the main command
 #[derive(Debug, Deserialize)]
-pub struct PostExecCommand {
-    #[serde(default)]
-    pub output_parser: Option<OutputParser>,
-    pub command: String,
+pub enum PostExecCommand {
+    /// Custom command with an explicit output parser for advanced use.
+    Custom {
+        output_parser: OutputParser,
+        command: String,
+    },
+    /// Command utilizing defaults
+    Basic(String),
 }
+
 
 /// Parse command output according to the specified parser configuration
 pub fn parse_command_output(output: &Output, parser: &OutputParser) -> Result<Value> {

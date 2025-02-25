@@ -1,4 +1,4 @@
-use super::cpi_actions::{CpiCommand, CpiCommandType};
+use super::cpi_actions::actions::CpiAction;
 use ez_logging::println;
 use rocket::{self, post, response::Responder, routes, serde::json::Json};
 use std::env;
@@ -19,67 +19,12 @@ impl From<anyhow::Error> for ApiError {
 type ApiResult<T> = Result<Json<T>, ApiError>;
 
 // Route handlers
-#[post("/vms/create", format = "json", data = "<params>")]
-async fn create(params: Json<CpiCommandType>) -> ApiResult<String> {
-    println!("attempted to create vm. received params: {params:?}");
-    let cpi = CpiCommand::new()?;
+#[post("/vms/action", format = "json", data = "<params>")]
+async fn create(params: Json<CpiAction>) -> ApiResult<String> {
+    let command = params.into_inner();
+    println!("received params: {:#?}", command);
+    let result = command.execute().unwrap();
 
-    let result = match cpi.execute(params.into_inner()) {
-        Ok(result) => Ok(Json(result.to_string())),
-        Err(err) => Err(ApiError::Internal(err.to_string())),
-    };
-
-    println!("successfully created vm: {result:#?}");
-    
-    Ok(Json(result?.to_string()))
-}
-#[post("/vms/start", format = "json", data = "<params>")]
-async fn start(params: Json<CpiCommandType>) -> ApiResult<String> {
-    println!("attempted to start vm. received params: {params:?}");
-    let cpi = CpiCommand::new()?;
-
-    let result = match cpi.execute(params.into_inner()) {
-        Ok(result) => Ok(Json(result.to_string())),
-        Err(err) => Err(ApiError::Internal(err.to_string())),
-    };
-
-    println!("successfully created vm: {result:#?}");
-
-    Ok(Json(result?.to_string()))
-}
-#[post("/vms/delete", format = "json", data = "<params>")]
-async fn delete(params: Json<CpiCommandType>) -> ApiResult<String> {
-    println!("attempted to delete vm. received params: {params:?}");
-    let cpi = CpiCommand::new()?;
-    let result = cpi.execute(params.into_inner())?;
-    Ok(Json(result.to_string()))
-}
-
-#[post("/vms/configure_networks", format = "json", data = "<params>")]
-async fn configure_networks(params: Json<CpiCommandType>) -> ApiResult<String> {
-    let cpi = CpiCommand::new()?;
-    let result = cpi.execute(params.into_inner())?;
-    Ok(Json(result.to_string()))
-}
-
-#[post("/vms/set_metadata", format = "json", data = "<params>")]
-async fn set_metadata(params: Json<CpiCommandType>) -> ApiResult<String> {
-    let cpi = CpiCommand::new()?;
-    let result = cpi.execute(params.into_inner())?;
-    Ok(Json(result.to_string()))
-}
-
-#[post("/vms/create_disk", format = "json", data = "<params>")]
-async fn create_disk(params: Json<CpiCommandType>) -> ApiResult<String> {
-    let cpi = CpiCommand::new()?;
-    let result = cpi.execute(params.into_inner())?;
-    Ok(Json(result.to_string()))
-}
-
-#[post("/vms/attach_disk", format = "json", data = "<params>")]
-async fn attach_disk(params: Json<CpiCommandType>) -> ApiResult<String> {
-    let cpi = CpiCommand::new()?;
-    let result = cpi.execute(params.into_inner())?;
     Ok(Json(result.to_string()))
 }
 
@@ -99,12 +44,6 @@ pub async fn rocket() -> rocket::Rocket<rocket::Build> {
         "/",
         routes![
             create,
-            delete,
-            start,
-            configure_networks,
-            set_metadata,
-            create_disk,
-            attach_disk
         ],
     )
 }

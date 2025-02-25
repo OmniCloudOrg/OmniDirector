@@ -180,7 +180,8 @@ pub struct CpiCommand {
 impl CpiCommand {
     /// Create a new CpiCommand instance by loading the configuration file
     pub fn new() -> Result<Self> {
-        let config_str = fs::read_to_string("./CPIs/cpi-virtualbox.json")?;
+        // Load the CPI configuration file
+        let config_str = fs::read_to_string("./CPIs/cpi-vb-wsl.json")?;
         let config_json: Value = serde_json::from_str(&config_str)?;
 
         Ok(Self {
