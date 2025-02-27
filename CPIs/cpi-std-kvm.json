@@ -1,5 +1,5 @@
 {
-    "name": "my_kvm_cpi",
+    "name": "kvm_cpi",
     "type": "virt",
     "actions": {
         "test_install": {

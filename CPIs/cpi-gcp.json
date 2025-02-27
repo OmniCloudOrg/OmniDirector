@@ -1,5 +1,5 @@
 {
-    "name": "my_gcp_cpi",
+    "name": "gcp_cpi",
     "type": "cloud",
     "actions": {
         "test_install": {
