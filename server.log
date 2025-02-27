@@ -2674,3 +2674,28 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-02-25 18:57:26] Server running at http://0.0.0.0:8081
 [2025-02-27 12:34:06] Logging system initialized
 [2025-02-27 12:34:06] Server running at http://0.0.0.0:8081
+[2025-02-27 17:01:08] Logging system initialized
+[2025-02-27 17:05:24] Logging system initialized
+[2025-02-27 17:06:06] Logging system initialized
+[2025-02-27 17:09:03] Logging system initialized
+[2025-02-27 17:09:03] Server running at http://0.0.0.0:8081
+[2025-02-27 17:09:04] Loaded CPI providers: ["aws_cpi", "virtualbox_cpi_linux", "virtualbox_cpi_windows"]
+[2025-02-27 17:10:21] Logging system initialized
+[2025-02-27 17:10:22] Server running at http://0.0.0.0:8081
+[2025-02-27 17:10:22] Loaded CPI providers: ["aws_cpi", "virtualbox_cpi_windows", "virtualbox_cpi_linux"]
+[2025-02-27 17:11:11] Logging system initialized
+[2025-02-27 17:11:11] Server running at http://0.0.0.0:8081
+[2025-02-27 17:11:12] Loaded CPI providers: ["virtualbox_cpi_linux", "aws_cpi", "virtualbox_cpi_windows"]
+[2025-02-27 17:14:00] Logging system initialized
+[2025-02-27 17:14:00] Server running at http://0.0.0.0:8081
+[2025-02-27 17:14:00] Loaded CPI providers: ["virtualbox_cpi_windows", "aws_cpi", "virtualbox_cpi_linux"]
+[2025-02-27 17:20:49] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "memory_mb": Number(2048),
+        "vm_name": String("test-vm"),
+        "os_type": String("Windows10_64"),
+        "cpu_count": Number(2),
+    },
+}
