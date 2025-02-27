@@ -80,7 +80,7 @@
             }
         },
         "create_vm": {
-            "command": "docker exec -i detee-cli detee-cli vm deploy --distro {distro} --vcpus {vcpus} --memory {memory_mb} --disk {disk_gb} --hours {hours} {hostname_param} {public_ip_param}",
+            "command": "docker exec -i detee-cli detee-cli vm deploy --distro {distro} --vcpus {vcpus} --memory {memory_mb} --disk {disk_gb} --hours {hours}",
             "params": ["distro", "vcpus", "memory_mb", "disk_gb", "hours"],
             "parse_rules": {
                 "type": "properties",
