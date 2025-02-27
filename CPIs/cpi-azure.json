@@ -1,0 +1,264 @@
+{
+    "name": "my_azure_cpi",
+    "type": "cloud",
+    "actions": {
+        "test_install": {
+            "command": "az --version",
+            "params": [],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "azure-cli\\s+([\\d\\.]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_vm": {
+            "command": "az vm create --name {vm_name} --resource-group {resource_group} --image {os_type}",
+            "params": ["vm_name", "os_type", "resource_group"],
+            "post_exec": [
+                {
+                    "command": "az vm update --name {vm_name} --resource-group {resource_group} --set hardwareProfile.vmSize={vm_size}",
+                    "params": ["vm_name", "resource_group", "vm_size"],
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "az network nic create --name {vm_name}-nic --resource-group {resource_group}",
+                    "params": ["vm_name", "resource_group"],
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                }
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "private_ip": {
+                        "regex": "\"privateIpAddress\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_vm": {
+            "command": "az vm delete --name {vm_name} --resource-group {resource_group} --yes",
+            "params": ["vm_name", "resource_group"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "has_vm": {
+            "command": "az vm show --name {vm_name} --resource-group {resource_group}",
+            "params": ["vm_name", "resource_group"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "exists": {
+                        "regex": "\"name\":\\s*\"{vm_name}\"",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "configure_networks": {
+            "command": "az network nic update --name {vm_name}-nic --resource-group {resource_group} --network-security-group {network_type}",
+            "params": ["vm_name", "resource_group", "network_type"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "create_disk": {
+            "command": "az disk create --name {disk_name} --resource-group {resource_group} --size-gb {size_gb}",
+            "params": ["disk_name", "resource_group", "size_gb"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_disk": {
+            "command": "az disk delete --name {disk_name} --resource-group {resource_group} --yes",
+            "params": ["disk_name", "resource_group"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "attach_disk": {
+            "command": "az vm disk attach --vm-name {vm_name} --resource-group {resource_group} --name {disk_name}",
+            "params": ["vm_name", "resource_group", "disk_name"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "detach_disk": {
+            "command": "az vm disk detach --vm-name {vm_name} --resource-group {resource_group} --name {disk_name}",
+            "params": ["vm_name", "resource_group", "disk_name"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "has_disk": {
+            "command": "az disk show --name {disk_name} --resource-group {resource_group}",
+            "params": ["disk_name", "resource_group"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "exists": {
+                        "regex": "\"name\":\\s*\"{disk_name}\"",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "reboot_vm": {
+            "command": "az vm restart --name {vm_name} --resource-group {resource_group}",
+            "params": ["vm_name", "resource_group"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "get_vm": {
+            "command": "az vm show --name {vm_name} --resource-group {resource_group}",
+            "params": ["vm_name", "resource_group"],
+            "parse_rules": {
+                "type": "properties",
+                "patterns": {
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "location": {
+                        "regex": "\"location\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "vm_size": {
+                        "regex": "\"vmSize\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "set_vm_metadata": {
+            "command": "az vm update --name {vm_name} --resource-group {resource_group} --set tags.{key}={value}",
+            "params": ["vm_name", "resource_group", "key", "value"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "create_snapshot": {
+            "command": "az snapshot create --name {snapshot_name} --resource-group {resource_group} --source {disk_id}",
+            "params": ["snapshot_name", "resource_group", "disk_id"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_snapshot": {
+            "command": "az snapshot delete --name {snapshot_name} --resource-group {resource_group}",
+            "params": ["snapshot_name", "resource_group"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "has_snapshot": {
+            "command": "az snapshot show --name {snapshot_name} --resource-group {resource_group}",
+            "params": ["snapshot_name", "resource_group"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "exists": {
+                        "regex": "\"name\":\\s*\"{snapshot_name}\"",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        }
+    },
+    "default_settings": {
+        "os_type": "UbuntuLTS",
+        "vm_size": "Standard_DS2_v2",
+        "resource_group": "default-rg",
+        "location": "eastus"
+    }
+}

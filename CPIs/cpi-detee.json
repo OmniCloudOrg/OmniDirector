@@ -1,0 +1,274 @@
+{
+    "name": "detee_cpi",
+    "type": "cloud",
+    "actions": {
+        "test_install": {
+            "command": "docker exec -i detee-cli detee-cli --version",
+            "params": [],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "detee-cli ([\\d\\.]+)",
+                        "group": 1,
+                        "optional": true
+                    },
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "setup_container": {
+            "command": "docker run --pull always -dt --name detee-cli --volume ~/.detee/container_volume/cli:/root/.detee/cli:rw --volume ~/.detee/container_volume/.ssh:/root/.ssh:rw --entrypoint /usr/bin/fish detee/detee-cli:latest",
+            "params": [],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "container_id": {
+                        "regex": "([a-f0-9]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "setup_account": {
+            "command": "docker exec -i detee-cli bash -c 'if [ ! -f /root/.ssh/id_ed25519.pub ]; then ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N \"\"; fi && detee-cli account ssh-pubkey-path /root/.ssh/id_ed25519.pub && detee-cli account brain-url http://164.92.249.180:31337'",
+            "params": [],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "get_account_info": {
+            "command": "docker exec -i detee-cli detee-cli account",
+            "params": [],
+            "parse_rules": {
+                "type": "properties",
+                "patterns": {
+                    "config_path": {
+                        "regex": "Config path: ([^\\n]+)",
+                        "group": 1
+                    },
+                    "brain_url": {
+                        "regex": "The brain URL is: ([^\\n]+)",
+                        "group": 1
+                    },
+                    "ssh_key_path": {
+                        "regex": "SSH Key Path: ([^\\n]+)",
+                        "group": 1
+                    },
+                    "wallet_public_key": {
+                        "regex": "Wallet public key: ([^\\n]+)",
+                        "group": 1
+                    },
+                    "account_balance": {
+                        "regex": "Account Balance: ([^\\n]+)",
+                        "group": 1
+                    },
+                    "wallet_secret_key_path": {
+                        "regex": "Wallet secret key path: ([^\\n]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_vm": {
+            "command": "docker exec -i detee-cli detee-cli vm deploy --distro {distro} --vcpus {vcpus} --memory {memory_mb} --disk {disk_gb} --hours {hours} {hostname_param} {public_ip_param}",
+            "params": ["distro", "vcpus", "memory_mb", "disk_gb", "hours"],
+            "parse_rules": {
+                "type": "properties",
+                "patterns": {
+                    "hostname": {
+                        "regex": "Using random VM name: ([^\\n]+)",
+                        "group": 1,
+                        "optional": true
+                    },
+                    "price": {
+                        "regex": "Node price: ([^ ]+)/unit/minute",
+                        "group": 1
+                    },
+                    "total_units": {
+                        "regex": "Total Units for hardware requested: (\\d+)",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "locked_lp": {
+                        "regex": "Locking ([\\d\\.]+) LP",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "ssh_port": {
+                        "regex": "ssh -p (\\d+)",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "ssh_host": {
+                        "regex": "ssh -p \\d+ root@([\\d\\.]+)",
+                        "group": 1
+                    },
+                    "uuid": {
+                        "regex": "VM CREATED!.*?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
+                        "group": 1,
+                        "optional": true
+                    }
+                }
+            }
+        },
+        "list_vms": {
+            "command": "docker exec -i detee-cli detee-cli vm list",
+            "params": [],
+            "parse_rules": {
+                "type": "array",
+                "separator": "│",
+                "patterns": {
+                    "city": {
+                        "regex": "│\\s+([^│]+)\\s+│\\s+[0-9a-f-]+",
+                        "group": 1
+                    },
+                    "uuid": {
+                        "regex": "│\\s+[^│]+\\s+│\\s+([0-9a-f-]{8}-[0-9a-f-]{4}-[0-9a-f-]{4}-[0-9a-f-]{4}-[0-9a-f-]{12})",
+                        "group": 1
+                    },
+                    "hostname": {
+                        "regex": "│\\s+[0-9a-f-]+\\s+│\\s+([^│]+)",
+                        "group": 1
+                    },
+                    "cores": {
+                        "regex": "│\\s+([0-9]+)\\s+│\\s+[0-9]+",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "memory_mb": {
+                        "regex": "│\\s+[0-9]+\\s+│\\s+([0-9]+)",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "disk_gb": {
+                        "regex": "│\\s+[0-9]+\\s+│\\s+([0-9]+)",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "lp_per_hour": {
+                        "regex": "│\\s+([0-9\\.]+)\\s+│",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "time_left": {
+                        "regex": "│\\s+([0-9]+h [0-9]+m)\\s+│",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_vm": {
+            "command": "docker exec -i detee-cli detee-cli vm list | grep {vm_id}",
+            "params": ["vm_id"],
+            "parse_rules": {
+                "type": "properties",
+                "patterns": {
+                    "city": {
+                        "regex": "│\\s+([^│]+)\\s+│\\s+{vm_id}",
+                        "group": 1
+                    },
+                    "hostname": {
+                        "regex": "│\\s+{vm_id}\\s+│\\s+([^│]+)",
+                        "group": 1
+                    },
+                    "cores": {
+                        "regex": "│\\s+([0-9]+)\\s+│\\s+[0-9]+",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "memory_mb": {
+                        "regex": "│\\s+[0-9]+\\s+│\\s+([0-9]+)",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "disk_gb": {
+                        "regex": "│\\s+[0-9]+\\s+│\\s+([0-9]+)",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "lp_per_hour": {
+                        "regex": "│\\s+([0-9\\.]+)\\s+│",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "time_left": {
+                        "regex": "│\\s+([0-9]+h [0-9]+m)\\s+│",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "has_vm": {
+            "command": "docker exec -i detee-cli detee-cli vm list | grep {vm_id}",
+            "params": ["vm_id"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "exists": {
+                        "regex": "{vm_id}",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "update_vm": {
+            "command": "docker exec -i detee-cli detee-cli vm update {vcpus_param} {memory_param} {hours_param} {vm_id}",
+            "params": ["vm_id"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "hardware_modified": {
+                        "regex": "The node accepted the hardware modifications for the VM",
+                        "transform": "boolean",
+                        "optional": true
+                    },
+                    "hours_updated": {
+                        "regex": "The VM will run for another ([0-9]+) hours",
+                        "group": 1,
+                        "transform": "number",
+                        "optional": true
+                    },
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "delete_vm": {
+            "command": "docker exec -i detee-cli detee-cli vm delete {vm_id}",
+            "params": ["vm_id"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        }
+    },
+    "default_settings": {
+        "distro": "ubuntu",
+        "vcpus": 2,
+        "memory_mb": 2048,
+        "disk_gb": 20,
+        "hours": 4
+    },
+    "authentication": {
+        "env_vars": [
+            "DETEE_BRAIN_URL"
+        ]
+    }
+}
