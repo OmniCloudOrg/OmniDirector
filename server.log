@@ -2774,3 +2774,186 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
         "hours": String("1"),
     },
 }
+[2025-03-02 09:58:52] Logging system initialized
+[2025-03-02 09:58:52] Server running at http://0.0.0.0:8081
+[2025-03-02 09:58:53] Loaded CPI providers: ["virtualbox_cpi_windows", "gcp_cpi", "azure_cpi", "detee_cpi", "aws_cpi", "virtualbox_cpi_linux", "kvm_cpi"]
+[2025-03-02 10:04:28] Logging system initialized
+[2025-03-02 10:04:28] Server running at http://0.0.0.0:8081
+[2025-03-02 10:04:28] Loaded CPI providers: ["gcp_cpi", "virtualbox_cpi_linux", "kvm_cpi", "azure_cpi", "virtualbox_cpi_windows", "aws_cpi", "detee_cpi"]
+[2025-03-02 10:09:39] Received action request: CpiActionRequest {
+    provider: "aws_cpi",
+    action: "create_vm",
+    params: {
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "ami_id": Number(1),
+        "distro": String("ubuntu"),
+        "subnet_id": Number(2),
+        "mamory_mb": String("800"),
+    },
+}
+[2025-03-02 10:09:41] Received action request: CpiActionRequest {
+    provider: "aws_cpi",
+    action: "create_vm",
+    params: {
+        "hours": String("1"),
+        "ami_id": Number(1),
+        "vcpus": String("1"),
+        "mamory_mb": String("800"),
+        "disk_gb": String("5"),
+        "subnet_id": Number(2),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-02 10:09:41] Received action request: CpiActionRequest {
+    provider: "aws_cpi",
+    action: "create_vm",
+    params: {
+        "mamory_mb": String("800"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "ami_id": Number(1),
+        "subnet_id": Number(2),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-02 10:09:41] Received action request: CpiActionRequest {
+    provider: "aws_cpi",
+    action: "create_vm",
+    params: {
+        "subnet_id": Number(2),
+        "mamory_mb": String("800"),
+        "disk_gb": String("5"),
+        "ami_id": Number(1),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+    },
+}
+[2025-03-02 10:09:41] Received action request: CpiActionRequest {
+    provider: "aws_cpi",
+    action: "create_vm",
+    params: {
+        "subnet_id": Number(2),
+        "vcpus": String("1"),
+        "ami_id": Number(1),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "mamory_mb": String("800"),
+    },
+}
+[2025-03-02 10:12:31] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "mamory_mb": String("800"),
+        "subnet_id": Number(2),
+        "disk_gb": String("5"),
+        "ami_id": Number(1),
+    },
+}
+[2025-03-02 10:12:51] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "subnet_id": Number(2),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "mamory_mb": String("800"),
+        "vm_name": String("Test"),
+        "ami_id": Number(1),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-02 10:13:19] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "vm_name": String("AbleVM"),
+        "subnet_id": Number(2),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "ami_id": Number(1),
+        "mamory_mb": String("800"),
+    },
+}
+[2025-03-02 10:13:31] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "mamory_mb": String("800"),
+        "vm_name": String("OmniVM"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "subnet_id": Number(2),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "ami_id": Number(1),
+    },
+}
+[2025-03-02 10:19:09] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "delete_vm",
+    params: {
+        "ami_id": Number(1),
+        "vcpus": String("1"),
+        "mamory_mb": String("8000"),
+        "subnet_id": Number(2),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "vm_name": String("OmniVM"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-02 10:19:11] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "delete_vm",
+    params: {
+        "vm_name": String("OmniVM"),
+        "subnet_id": Number(2),
+        "mamory_mb": String("8000"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "ami_id": Number(1),
+    },
+}
+[2025-03-02 10:19:20] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "distro": String("ubuntu"),
+        "vm_name": String("OmniVM"),
+        "disk_gb": String("5"),
+        "ami_id": Number(1),
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "subnet_id": Number(2),
+        "mamory_mb": String("8000"),
+    },
+}
+[2025-03-02 10:56:11] Logging system initialized
+[2025-03-02 10:56:11] Server running at http://0.0.0.0:8081
+[2025-03-02 10:56:12] Loaded CPI providers: ["azure_cpi", "detee_cpi", "kvm_cpi", "aws_cpi", "virtualbox_cpi_windows", "gcp_cpi"]
+[2025-03-02 10:56:23] Logging system initialized
+[2025-03-02 10:56:23] Server running at http://0.0.0.0:8081
+[2025-03-02 10:56:23] Loaded CPI providers: ["aws_cpi", "virtualbox_cpi_windows", "kvm_cpi", "detee_cpi", "gcp_cpi", "azure_cpi", "virtualbox_cpi_linux"]
+[2025-03-02 10:57:28] Logging system initialized
+[2025-03-02 10:57:29] Server running at http://0.0.0.0:8081
+[2025-03-02 10:57:29] Loaded CPI providers: ["aws_cpi", "azure_cpi", "kvm_cpi", "detee_cpi", "gcp_cpi", "virtualbox_cpi_windows"]
+[2025-03-02 10:57:54] Logging system initialized
+[2025-03-02 10:57:54] Server running at http://0.0.0.0:8081
+[2025-03-02 10:57:54] Loaded CPI providers: ["aws_cpi", "virtualbox_cpi_linux", "detee_cpi", "virtualbox_cpi_windows", "kvm_cpi", "azure_cpi", "gcp_cpi"]
+[2025-03-02 10:58:33] Logging system initialized
+[2025-03-02 10:58:33] Server running at http://0.0.0.0:8081
+[2025-03-02 10:58:33] Loaded CPI providers: ["detee_cpi", "aws_cpi", "virtualbox_cpi_windows", "azure_cpi", "kvm_cpi", "gcp_cpi"]
