@@ -105,23 +105,37 @@
                     "os_type": {
                         "regex": "^ostype=\"(.*)\"$",
                         "group": 1
+                    },
+                    "firmware": {
+                        "regex": "^firmware=\"(.*)\"$",
+                        "group": 1
+                    },
+                    "graphics_controller": {
+                        "regex": "^graphicscontroller=\"(.*)\"$",
+                        "group": 1
                     }
                 },
                 "array_patterns": {
-                    "networks": {
+                    "network_adapters": {
                         "prefix": "nic",
                         "index": "\\d+",
                         "object": {
-                            "mac_address": {
-                                "regex": "^macaddress(\\d+)=\"([^\"]+)\"$",
-                                "group": 2
-                            },
                             "type": {
-                                "regex": "^nic(\\d+)=\"([^\"]+)\"$",
+                                "regex": "^nic(\\d+)=\"(.*)\"$",
                                 "group": 2
                             },
-                            "attachment": {
-                                "regex": "^hostonlyadapter(\\d+)=\"([^\"]+)\"$",
+                            "mac_address": {
+                                "regex": "^macaddress(\\d+)=\"(.*)\"$",
+                                "group": 2,
+                                "optional": true
+                            },
+                            "connection_status": {
+                                "regex": "^cableconnected(\\d+)=\"(.*)\"$",
+                                "group": 2,
+                                "optional": true
+                            },
+                            "adapter_type": {
+                                "regex": "^nictype(\\d+)=\"(.*)\"$",
                                 "group": 2,
                                 "optional": true
                             }
