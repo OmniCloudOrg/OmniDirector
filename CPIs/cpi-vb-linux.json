@@ -113,15 +113,15 @@
                         "index": "\\d+",
                         "object": {
                             "mac_address": {
-                                "regex": "^macaddress(\\d+)=\"(.*)\"$",
+                                "regex": "^macaddress(\\d+)=\"([^\"]+)\"$",
                                 "group": 2
                             },
                             "type": {
-                                "regex": "^nic(\\d+)=\"(.*)\"$",
+                                "regex": "^nic(\\d+)=\"([^\"]+)\"$",
                                 "group": 2
                             },
                             "attachment": {
-                                "regex": "^hostonlyadapter(\\d+)=\"(.*)\"$",
+                                "regex": "^hostonlyadapter(\\d+)=\"([^\"]+)\"$",
                                 "group": 2,
                                 "optional": true
                             }
