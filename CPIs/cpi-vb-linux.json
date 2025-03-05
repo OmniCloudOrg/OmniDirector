@@ -1,5 +1,5 @@
 {
-    "name": "virtualbox_cpi_linux",
+    "name": "virtualbox_cpi_windows",
     "type": "virt",
     "actions": {
         "test_install": {
@@ -477,6 +477,8 @@
         "memory_mb": 2048,
         "cpu_count": 2,
         "controller_name": "SATA Controller",
-        "network_type": "nat"
+        "network_type": "nat",
+        "username": "vboxuser",
+        "password": "password"
     }
 }
