@@ -19,11 +19,14 @@
             "command": "VBoxManage.exe createvm --name {vm_name} --ostype {os_type} --register",
             "params": [
                 "vm_name",
-                "os_type"
+                "os_type",
+                "memory_mb",
+                "cpu_count",
+                "iso_path"
             ],
             "post_exec": [
                 {
-                    "command": "VBoxManage modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
+                    "command": "VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
                     "parse_rules": {
                         "type": "object",
                         "patterns": {
@@ -35,7 +38,55 @@
                     }
                 },
                 {
-                    "command": "VBoxManage modifyvm {vm_name} --nic1 nat",
+                    "command": "VBoxManage.exe modifyvm {vm_name} --nic1 nat",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe storagectl {vm_name} --name=IDEController --add ide --controller PIIX4 --bootable on",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe storagectl {vm_name} --name=SATAController --add sata --controller IntelAhci --portcount 30",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe storageattach {vm_name} --storagectl IDEController --port 0 --device 0 --type dvddrive --medium {iso_path}",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe modifyvm {vm_name} --boot1 dvd --boot2 disk --boot3 none --boot4 none",
                     "parse_rules": {
                         "type": "object",
                         "patterns": {
@@ -272,20 +323,6 @@
         "attach_disk": {
             "command": "VBoxManage.exe storageattach {vm_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}",
             "params": ["vm_name", "controller_name", "port", "disk_path"],
-            "pre_exec": [
-                {
-                    "command": "VBoxManage.exe storagectl {vm_name} --name {controller_name} --add sata --controller IntelAhci --portcount 30",
-                    "parse_rules": {
-                        "type": "object",
-                        "patterns": {
-                            "success": {
-                                "regex": ".*",
-                                "transform": "boolean"
-                            }
-                        }
-                    }
-                }
-            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -420,15 +457,127 @@
                     }
                 }
             }
+        },
+        "create_and_boot": {
+            "command": "VBoxManage.exe createvm --name {vm_name} --ostype {os_type} --register",
+            "params": [
+                "vm_name",
+                "os_type",
+                "memory_mb",
+                "cpu_count",
+                "iso_path"
+            ],
+            "post_exec": [
+                {
+                    "command": "VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe modifyvm {vm_name} --nic1 nat",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe storagectl {vm_name} --name=IDEController --add ide --controller PIIX4 --bootable on",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe storagectl {vm_name} --name=SATAController --add sata --controller IntelAhci --portcount 30",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe storageattach {vm_name} --storagectl IDEController --port 0 --device 0 --type dvddrive --medium {iso_path}",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe modifyvm {vm_name} --boot1 dvd --boot2 disk --boot3 none --boot4 none",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "VBoxManage.exe startvm {vm_name} --type headless",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "started": {
+                                "regex": "VM \"(.+)\" has been successfully started",
+                                "group": 1
+                            }
+                        }
+                    }
+                }
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "uuid": {
+                        "regex": "UUID: ([0-9a-f-]+)",
+                        "group": 1
+                    }
+                }
+            }
         }
     },
     "default_settings": {
         "os_type": "Ubuntu_64",
         "memory_mb": 2048,
         "cpu_count": 2,
-        "controller_name": "SATA Controller",
+        "controller_name": "SATAController",
+        "ide_controller_name": "IDEController",
         "network_type": "nat",
-        "username": "vboxuser",
-        "password": "password"
+        "username": "ubuntu",
+        "password": "ubuntu",
+        "port": "0",
+        "device": "0",
+        "boot1": "dvd",
+        "boot2": "disk",
+        "boot3": "none",
+        "boot4": "none"
     }
 }
