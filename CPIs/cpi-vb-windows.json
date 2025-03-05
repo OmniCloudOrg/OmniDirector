@@ -17,10 +17,13 @@
         },
         "create_vm": {
             "command": "VBoxManage.exe createvm --name {vm_name} --ostype {os_type} --register",
-            "params": ["vm_name", "os_type"],
+            "params": [
+                "vm_name",
+                "os_type"
+            ],
             "post_exec": [
                 {
-                    "command": "VBoxManage.exe modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
+                    "command": "VBoxManage modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
                     "parse_rules": {
                         "type": "object",
                         "patterns": {
@@ -32,7 +35,7 @@
                     }
                 },
                 {
-                    "command": "VBoxManage.exe modifyvm {vm_name} --nic1 nat",
+                    "command": "VBoxManage modifyvm {vm_name} --nic1 nat",
                     "parse_rules": {
                         "type": "object",
                         "patterns": {
@@ -86,32 +89,50 @@
                         "group": 1
                     },
                     "memory_mb": {
-                        "regex": "^memory=\"(\\d+)\"$",
+                        "regex": "^memory=(\\d+)$",
                         "group": 1,
                         "transform": "number"
                     },
                     "cpu_count": {
-                        "regex": "^cpus=\"(\\d+)\"$",
+                        "regex": "^cpus=(\\d+)$",
                         "group": 1,
                         "transform": "number"
                     },
                     "os_type": {
                         "regex": "^ostype=\"(.*)\"$",
                         "group": 1
+                    },
+                    "firmware": {
+                        "regex": "^firmware=\"(.*)\"$",
+                        "group": 1
+                    },
+                    "graphics_controller": {
+                        "regex": "^graphicscontroller=\"(.*)\"$",
+                        "group": 1
                     }
                 },
                 "array_patterns": {
-                    "networks": {
+                    "network_adapters": {
                         "prefix": "nic",
                         "index": "\\d+",
                         "object": {
-                            "mac_address": {
-                                "regex": "^macaddress\\d+=\"(.*)\"$",
-                                "group": 1
+                            "type": {
+                                "regex": "^nic(\\d+)=\"(.*)\"$",
+                                "group": 2
                             },
-                            "attachment": {
-                                "regex": "^hostonlyadapter\\d+=\"(.*)\"$",
-                                "group": 1,
+                            "mac_address": {
+                                "regex": "^macaddress(\\d+)=\"(.*)\"$",
+                                "group": 2,
+                                "optional": true
+                            },
+                            "connection_status": {
+                                "regex": "^cableconnected(\\d+)=\"(.*)\"$",
+                                "group": 2,
+                                "optional": true
+                            },
+                            "adapter_type": {
+                                "regex": "^nictype(\\d+)=\"(.*)\"$",
+                                "group": 2,
                                 "optional": true
                             }
                         }
@@ -382,6 +403,23 @@
                     }
                 }
             }
+        },
+        "execute_command": {
+            "command": "VBoxManage.exe guestcontrol {vm_name} run --username {username} --password {password} --exe {command_path} -- {command_args}",
+            "params": ["vm_name", "username", "password", "command_path", "command_args"],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "output": {
+                        "regex": "(?s)(.*)",
+                        "group": 1
+                    },
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
         }
     },
     "default_settings": {
@@ -389,6 +427,8 @@
         "memory_mb": 2048,
         "cpu_count": 2,
         "controller_name": "SATA Controller",
-        "network_type": "nat"
+        "network_type": "nat",
+        "username": "vboxuser",
+        "password": "password"
     }
 }
