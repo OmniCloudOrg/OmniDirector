@@ -59,7 +59,9 @@
         },
         "delete_vm": {
             "command": "VBoxManage.exe unregistervm {vm_name} --delete",
-            "params": ["vm_name"],
+            "params": [
+                "vm_name"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -72,7 +74,9 @@
         },
         "get_vm": {
             "command": "VBoxManage.exe showvminfo {vm_name} --machinereadable",
-            "params": ["vm_name"],
+            "params": [
+                "vm_name"
+            ],
             "parse_rules": {
                 "type": "properties",
                 "patterns": {
@@ -142,7 +146,9 @@
         },
         "has_vm": {
             "command": "VBoxManage.exe showvminfo {vm_id} --machinereadable",
-            "params": ["vm_id"],
+            "params": [
+                "vm_id"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -155,7 +161,9 @@
         },
         "start_vm": {
             "command": "VBoxManage.exe startvm {vm_name} --type headless",
-            "params": ["vm_name"],
+            "params": [
+                "vm_name"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -207,7 +215,9 @@
         },
         "has_disk": {
             "command": "VBoxManage.exe showmediuminfo disk {disk_path}",
-            "params": ["disk_path"],
+            "params": [
+                "disk_path"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -220,7 +230,9 @@
         },
         "get_snapshots": {
             "command": "VBoxManage.exe snapshot {vm_name} list --machinereadable",
-            "params": ["vm_name"],
+            "params": [
+                "vm_name"
+            ],
             "parse_rules": {
                 "type": "properties",
                 "array_key": "snapshots",
@@ -245,7 +257,10 @@
         },
         "create_snapshot": {
             "command": "VBoxManage.exe snapshot {vm_name} take {snapshot_name}",
-            "params": ["vm_name", "snapshot_name"],
+            "params": [
+                "vm_name",
+                "snapshot_name"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -258,7 +273,10 @@
         },
         "has_snapshot": {
             "command": "VBoxManage.exe snapshot {vm_name} list --machinereadable",
-            "params": ["vm_name", "snapshot_name"],
+            "params": [
+                "vm_name",
+                "snapshot_name"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -271,7 +289,12 @@
         },
         "attach_disk": {
             "command": "VBoxManage.exe storageattach {vm_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}",
-            "params": ["vm_name", "controller_name", "port", "disk_path"],
+            "params": [
+                "vm_name",
+                "controller_name",
+                "port",
+                "disk_path"
+            ],
             "pre_exec": [
                 {
                     "command": "VBoxManage.exe storagectl {vm_name} --name {controller_name} --add sata --controller IntelAhci --portcount 30",
@@ -298,7 +321,11 @@
         },
         "detach_disk": {
             "command": "VBoxManage.exe storageattach {vm_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium none",
-            "params": ["vm_name", "controller_name", "port"],
+            "params": [
+                "vm_name",
+                "controller_name",
+                "port"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -311,7 +338,10 @@
         },
         "create_disk": {
             "command": "VBoxManage.exe createmedium disk --filename {disk_path} --size {size_mb} --format VDI",
-            "params": ["disk_path", "size_mb"],
+            "params": [
+                "disk_path",
+                "size_mb"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -328,7 +358,9 @@
         },
         "delete_disk": {
             "command": "VBoxManage.exe closemedium disk {disk_path} --delete",
-            "params": ["disk_path"],
+            "params": [
+                "disk_path"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -341,7 +373,9 @@
         },
         "reboot_vm": {
             "command": "VBoxManage.exe controlvm {vm_name} reset",
-            "params": ["vm_name"],
+            "params": [
+                "vm_name"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -354,7 +388,10 @@
         },
         "snapshot_disk": {
             "command": "VBoxManage.exe clonemedium disk {source_disk_path} {target_disk_path}",
-            "params": ["source_disk_path", "target_disk_path"],
+            "params": [
+                "source_disk_path",
+                "target_disk_path"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -367,7 +404,11 @@
         },
         "configure_networks": {
             "command": "VBoxManage.exe modifyvm {vm_name} --nic{network_index} {network_type}",
-            "params": ["vm_name", "network_index", "network_type"],
+            "params": [
+                "vm_name",
+                "network_index",
+                "network_type"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -380,7 +421,11 @@
         },
         "set_vm_metadata": {
             "command": "VBoxManage.exe setextradata {vm_name} {key} {value}",
-            "params": ["vm_name", "key", "value"],
+            "params": [
+                "vm_name",
+                "key",
+                "value"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -393,7 +438,10 @@
         },
         "delete_snapshot": {
             "command": "VBoxManage.exe snapshot {vm_name} delete {snapshot_name}",
-            "params": ["vm_name", "snapshot_name"],
+            "params": [
+                "vm_name",
+                "snapshot_name"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -406,17 +454,19 @@
         },
         "execute_command": {
             "command": "VBoxManage.exe guestcontrol {vm_name} run --username {username} --password {password} --exe {command_path} -- {command_args}",
-            "params": ["vm_name", "username", "password", "command_path", "command_args"],
+            "params": [
+                "vm_name",
+                "username",
+                "password",
+                "command_path",
+                "command_args"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
                     "output": {
-                        "regex": "(?s)(.*)",
+                        "regex": "(?:total .*\n)((?:.*\n)*)",
                         "group": 1
-                    },
-                    "success": {
-                        "regex": ".*",
-                        "transform": "boolean"
                     }
                 }
             }

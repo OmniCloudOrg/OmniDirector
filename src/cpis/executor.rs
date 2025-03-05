@@ -92,22 +92,26 @@ fn fill_template(template: &str, params: &HashMap<String, Value>) -> Result<Stri
 
 // Helper function to execute a command
 fn execute_command(cmd: &str) -> Result<String, CpiError> {
+    println!("Executing command: {}", cmd); // Debugging output
+
     let parts: Vec<&str> = cmd.split_whitespace().collect();
     
     if parts.is_empty() {
         return Err(CpiError::ExecutionFailed("Empty command".to_string()));
     }
-    
+
+    println!("Parsed command: {:?}", parts); // Debugging output
+
     let output = Command::new(parts[0])
         .args(&parts[1..])
         .output()
         .map_err(|e| CpiError::ExecutionFailed(format!("Failed to execute '{}': {}", cmd, e)))?;
-    
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(CpiError::ExecutionFailed(format!("Command failed: {}\nError: {}", cmd, stderr)));
     }
-    
+
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
     Ok(stdout)
 }
