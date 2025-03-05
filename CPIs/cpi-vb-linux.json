@@ -1,5 +1,5 @@
 {
-    "name": "virtualbox_cpi_windows",
+    "name": "virtualbox_cpi_linux",
     "type": "virt",
     "actions": {
         "test_install": {
