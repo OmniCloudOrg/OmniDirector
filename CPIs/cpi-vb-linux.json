@@ -451,6 +451,25 @@
                     }
                 }
             }
+        },
+        "execute_command": {
+            "command": "VBoxManage guestcontrol {vm_name} run --username {username} --password {password} --exe {command_path} -- {command_args}",
+            "params": [
+                "vm_name",
+                "username",
+                "password",
+                "command_path",
+                "command_args"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "output": {
+                        "regex": "([\\s\\S]+)",
+                        "group": 1
+                    }
+                }
+            }
         }
     },
     "default_settings": {
