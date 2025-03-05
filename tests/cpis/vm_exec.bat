@@ -76,8 +76,8 @@ echo   "params": {
 echo     "vm_name": "%VM_NAME%",
 echo     "username": "vagrant",
 echo     "password": "vagrant",
-echo     "command_path": "/bin/ls",
-echo     "command_args": "-la /"
+echo     "command_path": "/bin/uname",
+echo     "command_args": "-a"
 echo   }
 echo }
 ) > "%TEMP%\execute_command.json"

@@ -92,7 +92,7 @@ fn fill_template(template: &str, params: &HashMap<String, Value>) -> Result<Stri
 
 // Helper function to execute a command
 fn execute_command(cmd: &str) -> Result<String, CpiError> {
-    println!("Executing command: {}", cmd); // Debugging output
+    println!(">>> Executing command: {}", cmd); // Debugging output
 
     let parts: Vec<&str> = cmd.split_whitespace().collect();
     
@@ -100,18 +100,33 @@ fn execute_command(cmd: &str) -> Result<String, CpiError> {
         return Err(CpiError::ExecutionFailed("Empty command".to_string()));
     }
 
-    println!("Parsed command: {:?}", parts); // Debugging output
+    println!(">>> Parsed command parts: {:?}", parts); // Debugging output
+    println!(">>> Command executable: {}", parts[0]);
+    if parts.len() > 1 {
+        println!(">>> Command arguments: {:?}", &parts[1..]);
+    } else {
+        println!(">>> No command arguments");
+    }
 
+    println!(">>> Attempting to execute command...");
     let output = Command::new(parts[0])
         .args(&parts[1..])
         .output()
-        .map_err(|e| CpiError::ExecutionFailed(format!("Failed to execute '{}': {}", cmd, e)))?;
+        .map_err(|e| {
+            println!(">>> Execution failed: {}", e);
+            CpiError::ExecutionFailed(format!("Failed to execute '{}': {}", cmd, e))
+        })?;
 
+    println!(">>> Command executed with status: {}", output.status);
+    
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
+        println!(">>> Command failed with stderr: {}", stderr);
         return Err(CpiError::ExecutionFailed(format!("Command failed: {}\nError: {}", cmd, stderr)));
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+
+    println!(">>> Command succeeded with stdout ({} bytes): {}", stdout.len(), stdout); // Debugging output
     Ok(stdout)
 }

@@ -465,7 +465,7 @@
                 "type": "object",
                 "patterns": {
                     "output": {
-                        "regex": "(?:total .*\n)((?:.*\n)*)",
+                        "regex": "([\\s\\S]+)",
                         "group": 1
                     }
                 }
