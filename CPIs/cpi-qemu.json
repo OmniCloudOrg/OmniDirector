@@ -1,0 +1,515 @@
+{
+    "name": "qemu_cpi_linux",
+    "type": "virt",
+    "actions": {
+        "test_install": {
+            "command": "qemu-system-x86_64 --version",
+            "params": [],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "QEMU emulator version ([\\d\\.]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_vm": {
+            "command": "qemu-img create -f qcow2 {vm_path}/{vm_name}.qcow2 {disk_size_mb}M",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "disk_size_mb"
+            ],
+            "post_exec": [
+                {
+                    "command": "echo '{\"name\": \"{vm_name}\", \"ostype\": \"{os_type}\", \"memory_mb\": {memory_mb}, \"cpu_count\": {cpu_count}, \"uuid\": \"'$(uuidgen)'\"' > {vm_path}/{vm_name}.json",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "command": "echo '\"network_adapters\": [{\"type\": \"nat\", \"mac_address\": \"52:54:00:12:34:56\"}]}' >> {vm_path}/{vm_name}.json",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                }
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "uuid": {
+                        "regex": ".*",
+                        "group": 0
+                    }
+                }
+            }
+        },
+        "delete_vm": {
+            "command": "rm -f {vm_path}/{vm_name}.qcow2 {vm_path}/{vm_name}.json {vm_path}/{vm_name}.pid 2>/dev/null",
+            "params": [
+                "vm_path",
+                "vm_name"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "get_vm": {
+            "command": "cat {vm_path}/{vm_name}.json",
+            "params": [
+                "vm_path",
+                "vm_name"
+            ],
+            "parse_rules": {
+                "type": "properties",
+                "patterns": {
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "id": {
+                        "regex": "\"uuid\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "state": {
+                        "regex": "\"state\":\\s*\"([^\"]+)\"",
+                        "group": 1,
+                        "default": "stopped"
+                    },
+                    "memory_mb": {
+                        "regex": "\"memory_mb\":\\s*(\\d+)",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "cpu_count": {
+                        "regex": "\"cpu_count\":\\s*(\\d+)",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "os_type": {
+                        "regex": "\"ostype\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "firmware": {
+                        "regex": "\"firmware\":\\s*\"([^\"]+)\"",
+                        "group": 1,
+                        "default": "bios"
+                    },
+                    "graphics_controller": {
+                        "regex": "\"graphics_controller\":\\s*\"([^\"]+)\"",
+                        "group": 1,
+                        "default": "vga"
+                    }
+                },
+                "array_patterns": {
+                    "network_adapters": {
+                        "prefix": "nic",
+                        "index": "\\d+",
+                        "object": {
+                            "type": {
+                                "regex": "\"type\":\\s*\"([^\"]+)\"",
+                                "group": 1
+                            },
+                            "mac_address": {
+                                "regex": "\"mac_address\":\\s*\"([^\"]+)\"",
+                                "group": 1,
+                                "optional": true
+                            },
+                            "connection_status": {
+                                "regex": "\"connection_status\":\\s*\"([^\"]+)\"",
+                                "group": 1,
+                                "optional": true
+                            },
+                            "adapter_type": {
+                                "regex": "\"adapter_type\":\\s*\"([^\"]+)\"",
+                                "group": 1,
+                                "optional": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "has_vm": {
+            "command": "test -f {vm_path}/{vm_id}.json && echo true || echo false",
+            "params": [
+                "vm_path",
+                "vm_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "exists": {
+                        "regex": "(true|false)",
+                        "group": 1,
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "start_vm": {
+            "command": "qemu-system-x86_64 -name {vm_name} -m {memory_mb} -smp {cpu_count} -drive file={vm_path}/{vm_name}.qcow2,format=qcow2 -net nic,model=virtio -net user -display none -daemonize -pidfile {vm_path}/{vm_name}.pid",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "memory_mb",
+                "cpu_count"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "started": {
+                        "regex": ".*",
+                        "group": 0,
+                        "default": "{vm_name}"
+                    }
+                }
+            }
+        },
+        "get_disks": {
+            "command": "find {disk_path} -name \"*.qcow2\" -type f | xargs -I{} bash -c 'uuid=$(uuidgen); size=$(qemu-img info --output=json {} | jq -r .virtual_size); size_mb=$((size/1024/1024)); format=$(qemu-img info --output=json {} | jq -r .format); echo \"UUID: $uuid\nLocation: {}\nCapacity: $size_mb MBytes\nFormat: $format\nType: base\nState: created\n\"'",
+            "params": [
+                "disk_path"
+            ],
+            "parse_rules": {
+                "type": "array",
+                "separator": "\n\n",
+                "patterns": {
+                    "id": {
+                        "regex": "UUID:\\s+(.+)",
+                        "group": 1
+                    },
+                    "path": {
+                        "regex": "Location:\\s+(.+)",
+                        "group": 1
+                    },
+                    "size_mb": {
+                        "regex": "Capacity:\\s+(\\d+) MBytes",
+                        "group": 1,
+                        "transform": "number"
+                    },
+                    "format": {
+                        "regex": "Format:\\s+(.+)",
+                        "group": 1
+                    },
+                    "type": {
+                        "regex": "Type:\\s+(.+)",
+                        "group": 1
+                    },
+                    "parent": {
+                        "regex": "Parent UUID:\\s+(.+)",
+                        "group": 1,
+                        "optional": true
+                    },
+                    "state": {
+                        "regex": "State:\\s+(.+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "has_disk": {
+            "command": "test -f {disk_path} && echo true || echo false",
+            "params": [
+                "disk_path"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "exists": {
+                        "regex": "(true|false)",
+                        "group": 1,
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "get_snapshots": {
+            "command": "ls -1 {vm_path}/{vm_name}-snapshot-*.qcow2 2>/dev/null | sed -n 's/.*{vm_name}-snapshot-\\(.*\\)\\.qcow2/SnapshotName-\\1=\"\\1\"/p' | tee /dev/null; ls -1 {vm_path}/{vm_name}-snapshot-*.qcow2 2>/dev/null | sed -n 's/.*{vm_name}-snapshot-\\(.*\\)\\.qcow2/SnapshotUUID-\\1=\"00000000-0000-0000-0000-000000000000\"/p' | tee /dev/null; if [ -f {vm_path}/{vm_name}-current-snapshot ]; then echo 'CurrentSnapshotUUID=\"00000000-0000-0000-0000-000000000000\"'; fi",
+            "params": [
+                "vm_path",
+                "vm_name"
+            ],
+            "parse_rules": {
+                "type": "properties",
+                "array_key": "snapshots",
+                "patterns": {
+                    "name": {
+                        "regex": "^SnapshotName(?:-([\\d]+))?=\"(.*)\"$",
+                        "group": 2
+                    }
+                },
+                "related_patterns": {
+                    "uuid": {
+                        "regex": "^SnapshotUUID-\\1=\"(.*)\"$",
+                        "group": 1
+                    },
+                    "current": {
+                        "regex": "^CurrentSnapshotUUID=\"(.*)\"$",
+                        "match_value": "uuid",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "create_snapshot": {
+            "command": "qemu-img snapshot -c {snapshot_name} {vm_path}/{vm_name}.qcow2 && cp {vm_path}/{vm_name}.qcow2 {vm_path}/{vm_name}-snapshot-{snapshot_name}.qcow2 && echo '00000000-0000-0000-0000-000000000000' > {vm_path}/{vm_name}-current-snapshot && echo '00000000-0000-0000-0000-000000000000'",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "snapshot_name"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "uuid": {
+                        "regex": "([0-9a-f-]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "has_snapshot": {
+            "command": "test -f {vm_path}/{vm_name}-snapshot-{snapshot_name}.qcow2 && echo true || echo false",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "snapshot_name"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "exists": {
+                        "regex": "(true|false)",
+                        "group": 1,
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "attach_disk": {
+            "command": "disk_info=$(cat {vm_path}/{vm_name}.json); echo \"$disk_info\" | jq '.attached_disks = (.attached_disks // []) + [{\\\"controller\\\": \\\"{controller_name}\\\", \\\"port\\\": {port}, \\\"disk_path\\\": \\\"{disk_path}\\\"}]' > {vm_path}/{vm_name}.json.tmp && mv {vm_path}/{vm_name}.json.tmp {vm_path}/{vm_name}.json",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "controller_name",
+                "port",
+                "disk_path"
+            ],
+            "pre_exec": [
+                {
+                    "command": "disk_info=$(cat {vm_path}/{vm_name}.json); echo \"$disk_info\" | jq '. += {\\\"sata_controller\\\": true}' > {vm_path}/{vm_name}.json.tmp && mv {vm_path}/{vm_name}.json.tmp {vm_path}/{vm_name}.json",
+                    "parse_rules": {
+                        "type": "object",
+                        "patterns": {
+                            "success": {
+                                "regex": ".*",
+                                "transform": "boolean"
+                            }
+                        }
+                    }
+                }
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "detach_disk": {
+            "command": "disk_info=$(cat {vm_path}/{vm_name}.json); echo \"$disk_info\" | jq '.attached_disks = (.attached_disks // []) | map(select(.controller != \"{controller_name}\" or .port != {port}))' > {vm_path}/{vm_name}.json.tmp && mv {vm_path}/{vm_name}.json.tmp {vm_path}/{vm_name}.json",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "controller_name",
+                "port"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "create_disk": {
+            "command": "qemu-img create -f qcow2 {disk_path} {size_mb}M",
+            "params": [
+                "disk_path",
+                "size_mb"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "uuid": {
+                        "regex": ".*",
+                        "group": 0
+                    },
+                    "path": {
+                        "regex": ".*",
+                        "group": 0,
+                        "default": "{disk_path}"
+                    }
+                }
+            }
+        },
+        "delete_disk": {
+            "command": "rm -f {disk_path}",
+            "params": [
+                "disk_path"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "reboot_vm": {
+            "command": "pid=$(cat {vm_path}/{vm_name}.pid 2>/dev/null); test -n \"$pid\" && (kill -TERM $pid; sleep 2; qemu-system-x86_64 -name {vm_name} -m {memory_mb} -smp {cpu_count} -drive file={vm_path}/{vm_name}.qcow2,format=qcow2 -net nic,model=virtio -net user -display none -daemonize -pidfile {vm_path}/{vm_name}.pid)",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "memory_mb",
+                "cpu_count"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "snapshot_disk": {
+            "command": "qemu-img convert -f qcow2 -O qcow2 {source_disk_path} {target_disk_path}",
+            "params": [
+                "source_disk_path",
+                "target_disk_path"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "uuid": {
+                        "regex": ".*",
+                        "group": 0
+                    }
+                }
+            }
+        },
+        "configure_networks": {
+            "command": "disk_info=$(cat {vm_path}/{vm_name}.json); echo \"$disk_info\" | jq '.network_adapters[{network_index}-1].type = \"{network_type}\"' > {vm_path}/{vm_name}.json.tmp && mv {vm_path}/{vm_name}.json.tmp {vm_path}/{vm_name}.json",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "network_index",
+                "network_type"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "set_vm_metadata": {
+            "command": "disk_info=$(cat {vm_path}/{vm_name}.json); echo \"$disk_info\" | jq '.metadata = (.metadata // {}) | .metadata += {{\"{key}\": \"{value}\"}}' > {vm_path}/{vm_name}.json.tmp && mv {vm_path}/{vm_name}.json.tmp {vm_path}/{vm_name}.json",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "key",
+                "value"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "delete_snapshot": {
+            "command": "qemu-img snapshot -d {snapshot_name} {vm_path}/{vm_name}.qcow2 && rm -f {vm_path}/{vm_name}-snapshot-{snapshot_name}.qcow2",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "snapshot_name"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "success": {
+                        "regex": ".*",
+                        "transform": "boolean"
+                    }
+                }
+            }
+        },
+        "execute_command": {
+            "command": "QEMU_MONITOR_SOCKET={vm_path}/{vm_name}.monitor; echo \"{ \\\"execute\\\": \\\"guest-exec\\\", \\\"arguments\\\": { \\\"path\\\": \\\"{command_path}\\\", \\\"arg\\\": [\\\"{command_args}\\\"], \\\"capture-output\\\": true } }\" | socat - UNIX-CONNECT:$QEMU_MONITOR_SOCKET",
+            "params": [
+                "vm_path",
+                "vm_name",
+                "command_path",
+                "command_args"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "output": {
+                        "regex": "([\\s\\S]+)",
+                        "group": 1
+                    }
+                }
+            }
+        }
+    },
+    "default_settings": {
+        "os_type": "Linux",
+        "memory_mb": 2048,
+        "cpu_count": 2,
+        "controller_name": "SATA",
+        "network_type": "user",
+        "disk_size_mb": 10240,
+        "vm_path": "/var/lib/qemu/images",
+        "disk_path": "/var/lib/qemu/disks",
+        "username": "qemuuser",
+        "password": "password"
+    }
+}

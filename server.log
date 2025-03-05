@@ -4499,3 +4499,9 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
         "username": String("vagrant"),
     },
 }
+[2025-03-05 16:48:44] Logging system initialized
+[2025-03-05 16:48:45] Server running at http://0.0.0.0:8081
+[2025-03-05 16:48:45] Loaded CPI providers: ["aws_cpi", "detee_cpi", "gcp_cpi", "azure_cpi", "kvm_cpi", "virtualbox_cpi_linux", "virtualbox_cpi_windows"]
+[2025-03-05 16:50:39] Logging system initialized
+[2025-03-05 16:50:40] Server running at http://0.0.0.0:8081
+[2025-03-05 16:50:40] Loaded CPI providers: ["azure_cpi", "kvm_cpi", "detee_cpi", "gcp_cpi", "qemu_cpi_linux", "virtualbox_cpi_windows", "aws_cpi", "virtualbox_cpi_linux"]
