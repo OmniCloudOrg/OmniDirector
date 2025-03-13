@@ -1,2 +1,5 @@
 /target
 server.log
+*.log
+server.log
+server.log
