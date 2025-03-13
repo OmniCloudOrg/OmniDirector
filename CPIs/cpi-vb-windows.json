@@ -462,11 +462,12 @@
                 "command_args"
             ],
             "parse_rules": {
-                "type": "object",
+                "type": "output",
                 "patterns": {
                     "output": {
-                        "regex": "([\\s\\S]+)",
-                        "group": 1
+                        "regex": "((?:[\\s\\S]+))",
+                        "group": 1,
+                        "optional": true
                     }
                 }
             }
