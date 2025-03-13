@@ -4505,3 +4505,1677 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-03-05 16:50:39] Logging system initialized
 [2025-03-05 16:50:40] Server running at http://0.0.0.0:8081
 [2025-03-05 16:50:40] Loaded CPI providers: ["azure_cpi", "kvm_cpi", "detee_cpi", "gcp_cpi", "qemu_cpi_linux", "virtualbox_cpi_windows", "aws_cpi", "virtualbox_cpi_linux"]
+[2025-03-12 21:13:05] Logging system initialized
+[2025-03-12 21:13:06] Server running at http://0.0.0.0:8081
+[2025-03-12 21:13:06] Loaded CPI providers: ["detee_cpi", "virtualbox_cpi_windows", "kvm_cpi", "qemu_cpi_linux", "aws_cpi", "virtualbox_cpi_linux", "gcp_cpi", "azure_cpi"]
+[2025-03-12 21:13:08] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("Test"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "username": String("vagrant"),
+        "command_args": String("-alh"),
+    },
+}
+[2025-03-12 21:13:52] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "os_type": String("Ubuntu_64"),
+        "memory_mb": String("2048"),
+        "cpu_count": String("2"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:13:53] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "attach_disk",
+    params: {
+        "port": String("0"),
+        "disk_path": String("C:\\Users\\redst\\AppData\\Local\\Temp\\vagrant_box_extracted\\box-disk1.vmdk"),
+        "vm_name": String("OmniVM"),
+        "controller_name": String("SATAController"),
+    },
+}
+[2025-03-12 21:13:53] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "start_vm",
+    params: {
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:14:00] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String("-a"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/uname"),
+    },
+}
+[2025-03-12 21:14:02] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "os_type": String("Ubuntu_64"),
+        "memory_mb": String("2048"),
+        "cpu_count": String("2"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:14:03] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "attach_disk",
+    params: {
+        "controller_name": String("SATAController"),
+        "disk_path": String("C:\\Users\\redst\\AppData\\Local\\Temp\\vagrant_box_extracted\\box-disk1.vmdk"),
+        "port": String("0"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:14:03] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "start_vm",
+    params: {
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:14:04] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_args": String("-a"),
+        "command_path": String("/bin/uname"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-12 21:14:06] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "cpu_count": String("2"),
+        "vm_name": String("OmniVM"),
+        "os_type": String("Ubuntu_64"),
+        "memory_mb": String("2048"),
+    },
+}
+[2025-03-12 21:14:07] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "attach_disk",
+    params: {
+        "disk_path": String("C:\\Users\\redst\\AppData\\Local\\Temp\\vagrant_box_extracted\\box-disk1.vmdk"),
+        "vm_name": String("OmniVM"),
+        "controller_name": String("SATAController"),
+        "port": String("0"),
+    },
+}
+[2025-03-12 21:14:07] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "start_vm",
+    params: {
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:14:08] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/uname"),
+        "username": String("vagrant"),
+        "command_args": String("-a"),
+    },
+}
+[2025-03-12 21:14:10] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("Test"),
+        "command_path": String("/bin/ls"),
+        "username": String("vagrant"),
+        "command_args": String("-alh"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:14:24] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "vm_name": String("OmniVM"),
+        "cpu_count": String("2"),
+        "os_type": String("Ubuntu_64"),
+        "memory_mb": String("2048"),
+    },
+}
+[2025-03-12 21:14:25] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "attach_disk",
+    params: {
+        "controller_name": String("SATAController"),
+        "port": String("0"),
+        "vm_name": String("OmniVM"),
+        "disk_path": String("C:\\Users\\redst\\AppData\\Local\\Temp\\vagrant_box_extracted\\box-disk1.vmdk"),
+    },
+}
+[2025-03-12 21:14:25] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "start_vm",
+    params: {
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:14:26] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String("-a"),
+        "command_path": String("/bin/uname"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-12 21:14:29] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-alh"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-12 21:14:29] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String("-alh"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "vm_name": String("Test"),
+        "command_path": String("/bin/ls"),
+    },
+}
+[2025-03-12 21:14:29] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("Test"),
+        "command_path": String("/bin/ls"),
+        "password": String("vagrant"),
+        "command_args": String("-alh"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-12 21:14:30] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-alh"),
+        "vm_name": String("Test"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:14:30] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "vm_name": String("Test"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-alh"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-12 21:14:30] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("Test"),
+        "command_args": String("-alh"),
+        "command_path": String("/bin/ls"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:14:30] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("Test"),
+        "password": String("vagrant"),
+        "command_args": String("-alh"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+    },
+}
+[2025-03-12 21:14:45] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-alh"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:15:29] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/help"),
+    },
+}
+[2025-03-12 21:16:26] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("ls /bin/"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:16:39] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:21:49] Logging system initialized
+[2025-03-12 21:21:49] Server running at http://0.0.0.0:8081
+[2025-03-12 21:21:50] Loaded CPI providers: ["azure_cpi", "qemu_cpi_linux", "virtualbox_cpi_windows", "aws_cpi", "detee_cpi", "gcp_cpi", "kvm_cpi", "virtualbox_cpi_linux"]
+[2025-03-12 21:21:51] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:23:27] Logging system initialized
+[2025-03-12 21:23:28] Server running at http://0.0.0.0:8081
+[2025-03-12 21:23:28] Loaded CPI providers: ["qemu_cpi_linux", "azure_cpi", "gcp_cpi", "virtualbox_cpi_linux", "virtualbox_cpi_windows", "kvm_cpi", "detee_cpi", "aws_cpi"]
+[2025-03-12 21:23:46] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+    },
+}
+[2025-03-12 21:26:56] Logging system initialized
+[2025-03-12 21:26:57] Server running at http://0.0.0.0:8081
+[2025-03-12 21:26:57] Loaded CPI providers: ["aws_cpi", "detee_cpi", "qemu_cpi_linux", "virtualbox_cpi_windows", "virtualbox_cpi_linux", "gcp_cpi", "azure_cpi", "kvm_cpi"]
+[2025-03-12 21:26:59] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+        "command_path": String("/bin/ls /bin/"),
+    },
+}
+[2025-03-12 21:27:00] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "command_path": String("/bin/ls /bin/"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:27:01] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:27:17] Logging system initialized
+[2025-03-12 21:27:17] Server running at http://0.0.0.0:8081
+[2025-03-12 21:27:18] Loaded CPI providers: ["azure_cpi", "aws_cpi", "detee_cpi", "gcp_cpi", "kvm_cpi", "virtualbox_cpi_linux", "qemu_cpi_linux"]
+[2025-03-12 21:27:19] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-12 21:27:20] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+    },
+}
+[2025-03-12 21:27:21] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+    },
+}
+[2025-03-12 21:28:07] Logging system initialized
+[2025-03-12 21:28:07] Server running at http://0.0.0.0:8081
+[2025-03-12 21:28:07] Loaded CPI providers: ["detee_cpi", "aws_cpi", "gcp_cpi", "kvm_cpi", "qemu_cpi_linux", "virtualbox_cpi_linux", "azure_cpi"]
+[2025-03-12 21:28:09] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "command_path": String("/bin/ls /bin/"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:28:10] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-12 21:28:10] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+    },
+}
+[2025-03-12 21:28:47] Logging system initialized
+[2025-03-12 21:28:47] Server running at http://0.0.0.0:8081
+[2025-03-12 21:28:48] Loaded CPI providers: ["virtualbox_cpi_linux", "detee_cpi", "qemu_cpi_linux", "aws_cpi", "azure_cpi", "gcp_cpi", "kvm_cpi"]
+[2025-03-12 21:28:51] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:28:52] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:28:52] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+    },
+}
+[2025-03-12 21:28:53] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+    },
+}
+[2025-03-12 21:30:03] Logging system initialized
+[2025-03-12 21:30:03] Server running at http://0.0.0.0:8081
+[2025-03-12 21:30:03] Loaded CPI providers: ["qemu_cpi_linux", "kvm_cpi", "virtualbox_cpi_linux", "azure_cpi", "gcp_cpi", "aws_cpi", "detee_cpi"]
+[2025-03-12 21:30:20] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:30:20] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+    },
+}
+[2025-03-12 21:30:20] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:30:21] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:30:21] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+    },
+}
+[2025-03-12 21:30:21] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:30:21] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-12 21:30:22] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+    },
+}
+[2025-03-12 21:30:22] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+    },
+}
+[2025-03-12 21:30:22] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:35:48] Logging system initialized
+[2025-03-12 21:35:48] Server running at http://0.0.0.0:8081
+[2025-03-12 21:35:48] Loaded CPI providers: ["aws_cpi", "virtualbox_cpi_linux", "detee_cpi", "azure_cpi", "qemu_cpi_linux", "kvm_cpi", "gcp_cpi"]
+[2025-03-12 21:35:50] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-12 21:35:50] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+    },
+}
+[2025-03-12 21:35:50] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 10:52:18] Logging system initialized
+[2025-03-13 10:52:18] Server running at http://0.0.0.0:8081
+[2025-03-13 10:52:18] Loaded CPI providers: ["virtualbox_cpi_linux", "kvm_cpi", "aws_cpi", "azure_cpi", "gcp_cpi", "qemu_cpi_linux", "detee_cpi"]
+[2025-03-13 10:52:19] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 10:55:50] Logging system initialized
+[2025-03-13 10:55:50] Server running at http://0.0.0.0:8081
+[2025-03-13 10:55:51] Loaded CPI providers: ["qemu_cpi_linux", "kvm_cpi", "virtualbox_cpi_linux", "aws_cpi", "gcp_cpi", "detee_cpi", "azure_cpi"]
+[2025-03-13 10:55:53] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 10:56:59] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 10:58:12] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 10:58:13] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 10:58:13] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 10:59:22] Logging system initialized
+[2025-03-13 10:59:23] Server running at http://0.0.0.0:8081
+[2025-03-13 10:59:23] Loaded CPI providers: ["virtualbox_cpi_linux", "aws_cpi", "detee_cpi", "gcp_cpi", "kvm_cpi", "qemu_cpi_linux", "azure_cpi"]
+[2025-03-13 10:59:31] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+    },
+}
+[2025-03-13 11:04:24] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:05:39] Logging system initialized
+[2025-03-13 11:05:39] Server running at http://0.0.0.0:8081
+[2025-03-13 11:05:40] Loaded CPI providers: ["virtualbox_cpi_linux", "azure_cpi", "detee_cpi", "gcp_cpi", "qemu_cpi_linux", "aws_cpi", "kvm_cpi"]
+[2025-03-13 11:15:43] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:18:54] Logging system initialized
+[2025-03-13 11:18:54] Server running at http://0.0.0.0:8081
+[2025-03-13 11:18:54] Loaded CPI providers: ["qemu_cpi_linux", "virtualbox_cpi_linux", "kvm_cpi", "aws_cpi", "detee_cpi", "gcp_cpi", "azure_cpi"]
+[2025-03-13 11:18:56] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:19:08] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "command_args": String("-lah"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:21:01] Logging system initialized
+[2025-03-13 11:21:02] Server running at http://0.0.0.0:8081
+[2025-03-13 11:21:02] Loaded CPI providers: ["kvm_cpi", "detee_cpi", "virtualbox_cpi_linux", "qemu_cpi_linux", "azure_cpi", "gcp_cpi", "aws_cpi"]
+[2025-03-13 11:21:05] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String("-lah"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:21:35] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String("-lah"),
+    },
+}
+[2025-03-13 11:21:39] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_args": String("-lah"),
+        "command_path": String("/bin/ls /bin/"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:21:41] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "vm_name": String("OmniVM"),
+        "command_args": String("-lah"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:21:42] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String("-lah"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+    },
+}
+[2025-03-13 11:23:10] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_args": String("-lah"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:23:11] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "command_args": String("-lah"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:24:50] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("curl -fsSL https://get.docker.com -o get-docker.sh"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:24:52] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("curl -fsSL https://get.docker.com -o get-docker.sh"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:24:52] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("curl -fsSL https://get.docker.com -o get-docker.sh"),
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:25:11] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/curl -fsSL https://get.docker.com -o get-docker.sh"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:25:21] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String("-lah"),
+    },
+}
+[2025-03-13 11:25:29] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:25:31] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "command_args": String(""),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:34:17] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:38:43] Logging system initialized
+[2025-03-13 11:38:43] Server running at http://0.0.0.0:8081
+[2025-03-13 11:38:44] Loaded CPI providers: ["virtualbox_cpi_linux", "aws_cpi", "detee_cpi", "gcp_cpi", "azure_cpi", "kvm_cpi", "qemu_cpi_linux"]
+[2025-03-13 11:40:28] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:40:44] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:40:57] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:40:58] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:41:01] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+    },
+}
+[2025-03-13 11:41:40] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:42:16] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:42:23] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("/bin"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:42:29] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_args": String("~"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:42:34] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String("~/"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:42:37] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("/"),
+    },
+}
+[2025-03-13 11:42:41] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String("/ -lah"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:42:47] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:42:59] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "command_path": String("/bin/sl"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:43:04] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/sudo"),
+        "command_args": String("apt install sl"),
+    },
+}
+[2025-03-13 11:43:26] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/sl"),
+    },
+}
+[2025-03-13 11:43:40] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:43:45] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/pwd"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:43:52] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "password": String("vagrant"),
+        "command_args": String("/"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:43:55] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String("/bin"),
+        "command_path": String("/bin/cd"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:43:59] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:45:23] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+    },
+}
+[2025-03-13 11:46:02] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:46:09] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "command_args": String("/"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:46:12] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "username": String("vagrant"),
+        "command_args": String("-lah ."),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:46:21] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_args": String("-lah ."),
+        "command_path": String("/bin/ls"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:46:21] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String("-lah ."),
+        "command_path": String("/bin/ls"),
+    },
+}
+[2025-03-13 11:46:23] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah ."),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:46:25] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah ."),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:46:29] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:46:32] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_args": String("."),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:46:36] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah ."),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:46:45] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /etc"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:46:52] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls /bin/"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_args": String(""),
+    },
+}
+[2025-03-13 11:46:55] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /etc"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:47:01] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /etc"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:47:17] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /etc/x11"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:47:26] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /etc/x11/"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:47:29] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /etc/"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:47:43] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String("-lah /etc/"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:47:48] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("/"),
+    },
+}
+[2025-03-13 11:47:58] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "vm_name": String("OmniVM"),
+        "command_args": String("-lah /etc/x11/"),
+    },
+}
+[2025-03-13 11:48:02] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin/ls"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String("-lah /etc/"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 11:48:08] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /var"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:48:12] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_args": String("-lah /var/log"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:48:28] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "command_args": String("auth.log"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/cat"),
+    },
+}
+[2025-03-13 11:48:40] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_path": String("/bin/more"),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_args": String("/var/log/auth.log"),
+    },
+}
+[2025-03-13 11:49:47] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("more /var/log/auth.log"),
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:49:59] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/more /var/log/auth.log"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:50:22] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_path": String("/bin//bin/more"),
+        "username": String("vagrant"),
+        "command_args": String("/var/log/auth.log"),
+        "vm_name": String("OmniVM"),
+    },
+}
+[2025-03-13 11:50:37] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin//bin/more"),
+        "command_args": String("/var/log/auth.log"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:51:24] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String("/var/log/auth.log"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+        "command_path": String("/bin//bin/more"),
+    },
+}
+[2025-03-13 11:51:25] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_args": String("/var/log/auth.log"),
+        "command_path": String("/bin//bin/more"),
+    },
+}
+[2025-03-13 11:51:25] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_path": String("/bin//bin/more"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_args": String("/var/log/auth.log"),
+    },
+}
+[2025-03-13 11:53:40] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls /bin/"),
+    },
+}
+[2025-03-13 11:56:26] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("/bin"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 11:57:28] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String("-lah /bin"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 12:02:06] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_path": String("/bin/uname"),
+        "command_args": String("-a"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 12:04:20] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/clear"),
+        "command_args": String(""),
+        "username": String("vagrant"),
+        "password": String("vagrant"),
+    },
+}
+[2025-03-13 12:04:22] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "command_path": String("/bin/clear"),
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 12:04:27] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "command_args": String(""),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/clear"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 12:05:40] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+    },
+}
+[2025-03-13 12:05:51] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_args": String("-lah /etc"),
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+    },
+}
+[2025-03-13 12:06:01] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "username": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /var"),
+    },
+}
+[2025-03-13 12:06:06] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "command_path": String("/bin/ls"),
+        "vm_name": String("OmniVM"),
+        "username": String("vagrant"),
+        "command_args": String("-lah /var/log"),
+    },
+}
+[2025-03-13 12:06:44] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "username": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "password": String("vagrant"),
+        "command_args": String("-lah /"),
+        "command_path": String("/bin/ls"),
+    },
+}
+[2025-03-13 12:06:50] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_linux",
+    action: "execute_command",
+    params: {
+        "password": String("vagrant"),
+        "vm_name": String("OmniVM"),
+        "command_path": String("/bin/ls"),
+        "command_args": String("-lah /"),
+        "username": String("vagrant"),
+    },
+}

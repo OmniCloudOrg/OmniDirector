@@ -8,14 +8,21 @@ use serde_json::{Value, Map, Number};
 pub fn parse_output(output: &str, parse_rules: &ParseRules, params: &HashMap<String, Value>) -> Result<Value, CpiError> {
     match parse_rules {
         ParseRules::Object { patterns } => {
+            println!("🔍 Parsing object with {} patterns", patterns.len());
             let mut result = Map::new();
             
             for (key, pattern) in patterns {
-                if let Some(value) = apply_pattern(output, pattern, params)? {
-                    result.insert(key.clone(), value);
-                }
+            println!("  ⚙️ Applying pattern for key '{}' with regex: {}", key, pattern.regex);
+            println!("Applying pattern to output: {}", output);
+            if let Some(value) = apply_pattern(output, pattern, params)? {
+                println!("  ✅ Found value for '{}': {:?}", key, value);
+                result.insert(key.clone(), value);
+            } else {
+                println!("  ❌ No value found for '{}'", key);
+            }
             }
             
+            println!("🏁 Finished object parsing, found {} keys", result.len());
             Ok(Value::Object(result))
         },
         
@@ -93,7 +100,18 @@ fn apply_pattern(text: &str, pattern: &Pattern, params: &HashMap<String, Value>)
     let re = Regex::new(&regex_str)
         .map_err(|e| CpiError::ParseError(format!("Invalid regex '{}': {}", regex_str, e)))?;
     
-    // First try line by line
+    // First try the whole text as a single match
+    if let Some(captures) = re.captures(text) {
+        let group_idx = pattern.group.unwrap_or(0);
+        
+        if let Some(matched) = captures.get(group_idx) {
+            let value_str = matched.as_str().to_string();
+            let value = transform_value(&value_str, &pattern.transform)?;
+            return Ok(Some(value));
+        }
+    }
+    
+    // Then try line by line if whole text matching fails
     for line in text.lines() {
         if let Some(captures) = re.captures(line) {
             let group_idx = pattern.group.unwrap_or(0);
@@ -103,17 +121,6 @@ fn apply_pattern(text: &str, pattern: &Pattern, params: &HashMap<String, Value>)
                 let value = transform_value(&value_str, &pattern.transform)?;
                 return Ok(Some(value));
             }
-        }
-    }
-    
-    // Then try the whole text as a single match
-    if let Some(captures) = re.captures(text) {
-        let group_idx = pattern.group.unwrap_or(0);
-        
-        if let Some(matched) = captures.get(group_idx) {
-            let value_str = matched.as_str().to_string();
-            let value = transform_value(&value_str, &pattern.transform)?;
-            return Ok(Some(value));
         }
     }
     
