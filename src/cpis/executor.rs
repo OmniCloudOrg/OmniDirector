@@ -56,13 +56,9 @@ fn execute_sub_action(action_def: &ActionDef, params: &HashMap<String, Value>) -
     // Execute the main command
     let cmd = fill_template(&action_def.command, params)?;
     let output = execute_command(&cmd)?;
-
-    println!(">>> Output: {}", output); // Debugging output
     
     // Parse the output according to the parse rules
     let result = parser::parse_output(&output, &action_def.parse_rules, params)?;
-
-    println!(">>> Result: {:?}", result); // Debugging output
     
     // Execute post-exec actions if any
     if let Some(post_actions) = &action_def.post_exec {
