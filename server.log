@@ -6179,3 +6179,123 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
         "username": String("vagrant"),
     },
 }
+[2025-03-17 17:18:45] Logging system initialized
+[2025-03-17 17:18:45] Server running at http://0.0.0.0:8081
+[2025-03-17 17:18:46] Loaded CPI providers: ["azure_cpi", "gcp_cpi", "aws_cpi", "qemu_cpi_linux", "detee_cpi", "kvm_cpi", "virtualbox_cpi_linux"]
+[2025-03-17 17:19:05] Logging system initialized
+[2025-03-17 17:19:05] Server running at http://0.0.0.0:8081
+[2025-03-17 17:19:05] Loaded CPI providers: ["aws_cpi", "azure_cpi", "detee_cpi", "qemu_cpi_linux", "gcp_cpi", "kvm_cpi", "virtualbox_cpi_linux"]
+[2025-03-17 17:35:40] Logging system initialized
+[2025-03-17 17:39:09] Logging system initialized
+[2025-03-17 17:39:20] Logging system initialized
+[2025-03-17 17:53:10] Logging system initialized
+[2025-03-17 17:54:05] Logging system initialized
+[2025-03-17 17:54:05] Server running at http://0.0.0.0:8081
+[2025-03-17 17:54:05] Loaded CPI providers: ["network"]
+[2025-03-17 17:55:31] Logging system initialized
+[2025-03-17 17:55:31] Server running at http://0.0.0.0:8081
+[2025-03-17 17:55:32] Loaded CPI providers: ["network"]
+[2025-03-17 17:55:39] Logging system initialized
+[2025-03-17 17:56:04] Logging system initialized
+[2025-03-17 17:56:18] Logging system initialized
+[2025-03-17 17:56:18] Server running at http://0.0.0.0:8081
+[2025-03-17 17:56:18] Loaded CPI providers: ["test"]
+[2025-03-17 17:57:34] Logging system initialized
+[2025-03-17 17:57:51] Logging system initialized
+[2025-03-17 17:57:51] Server running at http://0.0.0.0:8081
+[2025-03-17 17:57:51] Loaded CPI providers: ["virtualbox_cpi_windows"]
+[2025-03-17 17:58:46] Logging system initialized
+[2025-03-17 17:58:46] Server running at http://0.0.0.0:8081
+[2025-03-17 17:58:46] Loaded CPI providers: ["virtualbox_cpi_windows"]
+[2025-03-17 17:59:09] Logging system initialized
+[2025-03-17 17:59:09] Server running at http://0.0.0.0:8081
+[2025-03-17 17:59:09] Loaded CPI providers: ["virtualbox_cpi_windows"]
+[2025-03-17 17:59:38] Logging system initialized
+[2025-03-17 17:59:38] Server running at http://0.0.0.0:8081
+[2025-03-17 17:59:38] Loaded CPI providers: ["virtualbox_cpi_windows"]
+[2025-03-17 18:00:26] Logging system initialized
+[2025-03-17 18:01:03] Logging system initialized
+[2025-03-17 18:01:03] Server running at http://0.0.0.0:8081
+[2025-03-17 18:01:03] Loaded CPI providers: ["virtualbox_cpi_windows"]
+[2025-03-17 18:02:07] Logging system initialized
+[2025-03-17 18:02:36] Logging system initialized
+[2025-03-17 18:02:36] Server running at http://0.0.0.0:8081
+[2025-03-17 18:02:36] Loaded CPI providers: ["test"]
+[2025-03-17 18:02:58] Logging system initialized
+[2025-03-17 18:02:58] Server running at http://0.0.0.0:8081
+[2025-03-17 18:02:58] Loaded CPI providers: ["virtualbox"]
+[2025-03-17 18:03:08] Logging system initialized
+[2025-03-17 18:03:41] Logging system initialized
+[2025-03-17 18:04:03] Logging system initialized
+[2025-03-17 18:04:11] Logging system initialized
+[2025-03-17 18:04:28] Logging system initialized
+[2025-03-17 18:04:49] Logging system initialized
+[2025-03-17 18:05:08] Logging system initialized
+[2025-03-17 18:09:18] Logging system initialized
+[2025-03-17 18:12:25] Logging system initialized
+[2025-03-17 18:14:03] Logging system initialized
+[2025-03-17 18:14:03] Server running at http://0.0.0.0:8081
+[2025-03-17 18:14:03] Loaded CPI providers: ["virtualbox_windows"]
+[2025-03-17 18:14:30] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 18:14:32] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 18:14:32] Received action request: CpiActionRequest {
+    provider: "virtualbox_cpi_windows",
+    action: "create_vm",
+    params: {
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 18:14:45] Received action request: CpiActionRequest {
+    provider: "virtualbox_windows",
+    action: "create_vm",
+    params: {
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 18:31:21] Logging system initialized
+[2025-03-17 18:31:22] Server running at http://0.0.0.0:8081
+[2025-03-17 18:31:22] Loaded CPI providers: ["std_kvm", "azure", "gcp", "aws", "virtualbox_windows", "qemu"]
+[2025-03-17 18:31:56] Logging system initialized
+[2025-03-17 18:31:56] Server running at http://0.0.0.0:8081
+[2025-03-17 18:31:57] Loaded CPI providers: ["aws", "virtualbox_windows", "proxmox", "qemu", "azure", "gcp", "std_kvm"]
+[2025-03-17 18:35:19] Logging system initialized
+[2025-03-17 18:35:20] Server running at http://0.0.0.0:8081
+[2025-03-17 18:35:21] Loaded CPI providers: ["proxmox", "linode", "gcp", "aws", "digital_ocean", "vmware_esxi", "azure", "qemu", "virtualbox_windows", "std_kvm"]
+[2025-03-17 18:38:52] Logging system initialized
+[2025-03-17 18:38:54] Server running at http://0.0.0.0:8081
+[2025-03-17 18:38:55] Loaded CPI providers: ["virtualbox_windows", "azure", "detee_cpi", "vmware_esxi", "linode", "aws", "qemu", "digital_ocean", "gcp", "proxmox", "std_kvm"]
+[2025-03-17 18:40:27] Logging system initialized
+[2025-03-17 18:40:28] Server running at http://0.0.0.0:8081
+[2025-03-17 18:40:29] Loaded CPI providers: ["aws", "digital_ocean", "gcp", "std_kvm", "qemu", "proxmox", "detee_cpi", "azure", "virtualbox_windows", "vmware_esxi", "linode"]

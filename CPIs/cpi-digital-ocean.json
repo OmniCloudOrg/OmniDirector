@@ -1,0 +1,386 @@
+{
+  "name": "digital_ocean",
+  "type": "command",
+  "default_settings": {
+    "region": "nyc1",
+    "size": "s-1vcpu-1gb",
+    "image": "ubuntu-20-04-x64",
+    "ssh_keys": [],
+    "backups": "false",
+    "ipv6": "true",
+    "monitoring": "true",
+    "private_networking": "true"
+  },
+  "actions": {
+    "test_install": {
+      "command": "doctl version",
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "doctl version ([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_droplets": {
+      "command": "doctl compute droplet list --format ID,Name,PublicIPv4,Memory,VCPUs,Disk,Region,Status --no-header",
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "name": {
+            "regex": "^\\d+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "ip_address": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "memory": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "vcpus": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "region": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "status": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_droplet": {
+      "command": "doctl compute droplet create {droplet_name} --region {region} --size {size} --image {image} --ssh-keys {ssh_keys} --enable-backups {backups} --enable-ipv6 {ipv6} --enable-monitoring {monitoring} --enable-private-networking {private_networking} --format ID,Name,PublicIPv4 --no-header",
+      "params": [
+        "droplet_name",
+        "region",
+        "size",
+        "image",
+        "ssh_keys",
+        "backups",
+        "ipv6",
+        "monitoring",
+        "private_networking"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "id": {
+            "regex": "^(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "name": {
+            "regex": "^\\d+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "ip_address": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_droplet": {
+      "command": "doctl compute droplet delete {droplet_id} --force",
+      "params": [
+        "droplet_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "get_droplet": {
+      "command": "doctl compute droplet get {droplet_id} --format ID,Name,PublicIPv4,PrivateIPv4,Memory,VCPUs,Disk,Region,Status,Features --no-header",
+      "params": [
+        "droplet_id"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "^(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "name": {
+            "regex": "^\\d+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "public_ip": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "private_ip": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "memory": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "vcpus": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "region": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "status": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "features": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "power_on_droplet": {
+      "command": "doctl compute droplet-action power-on {droplet_id}",
+      "params": [
+        "droplet_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "power_off_droplet": {
+      "command": "doctl compute droplet-action power-off {droplet_id}",
+      "params": [
+        "droplet_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "shutdown_droplet": {
+      "command": "doctl compute droplet-action shutdown {droplet_id}",
+      "params": [
+        "droplet_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "reboot_droplet": {
+      "command": "doctl compute droplet-action reboot {droplet_id}",
+      "params": [
+        "droplet_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_snapshots": {
+      "command": "doctl compute snapshot list --format ID,Name,Created,Regions,ResourceID,ResourceType,MinDiskSize,Size --no-header",
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^([^\\s]+)",
+            "group": 1
+          },
+          "name": {
+            "regex": "^[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "created": {
+            "regex": "^[^\\s]+\\s+[^\\s]+\\s+([^\\s]+\\s+[^\\s]+\\s+[^\\s]+)",
+            "group": 1
+          },
+          "regions": {
+            "regex": "^[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "resource_id": {
+            "regex": "^[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "resource_type": {
+            "regex": "^[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_snapshot": {
+      "command": "doctl compute droplet-action snapshot {droplet_id} --snapshot-name {snapshot_name}",
+      "params": [
+        "droplet_id",
+        "snapshot_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "delete_snapshot": {
+      "command": "doctl compute snapshot delete {snapshot_id} --force",
+      "params": [
+        "snapshot_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_regions": {
+      "command": "doctl compute region list --format Slug,Name,Available --no-header",
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "slug": {
+            "regex": "^([^\\s]+)",
+            "group": 1
+          },
+          "name": {
+            "regex": "^[^\\s]+\\s+([^\\s]+(?:\\s+[^\\s]+)*?)\\s+(?:true|false)$",
+            "group": 1
+          },
+          "available": {
+            "regex": "\\s+(true|false)$",
+            "group": 1,
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_sizes": {
+      "command": "doctl compute size list --format Slug,Memory,VCPUs,Disk,PriceMonthly,PriceHourly --no-header",
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "slug": {
+            "regex": "^([^\\s]+)",
+            "group": 1
+          },
+          "memory": {
+            "regex": "^[^\\s]+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "vcpus": {
+            "regex": "^[^\\s]+\\s+\\d+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk": {
+            "regex": "^[^\\s]+\\s+\\d+\\s+\\d+\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "price_monthly": {
+            "regex": "^[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+([\\d\\.]+)",
+            "group": 1,
+            "transform": "number"
+          }
+        }
+      }
+    },
+    "list_images": {
+      "command": "doctl compute image list --public --format Slug,Name,Type,Distribution,MinDiskSize --no-header",
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "slug": {
+            "regex": "^([^\\s]+)",
+            "group": 1
+          },
+          "name": {
+            "regex": "^[^\\s]+\\s+([^\\s]+(?:\\s+[^\\s]+)*?)\\s+[^\\s]+\\s+",
+            "group": 1
+          },
+          "type": {
+            "regex": "^[^\\s]+\\s+(?:[^\\s]+(?:\\s+[^\\s]+)*?)\\s+([^\\s]+)\\s+",
+            "group": 1
+          },
+          "distribution": {
+            "regex": "^[^\\s]+\\s+(?:[^\\s]+(?:\\s+[^\\s]+)*?)\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          }
+        }
+      }
+    }
+  }
+}

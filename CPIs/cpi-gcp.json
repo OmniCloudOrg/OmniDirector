@@ -1,274 +1,332 @@
 {
-    "name": "gcp_cpi",
-    "type": "cloud",
-    "actions": {
-        "test_install": {
-            "command": "gcloud --version",
-            "params": [],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "version": {
-                        "regex": "Google Cloud SDK ([\\d\\.]+)",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "create_vm": {
-            "command": "gcloud compute instances create {vm_name} --machine-type {machine_type} --image {image} --zone {zone}",
-            "params": ["vm_name", "machine_type", "image", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "name": {
-                        "regex": "{vm_name}\\s+([0-9]+)",
-                        "group": 1
-                    },
-                    "ip": {
-                        "regex": "\\s+([0-9\\.]+)\\s+$",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "delete_vm": {
-            "command": "gcloud compute instances delete {vm_name} --zone {zone} --quiet",
-            "params": ["vm_name", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Deleted",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "has_vm": {
-            "command": "gcloud compute instances describe {vm_name} --zone {zone} --format json",
-            "params": ["vm_name", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "exists": {
-                        "regex": "\"name\":\\s*\"{vm_name}\"",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "configure_networks": {
-            "command": "gcloud compute instances network-interfaces update {vm_name} --zone {zone} --network-interface {interface_name}",
-            "params": ["vm_name", "zone", "interface_name"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Updated",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "create_disk": {
-            "command": "gcloud compute disks create {disk_name} --size {size_gb}GB --zone {zone} --type {disk_type}",
-            "params": ["disk_name", "size_gb", "zone", "disk_type"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "name": {
-                        "regex": "{disk_name}\\s+",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "delete_disk": {
-            "command": "gcloud compute disks delete {disk_name} --zone {zone} --quiet",
-            "params": ["disk_name", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Deleted",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "attach_disk": {
-            "command": "gcloud compute instances attach-disk {vm_name} --disk {disk_name} --zone {zone} --device-name {device_name}",
-            "params": ["vm_name", "disk_name", "zone", "device_name"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Updated",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "detach_disk": {
-            "command": "gcloud compute instances detach-disk {vm_name} --disk {disk_name} --zone {zone}",
-            "params": ["vm_name", "disk_name", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Updated",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "has_disk": {
-            "command": "gcloud compute disks describe {disk_name} --zone {zone} --format json",
-            "params": ["disk_name", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "exists": {
-                        "regex": "\"name\":\\s*\"{disk_name}\"",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "set_vm_metadata": {
-            "command": "gcloud compute instances add-metadata {vm_name} --zone {zone} --metadata {key}={value}",
-            "params": ["vm_name", "zone", "key", "value"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Updated",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "create_snapshot": {
-            "command": "gcloud compute disks snapshot {disk_name} --snapshot-names {snapshot_name} --zone {zone}",
-            "params": ["disk_name", "snapshot_name", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Created",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "delete_snapshot": {
-            "command": "gcloud compute snapshots delete {snapshot_name} --quiet",
-            "params": ["snapshot_name"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Deleted",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "has_snapshot": {
-            "command": "gcloud compute snapshots describe {snapshot_name} --format json",
-            "params": ["snapshot_name"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "exists": {
-                        "regex": "\"name\":\\s*\"{snapshot_name}\"",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "get_disks": {
-            "command": "gcloud compute disks list --filter 'labels.owner:{owner}' --format json",
-            "params": ["owner"],
-            "parse_rules": {
-                "type": "properties",
-                "patterns": {
-                    "disks": {
-                        "regex": "(\\[.*\\])",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "get_vm": {
-            "command": "gcloud compute instances describe {vm_name} --zone {zone} --format json",
-            "params": ["vm_name", "zone"],
-            "parse_rules": {
-                "type": "properties",
-                "patterns": {
-                    "name": {
-                        "regex": "\"name\":\\s*\"([^\"]+)\"",
-                        "group": 1
-                    },
-                    "id": {
-                        "regex": "\"id\":\\s*\"([^\"]+)\"",
-                        "group": 1
-                    },
-                    "machineType": {
-                        "regex": "\"machineType\":\\s*\"([^\"]+)\"",
-                        "group": 1
-                    },
-                    "status": {
-                        "regex": "\"status\":\\s*\"([^\"]+)\"",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "reboot_vm": {
-            "command": "gcloud compute instances reset {vm_name} --zone {zone}",
-            "params": ["vm_name", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Reset",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "snapshot_disk": {
-            "command": "gcloud compute disks snapshot {disk_name} --snapshot-names {snapshot_name} --zone {zone}",
-            "params": ["disk_name", "snapshot_name", "zone"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*Created",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "get_snapshots": {
-            "command": "gcloud compute snapshots list --filter 'labels.owner:{owner}' --format json",
-            "params": ["owner"],
-            "parse_rules": {
-                "type": "properties",
-                "patterns": {
-                    "snapshots": {
-                        "regex": "(\\[.*\\])",
-                        "group": 1
-                    }
-                }
-            }
-        }
-    },
+    "name": "gcp",
+    "type": "command",
     "default_settings": {
-        "machine_type": "e2-standard-2",
-        "disk_type": "pd-standard",
-        "zone": "us-central1-a"
+      "project": "my-gcp-project",
+      "zone": "us-central1-a",
+      "machine_type": "e2-medium",
+      "image_family": "ubuntu-2004-lts",
+      "image_project": "ubuntu-os-cloud",
+      "disk_type": "pd-standard",
+      "network": "default"
+    },
+    "actions": {
+      "test_install": {
+        "command": "gcloud --version",
+        "params": [],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "version": {
+              "regex": "Google Cloud SDK ([\\d\\.]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_instances": {
+        "command": "gcloud compute instances list --project {project} --format=json",
+        "params": [
+          "project"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_instance": {
+        "command": "gcloud compute instances create {instance_name} --project {project} --zone {zone} --machine-type {machine_type} --image-family {image_family} --image-project {image_project} --format=json",
+        "params": [
+          "instance_name",
+          "project",
+          "zone",
+          "machine_type",
+          "image_family",
+          "image_project"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "ip": {
+              "regex": "\"natIP\":\\s*\"([^\"]+)\"",
+              "group": 1,
+              "optional": true
+            }
+          }
+        }
+      },
+      "delete_instance": {
+        "command": "gcloud compute instances delete {instance_name} --project {project} --zone {zone} --quiet",
+        "params": [
+          "instance_name",
+          "project",
+          "zone"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Deleted \\[[^\\]]+\\]",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "start_instance": {
+        "command": "gcloud compute instances start {instance_name} --project {project} --zone {zone}",
+        "params": [
+          "instance_name",
+          "project",
+          "zone"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Updated \\[[^\\]]+\\]",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "stop_instance": {
+        "command": "gcloud compute instances stop {instance_name} --project {project} --zone {zone}",
+        "params": [
+          "instance_name",
+          "project",
+          "zone"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Updated \\[[^\\]]+\\]",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "get_instance": {
+        "command": "gcloud compute instances describe {instance_name} --project {project} --zone {zone} --format=json",
+        "params": [
+          "instance_name",
+          "project",
+          "zone"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "machine_type": {
+              "regex": "\"machineType\":\\s*\"[^\"]*\\/([^\\/\"]+)\"",
+              "group": 1
+            },
+            "status": {
+              "regex": "\"status\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "zone": {
+              "regex": "\"zone\":\\s*\"[^\"]*\\/([^\\/\"]+)\"",
+              "group": 1
+            },
+            "network": {
+              "regex": "\"network\":\\s*\"[^\"]*\\/([^\\/\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_disk": {
+        "command": "gcloud compute disks create {disk_name} --project {project} --zone {zone} --size {size_gb} --type {disk_type} --format=json",
+        "params": [
+          "disk_name",
+          "project",
+          "zone",
+          "size_gb",
+          "disk_type"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "attach_disk": {
+        "command": "gcloud compute instances attach-disk {instance_name} --project {project} --zone {zone} --disk {disk_name}",
+        "params": [
+          "instance_name",
+          "project",
+          "zone",
+          "disk_name"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Updated \\[[^\\]]+\\]",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "detach_disk": {
+        "command": "gcloud compute instances detach-disk {instance_name} --project {project} --zone {zone} --disk {disk_name}",
+        "params": [
+          "instance_name",
+          "project",
+          "zone",
+          "disk_name"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Updated \\[[^\\]]+\\]",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_disks": {
+        "command": "gcloud compute disks list --project {project} --format=json",
+        "params": [
+          "project"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "zone": {
+              "regex": "\"zone\":\\s*\"[^\"]*\\/([^\\/\"]+)\"",
+              "group": 1
+            },
+            "size_gb": {
+              "regex": "\"sizeGb\":\\s*\"([^\"]+)\"",
+              "group": 1,
+              "transform": "number"
+            },
+            "type": {
+              "regex": "\"type\":\\s*\"[^\"]*\\/([^\\/\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "has_disk": {
+        "command": "gcloud compute disks describe {disk_name} --project {project} --zone {zone} --format=json",
+        "params": [
+          "disk_name",
+          "project",
+          "zone"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "exists": {
+              "regex": "\"name\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_snapshot": {
+        "command": "gcloud compute disks snapshot {disk_name} --project {project} --zone {zone} --snapshot-names {snapshot_name} --format=json",
+        "params": [
+          "disk_name",
+          "project",
+          "zone",
+          "snapshot_name"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_snapshot": {
+        "command": "gcloud compute snapshots delete {snapshot_name} --project {project} --quiet",
+        "params": [
+          "snapshot_name",
+          "project"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Deleted \\[[^\\]]+\\]",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_snapshots": {
+        "command": "gcloud compute snapshots list --project {project} --format=json",
+        "params": [
+          "project"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "status": {
+              "regex": "\"status\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "disk_size_gb": {
+              "regex": "\"diskSizeGb\":\\s*\"([^\"]+)\"",
+              "group": 1,
+              "transform": "number"
+            },
+            "source_disk": {
+              "regex": "\"sourceDisk\":\\s*\"[^\"]*\\/([^\\/\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      }
     }
-}
+  }

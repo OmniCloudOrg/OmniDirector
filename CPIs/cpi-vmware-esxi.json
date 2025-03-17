@@ -1,0 +1,451 @@
+{
+    "name": "vmware_esxi",
+    "type": "command",
+    "default_settings": {
+      "host": "esxi.local",
+      "username": "root",
+      "datastore": "datastore1",
+      "memory_mb": "2048",
+      "cpus": "2",
+      "disk_size_gb": "32",
+      "network": "VM Network",
+      "guest_os": "ubuntu-64",
+      "disk_format": "thin"
+    },
+    "actions": {
+      "test_install": {
+        "command": "vim-cmd about",
+        "params": [],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "version": {
+              "regex": "VMware ESXi ([\\d\\.]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_vms": {
+        "command": "vim-cmd vmsvc/getallvms",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\\n",
+          "patterns": {
+            "vmid": {
+              "regex": "^(\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "name": {
+              "regex": "^\\d+\\s+([^\\s]+)",
+              "group": 1
+            },
+            "datastore": {
+              "regex": "\\[(.*?)\\]",
+              "group": 1
+            },
+            "vmx_path": {
+              "regex": "\\[.*?\\]\\s+(.*\\.vmx)",
+              "group": 1
+            },
+            "guest_os": {
+              "regex": "\\[.*?\\]\\s+.*\\.vmx\\s+([^\\s]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "get_vm_info": {
+        "command": "vim-cmd vmsvc/get.summary {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "name": {
+              "regex": "name = \"([^\"]+)\"",
+              "group": 1
+            },
+            "power_state": {
+              "regex": "powerState = \"([^\"]+)\"",
+              "group": 1
+            },
+            "ip_address": {
+              "regex": "ipAddress = \"([^\"]+)\"",
+              "group": 1,
+              "optional": true
+            },
+            "guest_full_name": {
+              "regex": "guestFullName = \"([^\"]+)\"",
+              "group": 1
+            },
+            "memory_size_mb": {
+              "regex": "memorySizeMB = (\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "num_cpu": {
+              "regex": "numCpu = (\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "vm_path_name": {
+              "regex": "vmPathName = \"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "power_on_vm": {
+        "command": "vim-cmd vmsvc/power.on {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Powering on VM:",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "power_off_vm": {
+        "command": "vim-cmd vmsvc/power.off {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Powering off VM:",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "reset_vm": {
+        "command": "vim-cmd vmsvc/power.reset {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Reset VM:",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "suspend_vm": {
+        "command": "vim-cmd vmsvc/power.suspend {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Suspending VM:",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_vm": {
+        "command": "vim-cmd vmsvc/createdummyvm {vm_name} [{datastore}]",
+        "params": [
+          "vm_name",
+          "datastore"
+        ],
+        "post_exec": [
+          {
+            "command": "vim-cmd vmsvc/getallvms | grep {vm_name} | awk '{print $1}'",
+            "parse_rules": {
+              "type": "object",
+              "patterns": {
+                "vmid": {
+                  "regex": "(\\d+)",
+                  "group": 1,
+                  "transform": "number"
+                }
+              }
+            }
+          },
+          {
+            "command": "vim-cmd vmsvc/device.getdevices {vmid}",
+            "parse_rules": {
+              "type": "object",
+              "patterns": {
+                "success": {
+                  "regex": ".*",
+                  "transform": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "delete_vm": {
+        "command": "vim-cmd vmsvc/destroy {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "register_vm": {
+        "command": "vim-cmd solo/registervm [{datastore}] {vmx_path}",
+        "params": [
+          "datastore",
+          "vmx_path"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "vmid": {
+              "regex": "(\\d+)",
+              "group": 1,
+              "transform": "number"
+            }
+          }
+        }
+      },
+      "unregister_vm": {
+        "command": "vim-cmd vmsvc/unregister {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_snapshot": {
+        "command": "vim-cmd vmsvc/snapshot.create {vmid} {snapshot_name} {snapshot_description} 1 0",
+        "params": [
+          "vmid",
+          "snapshot_name",
+          "snapshot_description"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Create Snapshot:",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_snapshots": {
+        "command": "vim-cmd vmsvc/snapshot.get {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "snapshot_count": {
+              "regex": "Found (\\d+) snapshots",
+              "group": 1,
+              "transform": "number"
+            },
+            "snapshot_info": {
+              "regex": "(Snapshot Name.*)",
+              "group": 1,
+              "optional": true
+            }
+          }
+        }
+      },
+      "revert_to_snapshot": {
+        "command": "vim-cmd vmsvc/snapshot.revert {vmid} {snapshot_id} 0",
+        "params": [
+          "vmid",
+          "snapshot_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Revert To Snapshot:",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "remove_snapshot": {
+        "command": "vim-cmd vmsvc/snapshot.remove {vmid} {snapshot_id}",
+        "params": [
+          "vmid",
+          "snapshot_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Remove Snapshot:",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "remove_all_snapshots": {
+        "command": "vim-cmd vmsvc/snapshot.removeall {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Remove All Snapshots:",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_datastores": {
+        "command": "esxcli storage filesystem list | grep VMFS",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\\n",
+          "patterns": {
+            "volume_name": {
+              "regex": "^\\s*/vmfs/volumes/[^/]+/([^\\s]+)",
+              "group": 1
+            },
+            "uuid": {
+              "regex": "^\\s*/vmfs/volumes/([^/]+)",
+              "group": 1
+            },
+            "type": {
+              "regex": "\\s+(VMFS-[\\d\\.]+)\\s+",
+              "group": 1
+            },
+            "size": {
+              "regex": "\\s+([\\d\\.]+)\\s+[TGM]B",
+              "group": 1,
+              "transform": "number"
+            },
+            "free": {
+              "regex": "\\s+([\\d\\.]+)\\s+[TGM]B\\s+true",
+              "group": 1,
+              "transform": "number"
+            }
+          }
+        }
+      },
+      "list_networks": {
+        "command": "esxcli network vswitch standard list",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "vSwitch",
+          "patterns": {
+            "name": {
+              "regex": "Name:\\s+([^\\s]+)",
+              "group": 1
+            },
+            "ports": {
+              "regex": "Num Ports:\\s+(\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "mtu": {
+              "regex": "MTU:\\s+(\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "uplinks": {
+              "regex": "Uplinks:\\s+([^\\n]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "get_vm_guest_info": {
+        "command": "vim-cmd vmsvc/get.guest {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "hostname": {
+              "regex": "hostName = \"([^\"]+)\"",
+              "group": 1,
+              "optional": true
+            },
+            "ip_address": {
+              "regex": "ipAddress = \"([^\"]+)\"",
+              "group": 1,
+              "optional": true
+            },
+            "tools_running": {
+              "regex": "toolsRunningStatus = \"([^\"]+)\"",
+              "group": 1
+            },
+            "tools_version": {
+              "regex": "toolsVersion = \"([^\"]+)\"",
+              "group": 1
+            },
+            "guest_state": {
+              "regex": "guestState = \"([^\"]+)\"",
+              "group": 1
+            },
+            "guest_family": {
+              "regex": "guestFamily = \"([^\"]+)\"",
+              "group": 1,
+              "optional": true
+            }
+          }
+        }
+      },
+      "upgrade_vm_hardware": {
+        "command": "vim-cmd vmsvc/upgrade {vmid}",
+        "params": [
+          "vmid"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "task_id": {
+              "regex": "Upgrade VM:",
+              "transform": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }

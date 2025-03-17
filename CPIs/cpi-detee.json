@@ -1,6 +1,6 @@
 {
     "name": "detee_cpi",
-    "type": "cloud",
+    "type": "command",
     "actions": {
         "test_install": {
             "command": "docker exec -i detee-cli detee-cli --version",
@@ -126,42 +126,42 @@
             "params": [],
             "parse_rules": {
                 "type": "array",
-                "separator": "│",
+                "separator": "\\n",
                 "patterns": {
                     "city": {
-                        "regex": "│\\s+([^│]+)\\s+│\\s+[0-9a-f-]+",
+                        "regex": "\\|\\s+([^\\|]+)\\s+\\|\\s+[0-9a-f-]+",
                         "group": 1
                     },
                     "uuid": {
-                        "regex": "│\\s+[^│]+\\s+│\\s+([0-9a-f-]{8}-[0-9a-f-]{4}-[0-9a-f-]{4}-[0-9a-f-]{4}-[0-9a-f-]{12})",
+                        "regex": "\\|\\s+[^\\|]+\\s+\\|\\s+([0-9a-f-]{8}-[0-9a-f-]{4}-[0-9a-f-]{4}-[0-9a-f-]{4}-[0-9a-f-]{12})",
                         "group": 1
                     },
                     "hostname": {
-                        "regex": "│\\s+[0-9a-f-]+\\s+│\\s+([^│]+)",
+                        "regex": "\\|\\s+[0-9a-f-]+\\s+\\|\\s+([^\\|]+)",
                         "group": 1
                     },
                     "cores": {
-                        "regex": "│\\s+([0-9]+)\\s+│\\s+[0-9]+",
+                        "regex": "\\|\\s+([0-9]+)\\s+\\|\\s+[0-9]+",
                         "group": 1,
                         "transform": "number"
                     },
                     "memory_mb": {
-                        "regex": "│\\s+[0-9]+\\s+│\\s+([0-9]+)",
+                        "regex": "\\|\\s+[0-9]+\\s+\\|\\s+([0-9]+)",
                         "group": 1,
                         "transform": "number"
                     },
                     "disk_gb": {
-                        "regex": "│\\s+[0-9]+\\s+│\\s+([0-9]+)",
+                        "regex": "\\|\\s+[0-9]+\\s+\\|\\s+([0-9]+)",
                         "group": 1,
                         "transform": "number"
                     },
                     "lp_per_hour": {
-                        "regex": "│\\s+([0-9\\.]+)\\s+│",
+                        "regex": "\\|\\s+([0-9\\.]+)\\s+\\|",
                         "group": 1,
                         "transform": "number"
                     },
                     "time_left": {
-                        "regex": "│\\s+([0-9]+h [0-9]+m)\\s+│",
+                        "regex": "\\|\\s+([0-9]+h [0-9]+m)\\s+\\|",
                         "group": 1
                     }
                 }
@@ -174,35 +174,35 @@
                 "type": "properties",
                 "patterns": {
                     "city": {
-                        "regex": "│\\s+([^│]+)\\s+│\\s+{vm_id}",
+                        "regex": "\\|\\s+([^\\|]+)\\s+\\|",
                         "group": 1
                     },
                     "hostname": {
-                        "regex": "│\\s+{vm_id}\\s+│\\s+([^│]+)",
+                        "regex": "\\|\\s+[0-9a-f-]+\\s+\\|\\s+([^\\|]+)",
                         "group": 1
                     },
                     "cores": {
-                        "regex": "│\\s+([0-9]+)\\s+│\\s+[0-9]+",
+                        "regex": "\\|\\s+([0-9]+)\\s+\\|\\s+[0-9]+",
                         "group": 1,
                         "transform": "number"
                     },
                     "memory_mb": {
-                        "regex": "│\\s+[0-9]+\\s+│\\s+([0-9]+)",
+                        "regex": "\\|\\s+[0-9]+\\s+\\|\\s+([0-9]+)",
                         "group": 1,
                         "transform": "number"
                     },
                     "disk_gb": {
-                        "regex": "│\\s+[0-9]+\\s+│\\s+([0-9]+)",
+                        "regex": "\\|\\s+[0-9]+\\s+\\|\\s+([0-9]+)",
                         "group": 1,
                         "transform": "number"
                     },
                     "lp_per_hour": {
-                        "regex": "│\\s+([0-9\\.]+)\\s+│",
+                        "regex": "\\|\\s+([0-9\\.]+)\\s+\\|",
                         "group": 1,
                         "transform": "number"
                     },
                     "time_left": {
-                        "regex": "│\\s+([0-9]+h [0-9]+m)\\s+│",
+                        "regex": "\\|\\s+([0-9]+h [0-9]+m)\\s+\\|",
                         "group": 1
                     }
                 }
@@ -215,7 +215,7 @@
                 "type": "object",
                 "patterns": {
                     "exists": {
-                        "regex": "{vm_id}",
+                        "regex": ".*",
                         "transform": "boolean"
                     }
                 }
@@ -223,7 +223,7 @@
         },
         "update_vm": {
             "command": "docker exec -i detee-cli detee-cli vm update {vcpus_param} {memory_param} {hours_param} {vm_id}",
-            "params": ["vm_id"],
+            "params": ["vm_id", "vcpus_param", "memory_param", "hours_param"],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -265,10 +265,5 @@
         "memory_mb": 2048,
         "disk_gb": 20,
         "hours": 4
-    },
-    "authentication": {
-        "env_vars": [
-            "DETEE_BRAIN_URL"
-        ]
     }
 }

@@ -1,283 +1,318 @@
 {
-    "name": "aws_cpi",
-    "type": "cloud",
-    "actions": {
-        "test_install": {
-            "command": "aws --version",
-            "params": [],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "version": {
-                        "regex": "aws-cli/([\\d\\.]+)",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "create_vm": {
-            "command": "aws ec2 run-instances --image-id {ami_id} --instance-type {instance_type} --subnet-id {subnet_id}",
-            "params": ["ami_id", "instance_type", "subnet_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "instance_id": {
-                        "regex": "\"InstanceId\":\\s*\"(i-[a-z0-9]+)\"",
-                        "group": 1
-                    }
-                }
-            },
-            "post_exec": [
-                {
-                    "command": "aws ec2 create-tags --resources {instance_id} --tags Key=Name,Value={vm_name}",
-                    "params": ["instance_id", "vm_name"],
-                    "parse_rules": {
-                        "type": "object",
-                        "patterns": {
-                            "success": {
-                                "regex": ".*",
-                                "transform": "boolean"
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        "delete_vm": {
-            "command": "aws ec2 terminate-instances --instance-ids {instance_id}",
-            "params": ["instance_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "terminating": {
-                        "regex": "\"CurrentState\":\\s*\\{[^\\}]*\"Name\":\\s*\"(terminating|shutting-down)\"",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "has_vm": {
-            "command": "aws ec2 describe-instances --instance-ids {instance_id}",
-            "params": ["instance_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "exists": {
-                        "regex": "\"InstanceId\":\\s*\"{instance_id}\"",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "configure_networks": {
-            "command": "aws ec2 modify-instance-attribute --instance-id {instance_id} --groups {security_group_ids}",
-            "params": ["instance_id", "security_group_ids"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "create_disk": {
-            "command": "aws ec2 create-volume --size {size_gb} --availability-zone {availability_zone} --volume-type {volume_type}",
-            "params": ["size_gb", "availability_zone", "volume_type"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "volume_id": {
-                        "regex": "\"VolumeId\":\\s*\"(vol-[a-z0-9]+)\"",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "delete_disk": {
-            "command": "aws ec2 delete-volume --volume-id {volume_id}",
-            "params": ["volume_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "attach_disk": {
-            "command": "aws ec2 attach-volume --volume-id {volume_id} --instance-id {instance_id} --device {device_name}",
-            "params": ["volume_id", "instance_id", "device_name"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "state": {
-                        "regex": "\"State\":\\s*\"(attaching|attached)\"",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "detach_disk": {
-            "command": "aws ec2 detach-volume --volume-id {volume_id}",
-            "params": ["volume_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "state": {
-                        "regex": "\"State\":\\s*\"(detaching|detached)\"",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "has_disk": {
-            "command": "aws ec2 describe-volumes --volume-ids {volume_id}",
-            "params": ["volume_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "exists": {
-                        "regex": "\"VolumeId\":\\s*\"{volume_id}\"",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "set_vm_metadata": {
-            "command": "aws ec2 create-tags --resources {instance_id} --tags Key={key},Value={value}",
-            "params": ["instance_id", "key", "value"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "create_snapshot": {
-            "command": "aws ec2 create-snapshot --volume-id {volume_id} --description {description}",
-            "params": ["volume_id", "description"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "snapshot_id": {
-                        "regex": "\"SnapshotId\":\\s*\"(snap-[a-z0-9]+)\"",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "delete_snapshot": {
-            "command": "aws ec2 delete-snapshot --snapshot-id {snapshot_id}",
-            "params": ["snapshot_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "has_snapshot": {
-            "command": "aws ec2 describe-snapshots --snapshot-ids {snapshot_id}",
-            "params": ["snapshot_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "exists": {
-                        "regex": "\"SnapshotId\":\\s*\"{snapshot_id}\"",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "get_disks": {
-            "command": "aws ec2 describe-volumes --filters Name=tag:Owner,Values={owner}",
-            "params": ["owner"],
-            "parse_rules": {
-                "type": "properties",
-                "array_key": "volumes",
-                "patterns": {
-                    "volumes": {
-                        "regex": "\"Volumes\":\\s*(\\[.*\\])",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "get_vm": {
-            "command": "aws ec2 describe-instances --instance-ids {instance_id}",
-            "params": ["instance_id"],
-            "parse_rules": {
-                "type": "properties",
-                "patterns": {
-                    "instance": {
-                        "regex": "\"Instances\":\\s*(\\[.*\\])",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "reboot_vm": {
-            "command": "aws ec2 reboot-instances --instance-ids {instance_id}",
-            "params": ["instance_id"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "success": {
-                        "regex": ".*",
-                        "transform": "boolean"
-                    }
-                }
-            }
-        },
-        "snapshot_disk": {
-            "command": "aws ec2 create-snapshot --volume-id {volume_id} --description {description}",
-            "params": ["volume_id", "description"],
-            "parse_rules": {
-                "type": "object",
-                "patterns": {
-                    "snapshot_id": {
-                        "regex": "\"SnapshotId\":\\s*\"(snap-[a-z0-9]+)\"",
-                        "group": 1
-                    }
-                }
-            }
-        },
-        "get_snapshots": {
-            "command": "aws ec2 describe-snapshots --owner-ids {owner_id}",
-            "params": ["owner_id"],
-            "parse_rules": {
-                "type": "properties",
-                "array_key": "snapshots",
-                "patterns": {
-                    "snapshots": {
-                        "regex": "\"Snapshots\":\\s*(\\[.*\\])",
-                        "group": 1
-                    }
-                }
-            }
-        }
-    },
+    "name": "aws",
+    "type": "command",
     "default_settings": {
-        "instance_type": "t3.micro",
-        "volume_type": "gp3",
-        "region": "us-east-1"
+      "region": "us-east-1",
+      "instance_type": "t2.micro",
+      "image_id": "ami-0c55b159cbfafe1f0",
+      "ssh_key_name": "default-key",
+      "security_group": "default",
+      "volume_type": "gp2"
     },
-    "authentication": {
-        "env_vars": [
-            "AWS_ACCESS_KEY_ID",
-            "AWS_SECRET_ACCESS_KEY",
-            "AWS_DEFAULT_REGION"
+    "actions": {
+      "test_install": {
+        "command": "aws --version",
+        "params": [],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "version": {
+              "regex": "aws-cli\\/([\\d\\.]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_instances": {
+        "command": "aws ec2 describe-instances --region {region} --output json",
+        "params": [
+          "region"
         ],
-        "profile_support": true
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_instance": {
+        "command": "aws ec2 run-instances --region {region} --image-id {image_id} --instance-type {instance_type} --key-name {ssh_key_name} --security-group-ids {security_group} --output json",
+        "params": [
+          "region",
+          "image_id",
+          "instance_type",
+          "ssh_key_name",
+          "security_group"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "instance_id": {
+              "regex": "\"InstanceId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "terminate_instance": {
+        "command": "aws ec2 terminate-instances --region {region} --instance-ids {instance_id} --output json",
+        "params": [
+          "region",
+          "instance_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "start_instance": {
+        "command": "aws ec2 start-instances --region {region} --instance-ids {instance_id} --output json",
+        "params": [
+          "region",
+          "instance_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "stop_instance": {
+        "command": "aws ec2 stop-instances --region {region} --instance-ids {instance_id} --output json",
+        "params": [
+          "region",
+          "instance_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "get_instance": {
+        "command": "aws ec2 describe-instances --region {region} --instance-ids {instance_id} --output json",
+        "params": [
+          "region",
+          "instance_id"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "state": {
+              "regex": "\"State\":\\s*\\{[^\\}]*\"Name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "public_ip": {
+              "regex": "\"PublicIpAddress\":\\s*\"([^\"]+)\"",
+              "group": 1,
+              "optional": true
+            },
+            "private_ip": {
+              "regex": "\"PrivateIpAddress\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "instance_type": {
+              "regex": "\"InstanceType\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "image_id": {
+              "regex": "\"ImageId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_volume": {
+        "command": "aws ec2 create-volume --region {region} --availability-zone {availability_zone} --size {size_gb} --volume-type {volume_type} --output json",
+        "params": [
+          "region",
+          "availability_zone",
+          "size_gb",
+          "volume_type"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "volume_id": {
+              "regex": "\"VolumeId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "attach_volume": {
+        "command": "aws ec2 attach-volume --region {region} --volume-id {volume_id} --instance-id {instance_id} --device {device} --output json",
+        "params": [
+          "region",
+          "volume_id",
+          "instance_id",
+          "device"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "detach_volume": {
+        "command": "aws ec2 detach-volume --region {region} --volume-id {volume_id} --output json",
+        "params": [
+          "region",
+          "volume_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_volumes": {
+        "command": "aws ec2 describe-volumes --region {region} --output json",
+        "params": [
+          "region"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"VolumeId\"",
+          "patterns": {
+            "volume_id": {
+              "regex": "\"VolumeId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "size": {
+              "regex": "\"Size\":\\s*(\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "state": {
+              "regex": "\"State\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "type": {
+              "regex": "\"VolumeType\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "has_volume": {
+        "command": "aws ec2 describe-volumes --region {region} --volume-ids {volume_id} --output json",
+        "params": [
+          "region",
+          "volume_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "exists": {
+              "regex": "\"Volumes\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_snapshot": {
+        "command": "aws ec2 create-snapshot --region {region} --volume-id {volume_id} --description {description} --output json",
+        "params": [
+          "region",
+          "volume_id",
+          "description"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "snapshot_id": {
+              "regex": "\"SnapshotId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_snapshot": {
+        "command": "aws ec2 delete-snapshot --region {region} --snapshot-id {snapshot_id} --output json",
+        "params": [
+          "region",
+          "snapshot_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_snapshots": {
+        "command": "aws ec2 describe-snapshots --region {region} --owner-ids self --output json",
+        "params": [
+          "region"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"SnapshotId\"",
+          "patterns": {
+            "snapshot_id": {
+              "regex": "\"SnapshotId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "volume_id": {
+              "regex": "\"VolumeId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "state": {
+              "regex": "\"State\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "progress": {
+              "regex": "\"Progress\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_regions": {
+        "command": "aws ec2 describe-regions --output json",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"RegionName\"",
+          "patterns": {
+            "name": {
+              "regex": "\"RegionName\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "endpoint": {
+              "regex": "\"Endpoint\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      }
     }
-}
+  }
