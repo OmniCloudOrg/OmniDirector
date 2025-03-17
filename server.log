@@ -6299,3 +6299,18 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-03-17 18:40:27] Logging system initialized
 [2025-03-17 18:40:28] Server running at http://0.0.0.0:8081
 [2025-03-17 18:40:29] Loaded CPI providers: ["aws", "digital_ocean", "gcp", "std_kvm", "qemu", "proxmox", "detee_cpi", "azure", "virtualbox_windows", "vmware_esxi", "linode"]
+[2025-03-17 18:48:05] Logging system initialized
+[2025-03-17 18:48:06] Server running at http://0.0.0.0:8081
+[2025-03-17 18:48:07] Loaded CPI providers: ["detee_cpi", "proxmox", "azure", "std_kvm", "qemu", "aws", "scaleway", "digital_ocean", "virtualbox_windows", "vmware_esxi", "oracle_cloud", "gcp", "hetzner_cloud", "linode"]
+[2025-03-17 18:49:10] Logging system initialized
+[2025-03-17 18:49:12] Server running at http://0.0.0.0:8081
+[2025-03-17 18:49:13] Loaded CPI providers: ["detee_cpi", "proxmox", "gcp", "std_kvm", "hetzner_cloud", "azure", "scaleway", "vmware_esxi", "linode", "ovh_cloud", "oracle_cloud", "virtualbox_windows", "aws", "qemu", "digital_ocean"]
+[2025-03-17 18:52:17] Logging system initialized
+[2025-03-17 18:52:19] Server running at http://0.0.0.0:8081
+[2025-03-17 18:52:20] Loaded CPI providers: ["aws", "hetzner_cloud", "upcloud", "virtualbox_windows", "oracle_cloud", "linode", "scaleway", "gcp", "proxmox", "azure", "ovh_cloud", "std_kvm", "digital_ocean", "detee_cpi", "qemu", "vmware_esxi"]
+[2025-03-17 18:52:32] Logging system initialized
+[2025-03-17 18:52:33] Server running at http://0.0.0.0:8081
+[2025-03-17 18:52:35] Loaded CPI providers: ["aws", "virtualbox_windows", "std_kvm", "oracle_cloud", "ovh_cloud", "upcloud", "vmware_esxi", "qemu", "detee_cpi", "gcp", "digital_ocean", "hetzner_cloud", "scaleway", "proxmox", "linode", "vultr", "azure"]
+[2025-03-17 18:58:19] Logging system initialized
+[2025-03-17 18:58:21] Server running at http://0.0.0.0:8081
+[2025-03-17 18:58:22] Loaded CPI providers: ["azure", "aws", "oracle_cloud", "hetzner_cloud", "qemu", "vmware_esxi", "gcp", "virtualbox_windows", "upcloud", "vultr", "std_kvm", "proxmox", "detee_cpi", "digital_ocean", "ovh_cloud", "linode", "scaleway"]

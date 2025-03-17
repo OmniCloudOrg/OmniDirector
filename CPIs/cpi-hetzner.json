@@ -1,0 +1,422 @@
+{
+    "name": "hetzner_cloud",
+    "type": "command",
+    "default_settings": {
+      "server_type": "cx11",
+      "image": "ubuntu-22.04",
+      "datacenter": "nbg1-dc3",
+      "location": "nbg1",
+      "ssh_key": "",
+      "user_data": "",
+      "volumes": "",
+      "networks": "",
+      "firewalls": ""
+    },
+    "actions": {
+      "test_install": {
+        "command": "hcloud version",
+        "params": [],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "version": {
+              "regex": "v([\\d\\.]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_servers": {
+        "command": "hcloud server list -o noheader -o columns=id,name,status,ipv4,datacenter,type",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\\n",
+          "patterns": {
+            "id": {
+              "regex": "^(\\d+)\\s+",
+              "group": 1,
+              "transform": "number"
+            },
+            "name": {
+              "regex": "^\\d+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "status": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "ipv4": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "datacenter": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "server_type": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_server": {
+        "command": "hcloud server create --name {name} --type {server_type} --image {image} --datacenter {datacenter} {ssh_key_param} {user_data_param} {volume_param} {network_param} {firewall_param}",
+        "params": [
+          "name",
+          "server_type",
+          "image",
+          "datacenter",
+          "ssh_key_param",
+          "user_data_param",
+          "volume_param",
+          "network_param",
+          "firewall_param"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "Server ([0-9]+) created",
+              "group": 1,
+              "transform": "number"
+            },
+            "ipv4": {
+              "regex": "IPv4:\\s+([0-9\\.]+)",
+              "group": 1
+            },
+            "ipv6": {
+              "regex": "IPv6:\\s+([0-9a-f:]+)",
+              "group": 1
+            },
+            "root_password": {
+              "regex": "Root password:\\s+(.+)$",
+              "group": 1,
+              "optional": true
+            }
+          }
+        }
+      },
+      "get_server": {
+        "command": "hcloud server describe {server_id}",
+        "params": [
+          "server_id"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "ID:\\s+(\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "name": {
+              "regex": "Name:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "status": {
+              "regex": "Status:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "created": {
+              "regex": "Created:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "server_type": {
+              "regex": "Server Type:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "datacenter": {
+              "regex": "Datacenter:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "location": {
+              "regex": "Location:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "ipv4": {
+              "regex": "Public IPv4:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "ipv6": {
+              "regex": "Public IPv6 Network:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "image": {
+              "regex": "Image:\\s+([^\\n]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_server": {
+        "command": "hcloud server delete {server_id}",
+        "params": [
+          "server_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Server [0-9]+ deleted",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "start_server": {
+        "command": "hcloud server poweron {server_id}",
+        "params": [
+          "server_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Server [0-9]+ started",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "stop_server": {
+        "command": "hcloud server poweroff {server_id}",
+        "params": [
+          "server_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Server [0-9]+ stopped",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "reboot_server": {
+        "command": "hcloud server reboot {server_id}",
+        "params": [
+          "server_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Server [0-9]+ rebooted",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_server_types": {
+        "command": "hcloud server-type list -o noheader",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\\n",
+          "patterns": {
+            "id": {
+              "regex": "^(\\d+)\\s+",
+              "group": 1,
+              "transform": "number"
+            },
+            "name": {
+              "regex": "^\\d+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "cores": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+(\\d+)\\s+",
+              "group": 1,
+              "transform": "number"
+            },
+            "memory": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+\\d+\\s+(\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "disk": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+(\\d+)",
+              "group": 1,
+              "transform": "number"
+            }
+          }
+        }
+      },
+      "list_images": {
+        "command": "hcloud image list -o noheader",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\\n",
+          "patterns": {
+            "id": {
+              "regex": "^(\\d+)\\s+",
+              "group": 1,
+              "transform": "number"
+            },
+            "type": {
+              "regex": "^\\d+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "name": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+\\S*)",
+              "group": 1
+            },
+            "description": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+(.+)",
+              "group": 1,
+              "optional": true
+            }
+          }
+        }
+      },
+      "create_snapshot": {
+        "command": "hcloud server create-image --type snapshot --description {description} {server_id}",
+        "params": [
+          "server_id",
+          "description"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "Image (\\d+) created",
+              "group": 1,
+              "transform": "number"
+            }
+          }
+        }
+      },
+      "list_snapshots": {
+        "command": "hcloud image list --type snapshot -o noheader",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\\n",
+          "patterns": {
+            "id": {
+              "regex": "^(\\d+)\\s+",
+              "group": 1,
+              "transform": "number"
+            },
+            "type": {
+              "regex": "^\\d+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "name": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)",
+              "group": 1,
+              "optional": true
+            },
+            "description": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+(?:[^\\s]+\\s+)?(.+)",
+              "group": 1
+            },
+            "size": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+(?:[^\\s]+\\s+)?(?:.+\\s+)?(\\d+\\.\\d+\\s*GB)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_snapshot": {
+        "command": "hcloud image delete {snapshot_id}",
+        "params": [
+          "snapshot_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "Image [0-9]+ deleted",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_datacenters": {
+        "command": "hcloud datacenter list -o noheader",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\\n",
+          "patterns": {
+            "id": {
+              "regex": "^(\\d+)\\s+",
+              "group": 1,
+              "transform": "number"
+            },
+            "name": {
+              "regex": "^\\d+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "description": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s].+?)\\s+[^\\s]+$",
+              "group": 1
+            },
+            "location": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s].+?\\s+([^\\s]+)$",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_locations": {
+        "command": "hcloud location list -o noheader",
+        "params": [],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\\n",
+          "patterns": {
+            "id": {
+              "regex": "^(\\d+)\\s+",
+              "group": 1,
+              "transform": "number"
+            },
+            "name": {
+              "regex": "^\\d+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "description": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)\\s+",
+              "group": 1
+            },
+            "country": {
+              "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_volume": {
+        "command": "hcloud volume create --name {name} --size {size_gb} --server {server_id} --format {format}",
+        "params": [
+          "name",
+          "size_gb",
+          "server_id",
+          "format"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "Volume (\\d+) created",
+              "group": 1,
+              "transform": "number"
+            },
+            "name": {
+              "regex": "Name:\\s+([^\\n]+)",
+              "group": 1
+            },
+            "size": {
+              "regex": "Size:\\s+(\\d+)",
+              "group": 1,
+              "transform": "number"
+            }
+          }
+        }
+      }
+    }
+  }

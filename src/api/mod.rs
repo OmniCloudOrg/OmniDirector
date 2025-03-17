@@ -104,6 +104,35 @@ async fn get_actions(provider: String, cpi_state: &rocket::State<CpiState>) -> A
     Ok(Json(actions))
 }
 
+// Get all unique actions across all providers
+#[get("/vms/actions")]
+async fn get_all_unique_actions(cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<String>> {
+    let providers = cpi_state.cpi_system.get_providers();
+    let mut all_actions = Vec::new();
+    
+    // Collect actions from all providers
+    for provider in providers {
+        match cpi_state.cpi_system.get_provider_actions(&provider) {
+            Ok(provider_actions) => {
+                all_actions.extend(provider_actions);
+            },
+            Err(err) => {
+                println!("Error getting actions for provider {}: {}", provider, err);
+                // Continue with other providers even if one fails
+            }
+        }
+    }
+    
+    // Remove duplicates by using a HashSet
+    let unique_actions: Vec<String> = all_actions
+        .into_iter()
+        .collect::<std::collections::HashSet<_>>()
+        .into_iter()
+        .collect();
+    
+    Ok(Json(unique_actions))
+}
+
 // Get required parameters for an action
 #[get("/vms/params/<provider>/<action>")]
 async fn get_action_params(
@@ -151,6 +180,7 @@ pub async fn rocket() -> rocket::Rocket<rocket::Build> {
                 get_providers,
                 get_actions,
                 get_action_params,
+                get_all_unique_actions,
             ],
         )
 }

@@ -1,0 +1,323 @@
+{
+    "name": "oracle_cloud",
+    "type": "command",
+    "default_settings": {
+      "compartment_id": "ocid1.compartment.oc1..example",
+      "availability_domain": "AD-1",
+      "shape": "VM.Standard.E2.1",
+      "image_id": "ocid1.image.oc1..example",
+      "subnet_id": "ocid1.subnet.oc1..example",
+      "boot_volume_size_gb": "50",
+      "ssh_authorized_keys": "~/.ssh/id_rsa.pub",
+      "region": "us-ashburn-1"
+    },
+    "actions": {
+      "test_install": {
+        "command": "oci --version",
+        "params": [],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "version": {
+              "regex": "([\\d\\.]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_instances": {
+        "command": "oci compute instance list --compartment-id {compartment_id} --region {region} --all",
+        "params": [
+          "compartment_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "data": {
+              "regex": "(\"data\".*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "get_instance": {
+        "command": "oci compute instance get --instance-id {instance_id} --region {region}",
+        "params": [
+          "instance_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "display_name": {
+              "regex": "\"display-name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "availability_domain": {
+              "regex": "\"availability-domain\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "lifecycle_state": {
+              "regex": "\"lifecycle-state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "shape": {
+              "regex": "\"shape\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "region": {
+              "regex": "\"region\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "time_created": {
+              "regex": "\"time-created\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_instance": {
+        "command": "oci compute instance launch --availability-domain {availability_domain} --compartment-id {compartment_id} --shape {shape} --image-id {image_id} --subnet-id {subnet_id} --boot-volume-size-in-gbs {boot_volume_size_gb} --ssh-authorized-keys-file {ssh_authorized_keys} --display-name {display_name} --region {region}",
+        "params": [
+          "availability_domain",
+          "compartment_id",
+          "shape",
+          "image_id",
+          "subnet_id",
+          "boot_volume_size_gb",
+          "ssh_authorized_keys",
+          "display_name",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "display_name": {
+              "regex": "\"display-name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "lifecycle_state": {
+              "regex": "\"lifecycle-state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "terminate_instance": {
+        "command": "oci compute instance terminate --instance-id {instance_id} --region {region} --force",
+        "params": [
+          "instance_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "start_instance": {
+        "command": "oci compute instance action --instance-id {instance_id} --action START --region {region}",
+        "params": [
+          "instance_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "lifecycle_state": {
+              "regex": "\"lifecycle-state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "stop_instance": {
+        "command": "oci compute instance action --instance-id {instance_id} --action STOP --region {region}",
+        "params": [
+          "instance_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "lifecycle_state": {
+              "regex": "\"lifecycle-state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "reboot_instance": {
+        "command": "oci compute instance action --instance-id {instance_id} --action RESET --region {region}",
+        "params": [
+          "instance_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "lifecycle_state": {
+              "regex": "\"lifecycle-state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_shapes": {
+        "command": "oci compute shape list --compartment-id {compartment_id} --region {region} --all",
+        "params": [
+          "compartment_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "data": {
+              "regex": "(\"data\".*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_images": {
+        "command": "oci compute image list --compartment-id {compartment_id} --region {region} --all",
+        "params": [
+          "compartment_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "data": {
+              "regex": "(\"data\".*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_boot_volumes": {
+        "command": "oci bv boot-volume list --availability-domain {availability_domain} --compartment-id {compartment_id} --region {region} --all",
+        "params": [
+          "availability_domain",
+          "compartment_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "data": {
+              "regex": "(\"data\".*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_boot_volume_backup": {
+        "command": "oci bv boot-volume-backup create --boot-volume-id {boot_volume_id} --display-name {backup_name} --region {region}",
+        "params": [
+          "boot_volume_id",
+          "backup_name",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "lifecycle_state": {
+              "regex": "\"lifecycle-state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "time_created": {
+              "regex": "\"time-created\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "display_name": {
+              "regex": "\"display-name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_boot_volume_backups": {
+        "command": "oci bv boot-volume-backup list --compartment-id {compartment_id} --region {region} --all",
+        "params": [
+          "compartment_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "data": {
+              "regex": "(\"data\".*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "get_instance_console_connection": {
+        "command": "oci compute instance-console-connection get-plink-connection-string --instance-console-connection-id {connection_id} --region {region}",
+        "params": [
+          "connection_id",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "connection_string": {
+              "regex": "(plink.exe.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_instance_console_connection": {
+        "command": "oci compute instance-console-connection create --instance-id {instance_id} --public-key-file {ssh_public_key_file} --region {region}",
+        "params": [
+          "instance_id",
+          "ssh_public_key_file",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "lifecycle_state": {
+              "regex": "\"lifecycle-state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      }
+    }
+  }
