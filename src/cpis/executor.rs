@@ -1,13 +1,12 @@
-// executor.rs - Optimized for performance and reliability
+// executor.rs - Using run_script crate for reliable shell execution
 use super::provider::{Provider, ActionDef};
 use super::error::CpiError;
 use super::parser;
 use log::{info, debug, trace, warn, error};
 use std::collections::HashMap;
-use std::process::{Command, Stdio};
 use std::time::Instant;
-use std::io::Read;
 use serde_json::Value;
+use run_script::ScriptOptions;
 
 // Main function to execute a CPI action
 pub fn execute_action(provider: &Provider, action_name: &str, params: HashMap<String, Value>) -> Result<Value, CpiError> {
@@ -150,72 +149,48 @@ fn fill_template(template: &str, params: &HashMap<String, Value>) -> Result<Stri
     Ok(result)
 }
 
-// Helper function to execute a command with better error handling
+// Helper function to execute a command using run_script
 fn execute_command(cmd: &str) -> Result<String, CpiError> {
-    debug!("Executing command: {}", cmd);
+    debug!("Executing shell command: {}", cmd);
     let start = Instant::now();
     
-    // Parse the command into executable and arguments
-    let parts: Vec<&str> = cmd.split_whitespace().collect();
+    // Configure script options
+    let options = ScriptOptions::new();
     
-    if parts.is_empty() {
-        return Err(CpiError::ExecutionFailed("Empty command".to_string()));
+    // No arguments needed
+    let args: Vec<String> = vec![];
+    
+    // Run the script using run_script crate
+    match run_script::run(cmd, &args, &options) {
+        Ok((code, output, error)) => {
+            let duration = start.elapsed();
+            
+            debug!("Command completed in {:?}", duration);
+            debug!("Exit code: {}", code);
+            
+            if !error.is_empty() {
+                trace!("Command stderr: {}", truncate_output(&error, 200));
+            }
+            
+            if code == 0 {
+                debug!("Command succeeded with output: {} bytes", output.len());
+                trace!("Command output: {}", truncate_output(&output, 200));
+                Ok(output)
+            } else {
+                error!("Command failed with exit code: {}", code);
+                error!("Command error output: {}", truncate_output(&error, 500));
+                
+                Err(CpiError::ExecutionFailed(format!(
+                    "Command failed with exit code {}: {}\nError: {}", 
+                    code, cmd, error
+                )))
+            }
+        },
+        Err(e) => {
+            error!("Failed to execute command: {}", e);
+            Err(CpiError::ExecutionFailed(format!(
+                "Failed to execute command '{}': {}", cmd, e
+            )))
+        }
     }
-    
-    let executable = parts[0];
-    let args = &parts[1..];
-    
-    debug!("Executing: {} with {} arguments", executable, args.len());
-    
-    // Create and execute the command
-    let mut command = Command::new(executable);
-    command.args(args)
-           .stdin(Stdio::null())
-           .stdout(Stdio::piped())
-           .stderr(Stdio::piped());
-    
-    // Use spawn+wait instead of output() for better error handling
-    let mut child = command.spawn().map_err(|e| {
-        error!("Failed to spawn command '{}': {}", executable, e);
-        CpiError::ExecutionFailed(format!("Failed to execute '{}': {}", cmd, e))
-    })?;
-    
-    // Get the exit status and capture output
-    let status = child.wait().map_err(|e| {
-        error!("Failed to wait for command completion: {}", e);
-        CpiError::ExecutionFailed(format!("Failed to complete command '{}': {}", cmd, e))
-    })?;
-    
-    // Read stdout and stderr
-    let mut stdout = String::new();
-    if let Some(mut stdout_handle) = child.stdout.take() {
-        stdout_handle.read_to_string(&mut stdout).map_err(|e| {
-            error!("Failed to read command stdout: {}", e);
-            CpiError::ExecutionFailed(format!("Failed to read stdout: {}", e))
-        })?;
-    }
-    
-    let mut stderr = String::new();
-    if let Some(mut stderr_handle) = child.stderr.take() {
-        stderr_handle.read_to_string(&mut stderr).map_err(|e| {
-            error!("Failed to read command stderr: {}", e);
-            CpiError::ExecutionFailed(format!("Failed to read stderr: {}", e))
-        })?;
-    }
-    
-    let duration = start.elapsed();
-    
-    if !status.success() {
-        error!("Command failed with status: {}", status);
-        error!("Command stderr: {}", truncate_output(&stderr, 500));
-        return Err(CpiError::ExecutionFailed(format!(
-            "Command failed with status {}: {}\nError: {}", 
-            status, cmd, stderr
-        )));
-    }
-    
-    debug!("Command succeeded in {:?} with output: {} bytes", duration, stdout.len());
-    trace!("Command output: {}", truncate_output(&stdout, 200));
-    
-    Ok(stdout)
 }

@@ -6314,3 +6314,1366 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-03-17 18:58:19] Logging system initialized
 [2025-03-17 18:58:21] Server running at http://0.0.0.0:8081
 [2025-03-17 18:58:22] Loaded CPI providers: ["azure", "aws", "oracle_cloud", "hetzner_cloud", "qemu", "vmware_esxi", "gcp", "virtualbox_windows", "upcloud", "vultr", "std_kvm", "proxmox", "detee_cpi", "digital_ocean", "ovh_cloud", "linode", "scaleway"]
+[2025-03-17 19:05:01] Logging system initialized
+[2025-03-17 19:05:03] Server running at http://0.0.0.0:8081
+[2025-03-17 19:05:04] Loaded CPI providers: ["upcloud", "std_kvm", "aws", "hetzner_cloud", "azure", "scaleway", "detee_cpi", "qemu", "virtualbox_windows", "gcp", "dummy", "proxmox", "vmware_esxi", "linode", "vultr", "oracle_cloud", "digital_ocean", "ovh_cloud"]
+[2025-03-17 19:05:12] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:06:26] Logging system initialized
+[2025-03-17 19:06:28] Server running at http://0.0.0.0:8081
+[2025-03-17 19:06:30] Loaded CPI providers: ["hetzner_cloud", "linode", "digital_ocean", "azure", "dummy", "vmware_esxi", "proxmox", "upcloud", "gcp", "scaleway", "std_kvm", "oracle_cloud", "ovh_cloud", "vultr", "aws", "virtualbox_windows", "qemu", "detee_cpi"]
+[2025-03-17 19:06:53] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:06:55] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:06:55] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:06:55] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:08:11] Logging system initialized
+[2025-03-17 19:08:13] Server running at http://0.0.0.0:8081
+[2025-03-17 19:08:15] Loaded CPI providers: ["aws", "proxmox", "linode", "virtualbox_windows", "scaleway", "azure", "vultr", "hetzner_cloud", "ovh_cloud", "digital_ocean", "oracle_cloud", "std_kvm", "dummy", "qemu", "vmware_esxi", "detee_cpi", "gcp", "upcloud"]
+[2025-03-17 19:08:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:08:17] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:10:17] Logging system initialized
+[2025-03-17 19:10:19] Server running at http://0.0.0.0:8081
+[2025-03-17 19:10:21] Loaded CPI providers: ["detee_cpi", "digital_ocean", "linode", "std_kvm", "vmware_esxi", "gcp", "upcloud", "oracle_cloud", "ovh_cloud", "vultr", "azure", "dummy", "hetzner_cloud", "aws", "qemu", "virtualbox_windows", "scaleway", "proxmox"]
+[2025-03-17 19:10:22] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:10:23] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:10:23] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:10:23] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:10:24] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:10:24] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:10:25] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:10:25] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:10:26] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:10:26] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:10:26] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:10:27] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:10:27] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:12:08] Logging system initialized
+[2025-03-17 19:12:10] Server running at http://0.0.0.0:8081
+[2025-03-17 19:12:12] Loaded CPI providers: ["proxmox", "ovh_cloud", "oracle_cloud", "virtualbox_windows", "vmware_esxi", "scaleway", "detee_cpi", "upcloud", "digital_ocean", "vultr", "azure", "aws", "gcp", "linode", "dummy", "hetzner_cloud", "std_kvm", "qemu"]
+[2025-03-17 19:12:13] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:12:13] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:12:13] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:12:14] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:12:14] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:12:14] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:12:14] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:12:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:12:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:12:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:12:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:12:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:12:41] Logging system initialized
+[2025-03-17 19:12:42] Server running at http://0.0.0.0:8081
+[2025-03-17 19:12:44] Loaded CPI providers: ["digital_ocean", "gcp", "vultr", "detee_cpi", "oracle_cloud", "std_kvm", "ovh_cloud", "aws", "proxmox", "qemu", "scaleway", "vmware_esxi", "linode", "hetzner_cloud", "dummy", "upcloud", "virtualbox_windows", "azure"]
+[2025-03-17 19:12:45] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:12:46] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:12:50] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:12:51] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:12:52] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:12:52] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:12:55] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:12:56] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:14:38] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:14:39] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:14:40] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:14:41] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:14:41] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:14:42] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:14:42] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:14:43] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:14:44] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:17:39] Logging system initialized
+[2025-03-17 19:17:41] Server running at http://0.0.0.0:8081
+[2025-03-17 19:17:42] Loaded CPI providers: ["azure", "upcloud", "dummy", "qemu", "vultr", "vmware_esxi", "virtualbox_windows", "ovh_cloud", "aws", "detee_cpi", "proxmox", "gcp", "scaleway", "linode", "std_kvm", "digital_ocean", "hetzner_cloud", "oracle_cloud"]
+[2025-03-17 19:17:42] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:17:43] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:17:43] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:17:44] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:17:44] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:17:44] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:17:44] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:17:44] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:17:45] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:17:45] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:18:22] Logging system initialized
+[2025-03-17 19:18:24] Server running at http://0.0.0.0:8081
+[2025-03-17 19:18:25] Loaded CPI providers: ["ovh_cloud", "qemu", "vmware_esxi", "virtualbox_windows", "hetzner_cloud", "vultr", "azure", "detee_cpi", "linode", "upcloud", "scaleway", "dummy", "aws", "oracle_cloud", "digital_ocean", "proxmox", "gcp", "std_kvm"]
+[2025-03-17 19:18:35] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:18:36] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:18:36] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:20:36] Logging system initialized
+[2025-03-17 19:20:38] Server running at http://0.0.0.0:8081
+[2025-03-17 19:20:39] Loaded CPI providers: ["digital_ocean", "dummy", "gcp", "ovh_cloud", "detee_cpi", "hetzner_cloud", "vultr", "upcloud", "linode", "azure", "vmware_esxi", "virtualbox_windows", "qemu", "scaleway", "oracle_cloud", "proxmox", "aws", "std_kvm"]
+[2025-03-17 19:20:40] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:20:41] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:21:53] Logging system initialized
+[2025-03-17 19:21:55] Server running at http://0.0.0.0:8081
+[2025-03-17 19:21:57] Loaded CPI providers: ["hetzner_cloud", "detee_cpi", "dummy", "digital_ocean", "azure", "oracle_cloud", "qemu", "vultr", "scaleway", "std_kvm", "gcp", "upcloud", "vmware_esxi", "ovh_cloud", "proxmox", "virtualbox_windows", "linode", "aws"]
+[2025-03-17 19:21:57] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:21:59] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:21:59] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:21:59] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:22:00] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:24:45] Logging system initialized
+[2025-03-17 19:24:47] Server running at http://0.0.0.0:8081
+[2025-03-17 19:24:49] Loaded CPI providers: ["ovh_cloud", "upcloud", "dummy", "virtualbox_windows", "qemu", "azure", "aws", "std_kvm", "hetzner_cloud", "oracle_cloud", "linode", "scaleway", "vultr", "proxmox", "gcp", "digital_ocean", "vmware_esxi", "detee_cpi"]
+[2025-03-17 19:24:49] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:25:56] Logging system initialized
+[2025-03-17 19:25:58] Server running at http://0.0.0.0:8081
+[2025-03-17 19:26:00] Loaded CPI providers: ["detee_cpi", "hetzner_cloud", "ovh_cloud", "azure", "std_kvm", "scaleway", "oracle_cloud", "qemu", "upcloud", "virtualbox_windows", "proxmox", "vultr", "digital_ocean", "dummy", "linode", "vmware_esxi", "aws", "gcp"]
+[2025-03-17 19:31:11] Logging system initialized
+[2025-03-17 19:31:13] Server running at http://0.0.0.0:8081
+[2025-03-17 19:31:14] Loaded CPI providers: ["aws", "upcloud", "scaleway", "proxmox", "gcp", "std_kvm", "oracle_cloud", "vultr", "dummy", "detee_cpi", "linode", "virtualbox_windows", "azure", "vmware_esxi", "digital_ocean", "ovh_cloud", "qemu", "hetzner_cloud"]
+[2025-03-17 19:31:15] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:31:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:31:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:31:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:31:17] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:31:17] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:31:17] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:31:18] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:31:19] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:31:19] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:31:20] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:31:21] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:31:21] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:31:22] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:31:23] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:31:24] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+    },
+}
+[2025-03-17 19:31:33] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "vm_name": String("Test"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:31:33] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:31:34] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_instances",
+    params: {
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:31:49] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "get_dummy_error",
+    params: {
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:31:58] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "get_dummy_malformed",
+    params: {
+        "disk_gb": String("5"),
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:32:08] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_images",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:32:16] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_sizes",
+    params: {
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:32:23] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "list_regions",
+    params: {
+        "memory_mb": String("800"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:34:00] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "boot_instance",
+    params: {
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "vcpus": String("1"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:34:01] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "boot_instance",
+    params: {
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:34:01] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "boot_instance",
+    params: {
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:34:01] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "boot_instance",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+        "disk_gb": String("5"),
+    },
+}
+[2025-03-17 19:34:01] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "boot_instance",
+    params: {
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "hours": String("1"),
+    },
+}
+[2025-03-17 19:34:50] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:34:51] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:34:51] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+        "hours": String("1"),
+        "vcpus": String("1"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:34:52] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+    },
+}
+[2025-03-17 19:34:54] Logging system initialized
+[2025-03-17 19:34:55] Server running at http://0.0.0.0:8081
+[2025-03-17 19:34:57] Loaded CPI providers: ["oracle_cloud", "ovh_cloud", "qemu", "aws", "vultr", "std_kvm", "scaleway", "virtualbox_windows", "vmware_esxi", "linode", "hetzner_cloud", "gcp", "detee_cpi", "proxmox", "upcloud", "digital_ocean", "azure"]
+[2025-03-17 19:34:58] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "vm_name": String("Test"),
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:34:59] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "distro": String("ubuntu"),
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+    },
+}
+[2025-03-17 19:34:59] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+        "vm_name": String("Test"),
+        "disk_gb": String("5"),
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+    },
+}
+[2025-03-17 19:34:59] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "hours": String("1"),
+        "memory_mb": String("800"),
+        "distro": String("ubuntu"),
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+        "disk_gb": String("5"),
+        "vm_name": String("Test"),
+        "vcpus": String("1"),
+    },
+}
+[2025-03-17 19:36:37] Logging system initialized
+[2025-03-17 19:36:39] Server running at http://0.0.0.0:8081
+[2025-03-17 19:36:41] Loaded CPI providers: ["oracle_cloud", "dummy", "vultr", "qemu", "virtualbox_windows", "linode", "scaleway", "digital_ocean", "ovh_cloud", "aws", "proxmox", "gcp", "detee_cpi", "upcloud", "hetzner_cloud", "std_kvm", "azure", "vmware_esxi"]
+[2025-03-17 19:36:42] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "vm_name": String("Test"),
+        "distro": String("ubuntu"),
+        "vcpus": String("1"),
+        "memory_mb": String("800"),
+        "disk_gb": String("5"),
+        "hours": String("1"),
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+    },
+}
+[2025-03-17 19:36:44] Received action request: CpiActionRequest {
+    provider: "dummy",
+    action: "direct_command",
+    params: {
+        "vm_name": String("Test"),
+        "memory_mb": String("800"),
+        "vcpus": String("1"),
+        "disk_gb": String("5"),
+        "command": String("echo \"Hi there from the Omni CPI!\""),
+        "distro": String("ubuntu"),
+        "hours": String("1"),
+    },
+}

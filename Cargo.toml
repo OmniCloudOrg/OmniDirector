@@ -23,6 +23,7 @@ log = "0.4.26"
 once_cell = "1.21.1"
 dashmap = "6.1.0"
 rayon = "1.10.0"
+run_script = "0.11.0"
 
 [profile.dev]
 codegen-units = 32
