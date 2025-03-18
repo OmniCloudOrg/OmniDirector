@@ -26,7 +26,7 @@
           }
         }
       },
-      "list_vms": {
+      "list_workers": {
         "command": "vim-cmd vmsvc/getallvms",
         "params": [],
         "parse_rules": {
@@ -57,7 +57,7 @@
           }
         }
       },
-      "get_vm_info": {
+      "get_worker_info": {
         "command": "vim-cmd vmsvc/get.summary {vmid}",
         "params": [
           "vmid"
@@ -99,7 +99,7 @@
           }
         }
       },
-      "power_on_vm": {
+      "power_on_worker": {
         "command": "vim-cmd vmsvc/power.on {vmid}",
         "params": [
           "vmid"
@@ -114,7 +114,7 @@
           }
         }
       },
-      "power_off_vm": {
+      "shutdown_worker": {
         "command": "vim-cmd vmsvc/power.off {vmid}",
         "params": [
           "vmid"
@@ -129,7 +129,7 @@
           }
         }
       },
-      "reset_vm": {
+      "reset_worker": {
         "command": "vim-cmd vmsvc/power.reset {vmid}",
         "params": [
           "vmid"
@@ -144,7 +144,7 @@
           }
         }
       },
-      "suspend_vm": {
+      "suspend_worker": {
         "command": "vim-cmd vmsvc/power.suspend {vmid}",
         "params": [
           "vmid"
@@ -159,7 +159,7 @@
           }
         }
       },
-      "create_vm": {
+      "create_worker": {
         "command": "vim-cmd vmsvc/createdummyvm {vm_name} [{datastore}]",
         "params": [
           "vm_name",
@@ -202,7 +202,7 @@
           }
         }
       },
-      "delete_vm": {
+      "delete_worker": {
         "command": "vim-cmd vmsvc/destroy {vmid}",
         "params": [
           "vmid"
@@ -217,7 +217,7 @@
           }
         }
       },
-      "register_vm": {
+      "register_worker": {
         "command": "vim-cmd solo/registervm [{datastore}] {vmx_path}",
         "params": [
           "datastore",
@@ -234,7 +234,7 @@
           }
         }
       },
-      "unregister_vm": {
+      "unregister_worker": {
         "command": "vim-cmd vmsvc/unregister {vmid}",
         "params": [
           "vmid"
@@ -394,7 +394,7 @@
           }
         }
       },
-      "get_vm_guest_info": {
+      "get_worker_guest_info": {
         "command": "vim-cmd vmsvc/get.guest {vmid}",
         "params": [
           "vmid"
@@ -432,7 +432,7 @@
           }
         }
       },
-      "upgrade_vm_hardware": {
+      "upgrade_worker_hardware": {
         "command": "vim-cmd vmsvc/upgrade {vmid}",
         "params": [
           "vmid"

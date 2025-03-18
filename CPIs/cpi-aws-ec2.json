@@ -23,7 +23,7 @@
           }
         }
       },
-      "list_instances": {
+      "list_workers": {
         "command": "aws ec2 describe-instances --region {region} --output json",
         "params": [
           "region"
@@ -38,7 +38,7 @@
           }
         }
       },
-      "create_instance": {
+      "create_worker": {
         "command": "aws ec2 run-instances --region {region} --image-id {image_id} --instance-type {instance_type} --key-name {ssh_key_name} --security-group-ids {security_group} --output json",
         "params": [
           "region",
@@ -57,7 +57,7 @@
           }
         }
       },
-      "terminate_instance": {
+      "terminate_worker": {
         "command": "aws ec2 terminate-instances --region {region} --instance-ids {instance_id} --output json",
         "params": [
           "region",
@@ -73,7 +73,7 @@
           }
         }
       },
-      "start_instance": {
+      "start_worker": {
         "command": "aws ec2 start-instances --region {region} --instance-ids {instance_id} --output json",
         "params": [
           "region",
@@ -89,7 +89,7 @@
           }
         }
       },
-      "stop_instance": {
+      "stop_worker": {
         "command": "aws ec2 stop-instances --region {region} --instance-ids {instance_id} --output json",
         "params": [
           "region",
@@ -105,7 +105,7 @@
           }
         }
       },
-      "get_instance": {
+      "get_worker": {
         "command": "aws ec2 describe-instances --region {region} --instance-ids {instance_id} --output json",
         "params": [
           "region",

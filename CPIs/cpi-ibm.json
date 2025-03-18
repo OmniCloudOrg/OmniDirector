@@ -181,7 +181,7 @@
                 }
             }
         },
-        "list_zones": {
+        "list_regions": {
             "command": "ibmcloud is zones --output JSON",
             "params": [
                 "region"
@@ -196,7 +196,7 @@
                 }
             }
         },
-        "create_disk": {
+        "create_volume": {
             "command": "ibmcloud is volume-create {disk_name} {zone} --capacity {size_gb} --iops {iops} --profile {disk_type} --output JSON",
             "params": [
                 "disk_name",
@@ -223,7 +223,7 @@
                 }
             }
         },
-        "list_disks": {
+        "list_volumes": {
             "command": "ibmcloud is volumes --output JSON",
             "parse_rules": {
                 "type": "object",
@@ -235,7 +235,7 @@
                 }
             }
         },
-        "delete_disk": {
+        "delete_volume": {
             "command": "ibmcloud is volume-delete {disk_id} --output JSON",
             "params": [
                 "disk_id"
@@ -250,7 +250,7 @@
                 }
             }
         },
-        "attach_disk": {
+        "attach_volume": {
             "command": "ibmcloud is instance-volume-attachment-add {worker_id} {disk_id} --auto-delete {auto_delete} --output JSON",
             "params": [
                 "worker_id",
@@ -273,7 +273,7 @@
                 }
             }
         },
-        "detach_disk": {
+        "detach_volume": {
             "command": "ibmcloud is instance-volume-attachment-remove {worker_id} {attachment_id} --output JSON",
             "params": [
                 "worker_id",

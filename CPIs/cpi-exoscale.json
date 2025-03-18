@@ -149,7 +149,7 @@
                 }
             }
         },
-        "list_zones": {
+        "list_regions": {
             "command": "exo zone list --output json",
             "parse_rules": {
                 "type": "object",

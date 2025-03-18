@@ -25,7 +25,7 @@
           }
         }
       },
-      "create_disk": {
+      "create_volume": {
         "command": "qemu-img create -f {disk_format} {image_dir}/{disk_name}.{disk_format} {disk_size_gb}G",
         "params": [
           "disk_format",
@@ -43,7 +43,7 @@
           }
         }
       },
-      "delete_disk": {
+      "delete_volume": {
         "command": "rm -f {image_dir}/{disk_name}.{disk_format}",
         "params": [
           "image_dir",
@@ -60,7 +60,7 @@
           }
         }
       },
-      "resize_disk": {
+      "resize_volume": {
         "command": "qemu-img resize {image_dir}/{disk_name}.{disk_format} {new_size_gb}G",
         "params": [
           "image_dir",
@@ -78,7 +78,7 @@
           }
         }
       },
-      "get_disk_info": {
+      "get_volume_info": {
         "command": "qemu-img info {image_dir}/{disk_name}.{disk_format}",
         "params": [
           "image_dir",
@@ -219,7 +219,7 @@
           }
         }
       },
-      "convert_disk": {
+      "convert_volume": {
         "command": "qemu-img convert -f {source_format} -O {target_format} {source_path} {target_path}",
         "params": [
           "source_format",
@@ -237,7 +237,7 @@
           }
         }
       },
-      "start_vm": {
+      "start_worker": {
         "command": "{qemu_binary} -name {vm_name} -m {memory_mb} -smp {cpus} -drive file={image_dir}/{disk_name}.{disk_format},format={disk_format} -vnc :{vnc_display} -netdev user,id=net0 -device {network_model},netdev=net0 -daemonize",
         "params": [
           "qemu_binary",
@@ -260,7 +260,7 @@
           }
         }
       },
-      "stop_vm": {
+      "stop_worker": {
         "command": "pkill -f \"{qemu_binary}.*-name {vm_name}\"",
         "params": [
           "qemu_binary",
@@ -276,7 +276,7 @@
           }
         }
       },
-      "list_vms": {
+      "list_workers": {
         "command": "ps -eo args | grep \"{qemu_binary}\" | grep \"-name\" | sed -e 's/.*-name \\([^ ]*\\).*/\\1/'",
         "params": [
           "qemu_binary"
@@ -292,7 +292,7 @@
           }
         }
       },
-      "has_vm": {
+      "has_worker": {
         "command": "ps -eo args | grep \"{qemu_binary}.*-name {vm_name}\"",
         "params": [
           "qemu_binary",
@@ -308,7 +308,7 @@
           }
         }
       },
-      "get_vm_info": {
+      "get_worker_info": {
         "command": "ps -eo pid,args | grep \"{qemu_binary}.*-name {vm_name}\"",
         "params": [
           "qemu_binary",
@@ -347,7 +347,7 @@
           }
         }
       },
-      "create_vm_template": {
+      "create_worker_template": {
         "command": "echo '{qemu_start_command}' > {template_dir}/{template_name}.sh && chmod +x {template_dir}/{template_name}.sh",
         "params": [
           "qemu_start_command",

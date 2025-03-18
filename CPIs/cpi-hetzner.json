@@ -26,7 +26,7 @@
           }
         }
       },
-      "list_servers": {
+      "list_workers": {
         "command": "hcloud server list -o noheader -o columns=id,name,status,ipv4,datacenter,type",
         "params": [],
         "parse_rules": {
@@ -61,7 +61,7 @@
           }
         }
       },
-      "create_server": {
+      "create_worker": {
         "command": "hcloud server create --name {name} --type {server_type} --image {image} --datacenter {datacenter} {ssh_key_param} {user_data_param} {volume_param} {network_param} {firewall_param}",
         "params": [
           "name",
@@ -98,7 +98,7 @@
           }
         }
       },
-      "get_server": {
+      "get_worker": {
         "command": "hcloud server describe {server_id}",
         "params": [
           "server_id"
@@ -150,7 +150,7 @@
           }
         }
       },
-      "delete_server": {
+      "delete_worker": {
         "command": "hcloud server delete {server_id}",
         "params": [
           "server_id"
@@ -165,7 +165,7 @@
           }
         }
       },
-      "start_server": {
+      "start_worker": {
         "command": "hcloud server poweron {server_id}",
         "params": [
           "server_id"
@@ -180,7 +180,7 @@
           }
         }
       },
-      "stop_server": {
+      "stop_worker": {
         "command": "hcloud server poweroff {server_id}",
         "params": [
           "server_id"
@@ -195,7 +195,7 @@
           }
         }
       },
-      "reboot_server": {
+      "reboot_worker": {
         "command": "hcloud server reboot {server_id}",
         "params": [
           "server_id"
@@ -210,7 +210,7 @@
           }
         }
       },
-      "list_server_types": {
+      "list_worker_types": {
         "command": "hcloud server-type list -o noheader",
         "params": [],
         "parse_rules": {

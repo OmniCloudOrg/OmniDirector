@@ -156,7 +156,7 @@
                 }
             }
         },
-        "list_zones": {
+        "list_regions": {
             "command": "aliyun ecs DescribeZones --RegionId {region} --output json",
             "params": [
                 "region"
@@ -198,7 +198,7 @@
                 }
             }
         },
-        "create_disk": {
+        "create_volume": {
             "command": "aliyun ecs CreateDisk --RegionId {region} --ZoneId {zone} --DiskName {disk_name} --DiskCategory {disk_type} --Size {size_gb} --output json",
             "params": [
                 "region",
@@ -217,7 +217,7 @@
                 }
             }
         },
-        "list_disks": {
+        "list_volumes": {
             "command": "aliyun ecs DescribeDisks --RegionId {region} --output json",
             "params": [
                 "region"
@@ -232,7 +232,7 @@
                 }
             }
         },
-        "delete_disk": {
+        "delete_volume": {
             "command": "aliyun ecs DeleteDisk --DiskId {disk_id} --output json",
             "params": [
                 "disk_id"
@@ -247,7 +247,7 @@
                 }
             }
         },
-        "attach_disk": {
+        "attach_volume": {
             "command": "aliyun ecs AttachDisk --InstanceId {worker_id} --DiskId {disk_id} --DeleteWithInstance {auto_delete} --output json",
             "params": [
                 "worker_id",
@@ -266,7 +266,7 @@
                 }
             }
         },
-        "detach_disk": {
+        "detach_volume": {
             "command": "aliyun ecs DetachDisk --InstanceId {worker_id} --DiskId {disk_id} --output json",
             "params": [
                 "worker_id",
@@ -282,7 +282,7 @@
                 }
             }
         },
-        "resize_disk": {
+        "resize_volume": {
             "command": "aliyun ecs ResizeDisk --DiskId {disk_id} --NewSize {size_gb} --output json",
             "params": [
                 "disk_id",

@@ -24,7 +24,7 @@
           }
         }
       },
-      "list_vms": {
+      "list_workers": {
         "command": "VBoxManage.exe list vms",
         "params": [],
         "parse_rules": {
@@ -42,7 +42,7 @@
           }
         }
       },
-      "create_vm": {
+      "create_worker": {
         "command": "VBoxManage.exe createvm --name {vm_name} --ostype {os_type} --register",
         "params": [
           "vm_name",
@@ -84,7 +84,7 @@
           }
         }
       },
-      "delete_vm": {
+      "delete_worker": {
         "command": "VBoxManage.exe unregistervm {vm_name} --delete",
         "params": [
           "vm_name"
@@ -99,7 +99,7 @@
           }
         }
       },
-      "get_vm": {
+      "get_worker": {
         "command": "VBoxManage.exe showvminfo {vm_name} --machinereadable",
         "params": [
           "vm_name"
@@ -186,7 +186,7 @@
           }
         }
       },
-      "has_vm": {
+      "has_worker": {
         "command": "VBoxManage.exe showvminfo {vm_id} --machinereadable",
         "params": [
           "vm_id"
@@ -201,7 +201,7 @@
           }
         }
       },
-      "start_vm": {
+      "start_worker": {
         "command": "VBoxManage.exe startvm {vm_name} --type headless",
         "params": [
           "vm_name"
@@ -216,7 +216,7 @@
           }
         }
       },
-      "get_disks": {
+      "get_volumes": {
         "command": "VBoxManage.exe list hdds",
         "params": [],
         "parse_rules": {
@@ -256,7 +256,7 @@
           }
         }
       },
-      "has_disk": {
+      "has_volume": {
         "command": "VBoxManage.exe showmediuminfo disk {disk_path}",
         "params": [
           "disk_path"
@@ -326,7 +326,7 @@
           }
         }
       },
-      "attach_disk": {
+      "attach_volume": {
         "command": "VBoxManage.exe storageattach {vm_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}",
         "params": [
           "vm_name",
@@ -358,7 +358,7 @@
           }
         }
       },
-      "detach_disk": {
+      "detach_volume": {
         "command": "VBoxManage.exe storageattach {vm_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium none",
         "params": [
           "vm_name",
@@ -375,7 +375,7 @@
           }
         }
       },
-      "create_disk": {
+      "create_volume": {
         "command": "VBoxManage.exe createmedium disk --filename {disk_path} --size {size_mb} --format VDI",
         "params": [
           "disk_path",
@@ -395,7 +395,7 @@
           }
         }
       },
-      "delete_disk": {
+      "delete_volume": {
         "command": "VBoxManage.exe closemedium disk {disk_path} --delete",
         "params": [
           "disk_path"
@@ -410,7 +410,7 @@
           }
         }
       },
-      "reboot_vm": {
+      "reboot_worker": {
         "command": "VBoxManage.exe controlvm {vm_name} reset",
         "params": [
           "vm_name"
@@ -425,11 +425,11 @@
           }
         }
       },
-      "snapshot_disk": {
-        "command": "VBoxManage.exe clonemedium disk {source_disk_path} {target_disk_path}",
+      "snapshot_volume": {
+        "command": "VBoxManage.exe clonemedium disk {source_volume_path} {target_volume_path}",
         "params": [
-          "source_disk_path",
-          "target_disk_path"
+          "source_volume_path",
+          "target_volume_path"
         ],
         "parse_rules": {
           "type": "object",
@@ -458,7 +458,7 @@
           }
         }
       },
-      "set_vm_metadata": {
+      "set_worker_metadata": {
         "command": "VBoxManage.exe setextradata {vm_name} {key} {value}",
         "params": [
           "vm_name",

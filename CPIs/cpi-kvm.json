@@ -25,7 +25,7 @@
           }
         }
       },
-      "list_vms": {
+      "list_workers": {
         "command": "virsh list --all",
         "params": [],
         "parse_rules": {
@@ -47,7 +47,7 @@
           }
         }
       },
-      "create_vm": {
+      "create_worker": {
         "command": "virt-install --name {vm_name} --memory {memory_mb} --vcpus {vcpus} --disk path={image_path}/{vm_name}.qcow2,size={disk_size_gb} --os-variant {os_variant} --graphics {graphics} --network {network} --import --disk {os_image},device=cdrom --noautoconsole",
         "params": [
           "vm_name",
@@ -70,7 +70,7 @@
           }
         }
       },
-      "delete_vm": {
+      "delete_worker": {
         "command": "virsh undefine {vm_name} --remove-all-storage",
         "params": [
           "vm_name"
@@ -85,7 +85,7 @@
           }
         }
       },
-      "start_vm": {
+      "start_worker": {
         "command": "virsh start {vm_name}",
         "params": [
           "vm_name"
@@ -100,7 +100,7 @@
           }
         }
       },
-      "stop_vm": {
+      "stop_worker": {
         "command": "virsh shutdown {vm_name}",
         "params": [
           "vm_name"
@@ -115,7 +115,7 @@
           }
         }
       },
-      "force_stop_vm": {
+      "force_stop_worker": {
         "command": "virsh destroy {vm_name}",
         "params": [
           "vm_name"
@@ -130,7 +130,7 @@
           }
         }
       },
-      "get_vm": {
+      "get_worker": {
         "command": "virsh dominfo {vm_name}",
         "params": [
           "vm_name"
@@ -173,7 +173,7 @@
           }
         }
       },
-      "has_vm": {
+      "has_worker": {
         "command": "virsh dominfo {vm_name}",
         "params": [
           "vm_name"
@@ -277,7 +277,7 @@
           }
         }
       },
-      "list_disks": {
+      "list_volumes": {
         "command": "virsh domblklist {vm_name}",
         "params": [
           "vm_name"
@@ -297,7 +297,7 @@
           }
         }
       },
-      "create_disk": {
+      "create_volume": {
         "command": "qemu-img create -f {disk_format} {image_path}/{disk_name}.{disk_format} {size_gb}G",
         "params": [
           "disk_format",
@@ -315,7 +315,7 @@
           }
         }
       },
-      "attach_disk": {
+      "attach_volume": {
         "command": "virsh attach-disk {vm_name} {image_path}/{disk_name}.{disk_format} {target_dev} --persistent",
         "params": [
           "vm_name",
@@ -334,7 +334,7 @@
           }
         }
       },
-      "detach_disk": {
+      "detach_volume": {
         "command": "virsh detach-disk {vm_name} {target_dev} --persistent",
         "params": [
           "vm_name",

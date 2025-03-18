@@ -319,7 +319,7 @@
           }
         }
       },
-      "list_block_storage": {
+      "list_block_volume": {
         "command": "buyvm storage list --format json",
         "parse_rules": {
           "type": "object",
@@ -331,7 +331,7 @@
           }
         }
       },
-      "create_block_storage": {
+      "create_block_volume": {
         "command": "buyvm storage create --location {location} --size {size_gb} --format json",
         "params": [
           "location",
@@ -347,7 +347,7 @@
           }
         }
       },
-      "attach_block_storage": {
+      "attach_block_volume": {
         "command": "buyvm storage attach {disk_id} --vm {worker_id} --format json",
         "params": [
           "disk_id",
@@ -363,7 +363,7 @@
           }
         }
       },
-      "detach_block_storage": {
+      "detach_block_volume": {
         "command": "buyvm storage detach {disk_id} --format json",
         "params": ["disk_id"],
         "parse_rules": {
@@ -376,7 +376,7 @@
           }
         }
       },
-      "delete_block_storage": {
+      "delete_block_volume": {
         "command": "buyvm storage delete {disk_id} --confirm --format json",
         "params": ["disk_id"],
         "parse_rules": {

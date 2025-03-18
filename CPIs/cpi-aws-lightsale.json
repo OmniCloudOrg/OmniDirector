@@ -182,7 +182,7 @@
                 }
             }
         },
-        "list_disks": {
+        "list_volumes": {
             "command": "aws lightsail get-disks --region {region} --output json",
             "params": [
                 "region"
@@ -197,7 +197,7 @@
                 }
             }
         },
-        "create_disk": {
+        "create_volume": {
             "command": "aws lightsail create-disk --disk-name {disk_name} --size-in-gb {size_gb} --availability-zone {availability_zone} {tags_param} --region {region} --output json",
             "params": [
                 "disk_name",
@@ -218,7 +218,7 @@
                 }
             }
         },
-        "delete_disk": {
+        "delete_volume": {
             "command": "aws lightsail delete-disk --disk-name {disk_id} --region {region} --output json",
             "params": [
                 "disk_id",
@@ -234,7 +234,7 @@
                 }
             }
         },
-        "attach_disk": {
+        "attach_volume": {
             "command": "aws lightsail attach-disk --disk-name {disk_id} --instance-name {worker_id} --disk-path /dev/xvdf --region {region} --output json",
             "params": [
                 "disk_id",
@@ -251,7 +251,7 @@
                 }
             }
         },
-        "detach_disk": {
+        "detach_volume": {
             "command": "aws lightsail detach-disk --disk-name {disk_id} --region {region} --output json",
             "params": [
                 "disk_id",

@@ -25,7 +25,7 @@
           }
         }
       },
-      "list_instances": {
+      "list_workers": {
         "command": "vultr-cli instance list",
         "params": [],
         "parse_rules": {
@@ -74,7 +74,7 @@
           }
         }
       },
-      "create_instance": {
+      "create_worker": {
         "command": "vultr-cli instance create --region {region} --plan {plan} --os {os_id} --label {label} {hostname_param} {ipv6_param} {ssh_keys_param} {tag_param}",
         "params": [
           "region",
@@ -118,7 +118,7 @@
           }
         }
       },
-      "get_instance": {
+      "get_worker": {
         "command": "vultr-cli instance get {instance_id}",
         "params": [
           "instance_id"
@@ -173,7 +173,7 @@
           }
         }
       },
-      "delete_instance": {
+      "delete_worker": {
         "command": "vultr-cli instance delete {instance_id}",
         "params": [
           "instance_id"
@@ -188,7 +188,7 @@
           }
         }
       },
-      "start_instance": {
+      "start_worker": {
         "command": "vultr-cli instance start {instance_id}",
         "params": [
           "instance_id"
@@ -203,7 +203,7 @@
           }
         }
       },
-      "stop_instance": {
+      "stop_worker": {
         "command": "vultr-cli instance stop {instance_id}",
         "params": [
           "instance_id"
@@ -218,7 +218,7 @@
           }
         }
       },
-      "reboot_instance": {
+      "reboot_worker": {
         "command": "vultr-cli instance reboot {instance_id}",
         "params": [
           "instance_id"
@@ -233,7 +233,7 @@
           }
         }
       },
-      "reinstall_instance": {
+      "reinstall_worker": {
         "command": "vultr-cli instance reinstall {instance_id} {hostname_param}",
         "params": [
           "instance_id",
@@ -477,7 +477,7 @@
           }
         }
       },
-      "create_block_storage": {
+      "create_block_volume": {
         "command": "vultr-cli block-storage create --region {region} --size {size_gb} {label_param}",
         "params": [
           "region",
@@ -517,7 +517,7 @@
           }
         }
       },
-      "list_block_storages": {
+      "list_block_volumes": {
         "command": "vultr-cli block-storage list",
         "params": [],
         "parse_rules": {
@@ -554,7 +554,7 @@
           }
         }
       },
-      "attach_block_storage": {
+      "attach_block_volume": {
         "command": "vultr-cli block-storage attach {block_id} --instance-id {instance_id}",
         "params": [
           "block_id",
@@ -570,7 +570,7 @@
           }
         }
       },
-      "detach_block_storage": {
+      "detach_block_volume": {
         "command": "vultr-cli block-storage detach {block_id}",
         "params": [
           "block_id"
@@ -585,7 +585,7 @@
           }
         }
       },
-      "delete_block_storage": {
+      "delete_block_volume": {
         "command": "vultr-cli block-storage delete {block_id}",
         "params": [
           "block_id"

@@ -24,7 +24,7 @@
           }
         }
       },
-      "list_instances": {
+      "list_workers": {
         "command": "openstack server list -f json",
         "params": [],
         "parse_rules": {
@@ -59,7 +59,7 @@
           }
         }
       },
-      "get_instance": {
+      "get_worker": {
         "command": "openstack server show -f json {server_id}",
         "params": [
           "server_id"
@@ -104,7 +104,7 @@
           }
         }
       },
-      "create_instance": {
+      "create_worker": {
         "command": "openstack server create --flavor {flavor} --image {image} --network {network} {ssh_key_param} {project_param} --wait {name}",
         "params": [
           "flavor",
@@ -140,7 +140,7 @@
           }
         }
       },
-      "delete_instance": {
+      "delete_worker": {
         "command": "openstack server delete --wait {server_id}",
         "params": [
           "server_id"
@@ -155,7 +155,7 @@
           }
         }
       },
-      "start_instance": {
+      "start_worker": {
         "command": "openstack server start {server_id}",
         "params": [
           "server_id"
@@ -170,7 +170,7 @@
           }
         }
       },
-      "stop_instance": {
+      "stop_worker": {
         "command": "openstack server stop {server_id}",
         "params": [
           "server_id"
@@ -185,7 +185,7 @@
           }
         }
       },
-      "reboot_instance": {
+      "reboot_worker": {
         "command": "openstack server reboot --wait {server_id}",
         "params": [
           "server_id"
@@ -200,7 +200,7 @@
           }
         }
       },
-      "resize_instance": {
+      "resize_worker": {
         "command": "openstack server resize --flavor {flavor} --wait {server_id}",
         "params": [
           "flavor",

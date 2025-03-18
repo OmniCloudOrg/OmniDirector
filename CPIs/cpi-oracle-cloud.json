@@ -25,7 +25,7 @@
           }
         }
       },
-      "list_instances": {
+      "list_workers": {
         "command": "oci compute instance list --compartment-id {compartment_id} --region {region} --all",
         "params": [
           "compartment_id",
@@ -41,7 +41,7 @@
           }
         }
       },
-      "get_instance": {
+      "get_worker": {
         "command": "oci compute instance get --instance-id {instance_id} --region {region}",
         "params": [
           "instance_id",
@@ -81,7 +81,7 @@
           }
         }
       },
-      "create_instance": {
+      "create_worker": {
         "command": "oci compute instance launch --availability-domain {availability_domain} --compartment-id {compartment_id} --shape {shape} --image-id {image_id} --subnet-id {subnet_id} --boot-volume-size-in-gbs {boot_volume_size_gb} --ssh-authorized-keys-file {ssh_authorized_keys} --display-name {display_name} --region {region}",
         "params": [
           "availability_domain",
@@ -112,7 +112,7 @@
           }
         }
       },
-      "terminate_instance": {
+      "terminate_worker": {
         "command": "oci compute instance terminate --instance-id {instance_id} --region {region} --force",
         "params": [
           "instance_id",
@@ -128,7 +128,7 @@
           }
         }
       },
-      "start_instance": {
+      "start_worker": {
         "command": "oci compute instance action --instance-id {instance_id} --action START --region {region}",
         "params": [
           "instance_id",
@@ -148,7 +148,7 @@
           }
         }
       },
-      "stop_instance": {
+      "stop_worker": {
         "command": "oci compute instance action --instance-id {instance_id} --action STOP --region {region}",
         "params": [
           "instance_id",
@@ -168,7 +168,7 @@
           }
         }
       },
-      "reboot_instance": {
+      "reboot_worker": {
         "command": "oci compute instance action --instance-id {instance_id} --action RESET --region {region}",
         "params": [
           "instance_id",
@@ -282,7 +282,7 @@
           }
         }
       },
-      "get_instance_console_connection": {
+      "get_worker_console_connection": {
         "command": "oci compute instance-console-connection get-plink-connection-string --instance-console-connection-id {connection_id} --region {region}",
         "params": [
           "connection_id",
@@ -298,7 +298,7 @@
           }
         }
       },
-      "create_instance_console_connection": {
+      "create_worker_console_connection": {
         "command": "oci compute instance-console-connection create --instance-id {instance_id} --public-key-file {ssh_public_key_file} --region {region}",
         "params": [
           "instance_id",

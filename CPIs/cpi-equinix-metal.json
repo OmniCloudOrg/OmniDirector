@@ -119,7 +119,7 @@
                 }
             }
         },
-        "power_off_worker": {
+        "shutdown_worker": {
             "command": "metal device power-off {worker_id} -o json",
             "params": [
                 "worker_id"

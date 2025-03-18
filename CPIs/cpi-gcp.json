@@ -24,7 +24,7 @@
           }
         }
       },
-      "list_instances": {
+      "list_workers": {
         "command": "gcloud compute instances list --project {project} --format=json",
         "params": [
           "project"
@@ -39,7 +39,7 @@
           }
         }
       },
-      "create_instance": {
+      "create_worker": {
         "command": "gcloud compute instances create {instance_name} --project {project} --zone {zone} --machine-type {machine_type} --image-family {image_family} --image-project {image_project} --format=json",
         "params": [
           "instance_name",
@@ -68,7 +68,7 @@
           }
         }
       },
-      "delete_instance": {
+      "delete_worker": {
         "command": "gcloud compute instances delete {instance_name} --project {project} --zone {zone} --quiet",
         "params": [
           "instance_name",
@@ -85,7 +85,7 @@
           }
         }
       },
-      "start_instance": {
+      "start_worker": {
         "command": "gcloud compute instances start {instance_name} --project {project} --zone {zone}",
         "params": [
           "instance_name",
@@ -102,7 +102,7 @@
           }
         }
       },
-      "stop_instance": {
+      "stop_worker": {
         "command": "gcloud compute instances stop {instance_name} --project {project} --zone {zone}",
         "params": [
           "instance_name",
@@ -119,7 +119,7 @@
           }
         }
       },
-      "get_instance": {
+      "get_worker": {
         "command": "gcloud compute instances describe {instance_name} --project {project} --zone {zone} --format=json",
         "params": [
           "instance_name",
@@ -156,7 +156,7 @@
           }
         }
       },
-      "create_disk": {
+      "create_volume": {
         "command": "gcloud compute disks create {disk_name} --project {project} --zone {zone} --size {size_gb} --type {disk_type} --format=json",
         "params": [
           "disk_name",
@@ -179,7 +179,7 @@
           }
         }
       },
-      "attach_disk": {
+      "attach_volume": {
         "command": "gcloud compute instances attach-disk {instance_name} --project {project} --zone {zone} --disk {disk_name}",
         "params": [
           "instance_name",
@@ -197,7 +197,7 @@
           }
         }
       },
-      "detach_disk": {
+      "detach_volume": {
         "command": "gcloud compute instances detach-disk {instance_name} --project {project} --zone {zone} --disk {disk_name}",
         "params": [
           "instance_name",
@@ -215,7 +215,7 @@
           }
         }
       },
-      "list_disks": {
+      "list_volumes": {
         "command": "gcloud compute disks list --project {project} --format=json",
         "params": [
           "project"
@@ -244,7 +244,7 @@
           }
         }
       },
-      "has_disk": {
+      "has_volume": {
         "command": "gcloud compute disks describe {disk_name} --project {project} --zone {zone} --format=json",
         "params": [
           "disk_name",
@@ -321,7 +321,7 @@
               "group": 1,
               "transform": "number"
             },
-            "source_disk": {
+            "source_volume": {
               "regex": "\"sourceDisk\":\\s*\"[^\"]*\\/([^\\/\"]+)\"",
               "group": 1
             }

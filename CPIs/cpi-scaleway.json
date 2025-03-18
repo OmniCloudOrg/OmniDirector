@@ -25,7 +25,7 @@
           }
         }
       },
-      "list_instances": {
+      "list_workers": {
         "command": "scw instance server list zone={zone} -o json",
         "params": [
           "zone"
@@ -40,7 +40,7 @@
           }
         }
       },
-      "create_instance": {
+      "create_worker": {
         "command": "scw instance server create type={type} image={image} zone={zone} root-volume={root_volume_size_gb}GB boot-type={boot_type} name={name} {project_param} {ssh_key_param} -o json",
         "params": [
           "type",
@@ -83,7 +83,7 @@
           }
         }
       },
-      "get_instance": {
+      "get_worker": {
         "command": "scw instance server get {server_id} zone={zone} -o json",
         "params": [
           "server_id",
@@ -139,7 +139,7 @@
           }
         }
       },
-      "delete_instance": {
+      "delete_worker": {
         "command": "scw instance server delete {server_id} zone={zone} -o json",
         "params": [
           "server_id",
@@ -155,7 +155,7 @@
           }
         }
       },
-      "start_instance": {
+      "start_worker": {
         "command": "scw instance server start {server_id} zone={zone} -o json",
         "params": [
           "server_id",
@@ -171,7 +171,7 @@
           }
         }
       },
-      "stop_instance": {
+      "stop_worker": {
         "command": "scw instance server stop {server_id} zone={zone} -o json",
         "params": [
           "server_id",
@@ -187,7 +187,7 @@
           }
         }
       },
-      "reboot_instance": {
+      "reboot_worker": {
         "command": "scw instance server reboot {server_id} zone={zone} -o json",
         "params": [
           "server_id",
@@ -379,7 +379,7 @@
           }
         }
       },
-      "list_server_types": {
+      "list_worker_types": {
         "command": "scw instance server-type list zone={zone} -o json",
         "params": [
           "zone"

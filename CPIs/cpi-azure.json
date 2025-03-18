@@ -58,7 +58,7 @@
           }
         }
       },
-      "create_vm": {
+      "create_worker": {
         "command": "az vm create --resource-group {resource_group} --name {vm_name} --image {image} --admin-username {admin_username} --size {vm_size} --generate-ssh-keys",
         "params": [
           "resource_group",
@@ -86,7 +86,7 @@
           }
         }
       },
-      "delete_vm": {
+      "delete_worker": {
         "command": "az vm delete --resource-group {resource_group} --name {vm_name} --yes",
         "params": [
           "resource_group",
@@ -102,7 +102,7 @@
           }
         }
       },
-      "start_vm": {
+      "start_worker": {
         "command": "az vm start --resource-group {resource_group} --name {vm_name}",
         "params": [
           "resource_group",
@@ -118,7 +118,7 @@
           }
         }
       },
-      "stop_vm": {
+      "stop_worker": {
         "command": "az vm stop --resource-group {resource_group} --name {vm_name}",
         "params": [
           "resource_group",
@@ -134,7 +134,7 @@
           }
         }
       },
-      "list_vms": {
+      "list_workers": {
         "command": "az vm list --resource-group {resource_group}",
         "params": [
           "resource_group"
@@ -163,7 +163,7 @@
           }
         }
       },
-      "get_vm": {
+      "get_worker": {
         "command": "az vm show --resource-group {resource_group} --name {vm_name}",
         "params": [
           "resource_group",
@@ -188,7 +188,7 @@
               "regex": "\"hardwareProfile\":\\s*\\{[^}]*\"vmSize\":\\s*\"([^\"]+)\"",
               "group": 1
             },
-            "os_disk": {
+            "os_volume": {
               "regex": "\"osProfileWindowsConfiguration\":\\s*\\{",
               "transform": "boolean",
               "optional": true
@@ -196,7 +196,7 @@
           }
         }
       },
-      "create_disk": {
+      "create_volume": {
         "command": "az disk create --resource-group {resource_group} --name {disk_name} --size-gb {size_gb} --sku {disk_sku}",
         "params": [
           "resource_group",
@@ -218,7 +218,7 @@
           }
         }
       },
-      "attach_disk": {
+      "attach_volume": {
         "command": "az vm disk attach --resource-group {resource_group} --vm-name {vm_name} --name {disk_name}",
         "params": [
           "resource_group",
@@ -235,7 +235,7 @@
           }
         }
       },
-      "detach_disk": {
+      "detach_volume": {
         "command": "az vm disk detach --resource-group {resource_group} --vm-name {vm_name} --name {disk_name}",
         "params": [
           "resource_group",
@@ -252,7 +252,7 @@
           }
         }
       },
-      "list_disks": {
+      "list_volumes": {
         "command": "az disk list --resource-group {resource_group}",
         "params": [
           "resource_group"
@@ -281,7 +281,7 @@
           }
         }
       },
-      "has_disk": {
+      "has_volume": {
         "command": "az disk show --resource-group {resource_group} --name {disk_name}",
         "params": [
           "resource_group",

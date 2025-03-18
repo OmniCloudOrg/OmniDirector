@@ -79,7 +79,7 @@
                 }
             }
         },
-        "create_vm": {
+        "create_worker": {
             "command": "docker exec -i detee-cli detee-cli vm deploy --distro {distro} --vcpus {vcpus} --memory {memory_mb} --disk {disk_gb} --hours {hours}",
             "params": ["distro", "vcpus", "memory_mb", "disk_gb", "hours"],
             "parse_rules": {
@@ -121,7 +121,7 @@
                 }
             }
         },
-        "list_vms": {
+        "list_workers": {
             "command": "docker exec -i detee-cli detee-cli vm list",
             "params": [],
             "parse_rules": {
@@ -167,7 +167,7 @@
                 }
             }
         },
-        "get_vm": {
+        "get_worker": {
             "command": "docker exec -i detee-cli detee-cli vm list | grep {vm_id}",
             "params": ["vm_id"],
             "parse_rules": {
@@ -208,7 +208,7 @@
                 }
             }
         },
-        "has_vm": {
+        "has_worker": {
             "command": "docker exec -i detee-cli detee-cli vm list | grep {vm_id}",
             "params": ["vm_id"],
             "parse_rules": {
@@ -221,7 +221,7 @@
                 }
             }
         },
-        "update_vm": {
+        "update_worker": {
             "command": "docker exec -i detee-cli detee-cli vm update {vcpus_param} {memory_param} {hours_param} {vm_id}",
             "params": ["vm_id", "vcpus_param", "memory_param", "hours_param"],
             "parse_rules": {
@@ -245,7 +245,7 @@
                 }
             }
         },
-        "delete_vm": {
+        "delete_worker": {
             "command": "docker exec -i detee-cli detee-cli vm delete {vm_id}",
             "params": ["vm_id"],
             "parse_rules": {

@@ -25,7 +25,7 @@
           }
         }
       },
-      "list_servers": {
+      "list_workers": {
         "command": "upctl server list --format json",
         "params": [],
         "parse_rules": {
@@ -38,7 +38,7 @@
           }
         }
       },
-      "get_server": {
+      "get_worker": {
         "command": "upctl server show {server_uuid} --format json",
         "params": [
           "server_uuid"
@@ -82,7 +82,7 @@
           }
         }
       },
-      "create_server": {
+      "create_worker": {
         "command": "upctl server create --hostname {hostname} --title {title} --zone {zone} --plan {plan} --storage-size {storage_size} --os {os} --login-user {login_user} {ssh_key_param} --format json",
         "params": [
           "hostname",
@@ -133,7 +133,7 @@
           }
         }
       },
-      "delete_server": {
+      "delete_worker": {
         "command": "upctl server delete {server_uuid}",
         "params": [
           "server_uuid"
@@ -148,7 +148,7 @@
           }
         }
       },
-      "start_server": {
+      "start_worker": {
         "command": "upctl server start {server_uuid}",
         "params": [
           "server_uuid"
@@ -163,7 +163,7 @@
           }
         }
       },
-      "stop_server": {
+      "stop_worker": {
         "command": "upctl server stop {server_uuid} {stop_type_param}",
         "params": [
           "server_uuid",
@@ -179,7 +179,7 @@
           }
         }
       },
-      "restart_server": {
+      "restart_worker": {
         "command": "upctl server restart {server_uuid} {stop_type_param}",
         "params": [
           "server_uuid",
@@ -195,7 +195,7 @@
           }
         }
       },
-      "modify_server": {
+      "modify_worker": {
         "command": "upctl server modify {server_uuid} {plan_param} {hostname_param} {title_param} --format json",
         "params": [
           "server_uuid",
@@ -225,7 +225,7 @@
           }
         }
       },
-      "list_storages": {
+      "list_volumes": {
         "command": "upctl storage list --format json",
         "params": [],
         "parse_rules": {
@@ -238,7 +238,7 @@
           }
         }
       },
-      "get_storage": {
+      "get_volume": {
         "command": "upctl storage show {storage_uuid} --format json",
         "params": [
           "storage_uuid"
@@ -274,7 +274,7 @@
           }
         }
       },
-      "create_storage": {
+      "create_volume": {
         "command": "upctl storage create --title {title} --zone {zone} --size {size} --tier {tier} --format json",
         "params": [
           "title",
@@ -313,7 +313,7 @@
           }
         }
       },
-      "delete_storage": {
+      "delete_volume": {
         "command": "upctl storage delete {storage_uuid}",
         "params": [
           "storage_uuid"
@@ -328,7 +328,7 @@
           }
         }
       },
-      "attach_storage": {
+      "attach_volume": {
         "command": "upctl server storage-attach {server_uuid} --storage {storage_uuid} --type {attachment_type} --address {attachment_address} --format json",
         "params": [
           "server_uuid",
@@ -346,7 +346,7 @@
           }
         }
       },
-      "detach_storage": {
+      "detach_volume": {
         "command": "upctl server storage-detach {server_uuid} --address {attachment_address}",
         "params": [
           "server_uuid",
@@ -436,7 +436,7 @@
           }
         }
       },
-      "list_zones": {
+      "list_regions": {
         "command": "upctl zone list --format json",
         "params": [],
         "parse_rules": {

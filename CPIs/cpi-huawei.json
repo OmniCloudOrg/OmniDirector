@@ -211,7 +211,7 @@
                 }
             }
         },
-        "list_zones": {
+        "list_regions": {
             "command": "hcloud ECS ListAvailabilityZones --cli-region={region}",
             "params": [
                 "region"
@@ -226,7 +226,7 @@
                 }
             }
         },
-        "create_disk": {
+        "create_volume": {
             "command": "hcloud EVS CreateVolume --cli-region={region} --volume '{\"name\": \"{disk_name}\", \"availability_zone\": \"{zone}\", \"volume_type\": \"{disk_type}\", \"size\": {size_gb}}'",
             "params": [
                 "region",
@@ -245,7 +245,7 @@
                 }
             }
         },
-        "list_disks": {
+        "list_volumes": {
             "command": "hcloud EVS ListVolumes --cli-region={region}",
             "params": [
                 "region"
@@ -260,7 +260,7 @@
                 }
             }
         },
-        "delete_disk": {
+        "delete_volume": {
             "command": "hcloud EVS DeleteVolume --cli-region={region} --volume-id {disk_id}",
             "params": [
                 "region",
@@ -276,7 +276,7 @@
                 }
             }
         },
-        "attach_disk": {
+        "attach_volume": {
             "command": "hcloud ECS AttachServerVolume --cli-region={region} --server-id {worker_id} --body '{\"volumeAttachment\": {\"volumeId\": \"{disk_id}\", \"device\": \"/dev/sdb\"}}'",
             "params": [
                 "region",
@@ -293,7 +293,7 @@
                 }
             }
         },
-        "detach_disk": {
+        "detach_volume": {
             "command": "hcloud ECS DetachServerVolume --cli-region={region} --server-id {worker_id} --volume-id {disk_id}",
             "params": [
                 "region",

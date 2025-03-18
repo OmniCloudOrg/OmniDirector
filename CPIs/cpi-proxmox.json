@@ -9,7 +9,7 @@
       "disk_size_gb": "32",
       "image_format": "qcow2",
       "network_bridge": "vmbr0",
-      "template_storage": "local",
+      "template_volume": "local",
       "netif": "virtio"
     },
     "actions": {
@@ -26,7 +26,7 @@
           }
         }
       },
-      "list_vms": {
+      "list_workers": {
         "command": "pvesh get /cluster/resources --type vm",
         "params": [],
         "parse_rules": {
@@ -56,7 +56,7 @@
           }
         }
       },
-      "create_vm": {
+      "create_worker": {
         "command": "pvesh create /nodes/{node}/qemu -vmid {vmid} -name {vm_name} -memory {memory_mb} -cores {cpus} -net0 {netif},bridge={network_bridge} -virtio0 {storage}:{disk_size_gb}",
         "params": [
           "node",
@@ -79,7 +79,7 @@
           }
         }
       },
-      "delete_vm": {
+      "delete_worker": {
         "command": "pvesh delete /nodes/{node}/qemu/{vmid}",
         "params": [
           "node",
@@ -95,7 +95,7 @@
           }
         }
       },
-      "start_vm": {
+      "start_worker": {
         "command": "pvesh create /nodes/{node}/qemu/{vmid}/status/start",
         "params": [
           "node",
@@ -111,7 +111,7 @@
           }
         }
       },
-      "stop_vm": {
+      "stop_worker": {
         "command": "pvesh create /nodes/{node}/qemu/{vmid}/status/stop",
         "params": [
           "node",
@@ -127,7 +127,7 @@
           }
         }
       },
-      "get_vm": {
+      "get_worker": {
         "command": "pvesh get /nodes/{node}/qemu/{vmid}/config",
         "params": [
           "node",
@@ -252,7 +252,7 @@
           }
         }
       },
-      "resize_disk": {
+      "resize_volume": {
         "command": "pvesh set /nodes/{node}/qemu/{vmid}/resize -disk {disk} -size {size_gb}G",
         "params": [
           "node",
@@ -270,13 +270,13 @@
           }
         }
       },
-      "clone_vm": {
-        "command": "pvesh create /nodes/{node}/qemu/{vmid}/clone -newid {new_vmid} -name {new_vm_name} -full {full_clone}",
+      "clone_worker": {
+        "command": "pvesh create /nodes/{node}/qemu/{vmid}/clone -newid {new_workerid} -name {new_worker_name} -full {full_clone}",
         "params": [
           "node",
           "vmid",
-          "new_vmid",
-          "new_vm_name",
+          "new_workerid",
+          "new_worker_name",
           "full_clone"
         ],
         "parse_rules": {
@@ -289,7 +289,7 @@
           }
         }
       },
-      "get_vm_status": {
+      "get_worker_status": {
         "command": "pvesh get /nodes/{node}/qemu/{vmid}/status/current",
         "params": [
           "node",
@@ -307,7 +307,7 @@
               "group": 1,
               "transform": "number"
             },
-            "running_machine": {
+            "running_worker": {
               "regex": "\"running-machine\":\\s*\"([^\"]+)\"",
               "group": 1,
               "optional": true
@@ -320,7 +320,7 @@
           }
         }
       },
-      "list_storage": {
+      "list_volume": {
         "command": "pvesh get /nodes/{node}/storage",
         "params": [
           "node"

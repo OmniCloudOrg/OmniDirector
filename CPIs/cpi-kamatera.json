@@ -7,7 +7,7 @@
         "cpu_cores": "2",
         "ram_mb": "2048",
         "disk_size_gb": "40",
-        "image": "ubuntu_server_20.04_64-bit",
+        "image": "ubuntu_worker_20.04_64-bit",
         "power_on": "true",
         "network_name": "wan",
         "billing_cycle": "hourly"
@@ -255,7 +255,7 @@
                 }
             }
         },
-        "create_disk": {
+        "create_volume": {
             "command": "kamatera server disk add {worker_id} --size {size_gb} --format json",
             "params": [
                 "worker_id",
@@ -275,7 +275,7 @@
                 }
             }
         },
-        "resize_disk": {
+        "resize_volume": {
             "command": "kamatera server disk resize {worker_id} --disk-id {disk_id} --size {size_gb} --format json",
             "params": [
                 "worker_id",
@@ -292,7 +292,7 @@
                 }
             }
         },
-        "delete_disk": {
+        "delete_volume": {
             "command": "kamatera server disk remove {worker_id} --disk-id {disk_id} --format json",
             "params": [
                 "worker_id",
@@ -308,7 +308,7 @@
                 }
             }
         },
-        "list_disks": {
+        "list_volumes": {
             "command": "kamatera server info {worker_id} --format json",
             "params": [
                 "worker_id"

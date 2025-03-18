@@ -25,7 +25,7 @@
         }
       }
     },
-    "list_droplets": {
+    "list_workers": {
       "command": "doctl compute droplet list --format ID,Name,PublicIPv4,Memory,VCPUs,Disk,Region,Status --no-header",
       "params": [],
       "parse_rules": {
@@ -71,7 +71,7 @@
         }
       }
     },
-    "create_droplet": {
+    "create_worker": {
       "command": "doctl compute droplet create {droplet_name} --region {region} --size {size} --image {image} --ssh-keys {ssh_keys} --enable-backups {backups} --enable-ipv6 {ipv6} --enable-monitoring {monitoring} --enable-private-networking {private_networking} --format ID,Name,PublicIPv4 --no-header",
       "params": [
         "droplet_name",
@@ -103,7 +103,7 @@
         }
       }
     },
-    "delete_droplet": {
+    "delete_worker": {
       "command": "doctl compute droplet delete {droplet_id} --force",
       "params": [
         "droplet_id"
@@ -118,7 +118,7 @@
         }
       }
     },
-    "get_droplet": {
+    "get_worker": {
       "command": "doctl compute droplet get {droplet_id} --format ID,Name,PublicIPv4,PrivateIPv4,Memory,VCPUs,Disk,Region,Status,Features --no-header",
       "params": [
         "droplet_id"
@@ -173,7 +173,7 @@
         }
       }
     },
-    "power_on_droplet": {
+    "power_on_worker": {
       "command": "doctl compute droplet-action power-on {droplet_id}",
       "params": [
         "droplet_id"
@@ -188,7 +188,7 @@
         }
       }
     },
-    "power_off_droplet": {
+    "shutdown_worker": {
       "command": "doctl compute droplet-action power-off {droplet_id}",
       "params": [
         "droplet_id"
@@ -203,7 +203,7 @@
         }
       }
     },
-    "shutdown_droplet": {
+    "shutdown_worker": {
       "command": "doctl compute droplet-action shutdown {droplet_id}",
       "params": [
         "droplet_id"
@@ -218,7 +218,7 @@
         }
       }
     },
-    "reboot_droplet": {
+    "reboot_worker": {
       "command": "doctl compute droplet-action reboot {droplet_id}",
       "params": [
         "droplet_id"

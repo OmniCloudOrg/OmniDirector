@@ -25,7 +25,7 @@
           }
         }
       },
-      "list_instances": {
+      "list_workers": {
         "command": "linode-cli linodes list --format 'id,label,region,type,status,ipv4' --no-headers",
         "params": [],
         "parse_rules": {
@@ -60,7 +60,7 @@
           }
         }
       },
-      "create_instance": {
+      "create_worker": {
         "command": "linode-cli linodes create --label {label} --region {region} --type {type} --image {image} --root_pass {root_pass} --backups_enabled {backups_enabled} --private_ip {private_ip} --tags {tags} --format 'id,label,ipv4' --no-headers",
         "params": [
           "label",
@@ -91,7 +91,7 @@
           }
         }
       },
-      "delete_instance": {
+      "delete_worker": {
         "command": "linode-cli linodes delete {linode_id}",
         "params": [
           "linode_id"
@@ -106,7 +106,7 @@
           }
         }
       },
-      "get_instance": {
+      "get_worker": {
         "command": "linode-cli linodes view {linode_id}",
         "params": [
           "linode_id"
@@ -161,7 +161,7 @@
           }
         }
       },
-      "boot_instance": {
+      "boot_worker": {
         "command": "linode-cli linodes boot {linode_id}",
         "params": [
           "linode_id"
@@ -176,7 +176,7 @@
           }
         }
       },
-      "reboot_instance": {
+      "reboot_worker": {
         "command": "linode-cli linodes reboot {linode_id}",
         "params": [
           "linode_id"
@@ -191,7 +191,7 @@
           }
         }
       },
-      "shutdown_instance": {
+      "shutdown_worker": {
         "command": "linode-cli linodes shutdown {linode_id}",
         "params": [
           "linode_id"
@@ -206,7 +206,7 @@
           }
         }
       },
-      "resize_instance": {
+      "resize_worker": {
         "command": "linode-cli linodes resize {linode_id} --type {new_type}",
         "params": [
           "linode_id",
@@ -222,7 +222,7 @@
           }
         }
       },
-      "list_instance_disks": {
+      "list_worker_volumes": {
         "command": "linode-cli linodes disks-list {linode_id} --format 'id,label,size,filesystem' --no-headers",
         "params": [
           "linode_id"
@@ -252,7 +252,7 @@
           }
         }
       },
-      "create_disk": {
+      "create_volume": {
         "command": "linode-cli linodes disk-create {linode_id} --label {disk_label} --size {size_mb} --filesystem {filesystem}",
         "params": [
           "linode_id",
@@ -280,7 +280,7 @@
           }
         }
       },
-      "delete_disk": {
+      "delete_volume": {
         "command": "linode-cli linodes disk-delete {linode_id} {disk_id}",
         "params": [
           "linode_id",
@@ -296,7 +296,7 @@
           }
         }
       },
-      "resize_disk": {
+      "resize_volume": {
         "command": "linode-cli linodes disk-resize {linode_id} {disk_id} --size {new_size_mb}",
         "params": [
           "linode_id",
@@ -402,7 +402,7 @@
           }
         }
       },
-      "list_instance_types": {
+      "list_worker_types": {
         "command": "linode-cli linodes types --format 'id,label,vcpus,memory,disk,price_monthly' --no-headers",
         "params": [],
         "parse_rules": {
