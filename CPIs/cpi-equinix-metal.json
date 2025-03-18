@@ -1,0 +1,508 @@
+{
+    "name": "equinix-metal",
+    "type": "command",
+    "default_settings": {
+        "metro": "da",
+        "plan": "c3.small.x86",
+        "operating_system": "ubuntu_20_04",
+        "billing_cycle": "hourly",
+        "hostname": "metal-server",
+        "project_id": "",
+        "user_data": ""
+    },
+    "actions": {
+        "test_install": {
+            "command": "metal --version",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "([0-9.]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_workers": {
+            "command": "metal device list --project-id {project_id} -o json",
+            "params": [
+                "project_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "devices": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_worker": {
+            "command": "metal device create --hostname {name} --plan {worker_type} --metro {metro} --operating-system {operating_system} --project-id {project_id} --billing-cycle {billing_cycle} {ssh_key_param} {user_data_param} -o json",
+            "params": [
+                "name",
+                "worker_type",
+                "metro",
+                "operating_system",
+                "project_id",
+                "billing_cycle"
+            ],
+            "default_settings": {
+                "ssh_key_param": "",
+                "user_data_param": ""
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "hostname": {
+                        "regex": "\"hostname\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "state": {
+                        "regex": "\"state\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "ip_addresses": {
+                        "regex": "\"ip_addresses\":\\s*(\\[.*?\\])",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_worker": {
+            "command": "metal device delete {worker_id} --force -o json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_worker": {
+            "command": "metal device get {worker_id} -o json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "device": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "reboot_worker": {
+            "command": "metal device reboot {worker_id} -o json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "power_off_worker": {
+            "command": "metal device power-off {worker_id} -o json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "power_on_worker": {
+            "command": "metal device power-on {worker_id} -o json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_metros": {
+            "command": "metal metro list -o json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "metros": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_worker_types": {
+            "command": "metal plan list -o json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "plans": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_operating_systems": {
+            "command": "metal operating-system list -o json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "operating_systems": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_projects": {
+            "command": "metal project list -o json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "projects": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_project": {
+            "command": "metal project create --name {name} {payment_method_param} -o json",
+            "params": [
+                "name"
+            ],
+            "default_settings": {
+                "payment_method_param": ""
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_project": {
+            "command": "metal project delete {project_id} --force -o json",
+            "params": [
+                "project_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_ssh_key": {
+            "command": "metal ssh-key create --key \"{ssh_public_key}\" --label {name} -o json",
+            "params": [
+                "name",
+                "ssh_public_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "label": {
+                        "regex": "\"label\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_ssh_keys": {
+            "command": "metal ssh-key list -o json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "ssh_keys": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_ssh_key": {
+            "command": "metal ssh-key delete {ssh_key_id} -o json",
+            "params": [
+                "ssh_key_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_volume": {
+            "command": "metal volume create --size {size_gb} --plan {disk_type} --project-id {project_id} --metro {metro} --description {description} -o json",
+            "params": [
+                "size_gb",
+                "disk_type",
+                "project_id",
+                "metro",
+                "description"
+            ],
+            "default_settings": {
+                "description": "Volume created via CPI"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "size": {
+                        "regex": "\"size\":\\s*([0-9]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_volumes": {
+            "command": "metal volume list --project-id {project_id} -o json",
+            "params": [
+                "project_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "volumes": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_volume": {
+            "command": "metal volume delete {disk_id} -o json",
+            "params": [
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "attach_volume": {
+            "command": "metal volume attach {disk_id} --device-id {worker_id} -o json",
+            "params": [
+                "disk_id",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "detach_volume": {
+            "command": "metal volume detach {disk_id} -o json",
+            "params": [
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_ip": {
+            "command": "metal ip request --type public_ipv4 --project-id {project_id} --metro {metro} --quantity {quantity} -o json",
+            "params": [
+                "project_id",
+                "metro",
+                "quantity"
+            ],
+            "default_settings": {
+                "quantity": "1"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "address": {
+                        "regex": "\"address\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_ips": {
+            "command": "metal ip list --project-id {project_id} -o json",
+            "params": [
+                "project_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "ips": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "assign_ip": {
+            "command": "metal ip assign {ip_id} --device-id {worker_id} -o json",
+            "params": [
+                "ip_id",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "unassign_ip": {
+            "command": "metal ip unassign {ip_id} -o json",
+            "params": [
+                "ip_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_bgp_session": {
+            "command": "metal bgp-session create --project-id {project_id} --device-id {worker_id} -o json",
+            "params": [
+                "project_id",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "status": {
+                        "regex": "\"status\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_bgp_sessions": {
+            "command": "metal bgp-session list --device-id {worker_id} -o json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "bgp_sessions": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "enable_bgp": {
+            "command": "metal project bgp-enable --project-id {project_id} --asn {asn} -o json",
+            "params": [
+                "project_id",
+                "asn"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_bgp_ranges": {
+            "command": "metal project bgp-ranges --project-id {project_id} -o json",
+            "params": [
+                "project_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "ranges": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        }
+    }
+}

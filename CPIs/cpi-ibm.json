@@ -1,0 +1,419 @@
+{
+    "name": "ibm-cloud",
+    "type": "command",
+    "default_settings": {
+        "region": "us-south",
+        "zone": "us-south-1",
+        "instance_type": "bx2-2x8",
+        "image_id": "r006-aaf9e2c4-a81d-4e3b-b3d4-3e257d58f95d",
+        "ssh_key_name": "default-key",
+        "security_group": "default",
+        "volume_type": "general-purpose"
+    },
+    "actions": {
+        "test_install": {
+            "command": "ibmcloud --version",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "ibmcloud version ([0-9.]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_workers": {
+            "command": "ibmcloud is instances --output JSON",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "instances": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_worker": {
+            "command": "ibmcloud is instance-create {name} {vpc_id} {zone} {worker_type} {subnet_id} --image {image_id} --keys {ssh_key_name} --output JSON",
+            "params": [
+                "name",
+                "vpc_id",
+                "zone",
+                "worker_type",
+                "subnet_id",
+                "image_id",
+                "ssh_key_name"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "status": {
+                        "regex": "\"status\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_worker": {
+            "command": "ibmcloud is instance-delete {worker_id} --force {force} --output JSON",
+            "params": [
+                "worker_id"
+            ],
+            "default_settings": {
+                "force": "true"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_worker": {
+            "command": "ibmcloud is instance {worker_id} --output JSON",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "instance": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "start_worker": {
+            "command": "ibmcloud is instance-start {worker_id} --output JSON",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "stop_worker": {
+            "command": "ibmcloud is instance-stop {worker_id} --output JSON",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "reboot_worker": {
+            "command": "ibmcloud is instance-reboot {worker_id} --output JSON",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_images": {
+            "command": "ibmcloud is images --visibility public --output JSON",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "images": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_worker_types": {
+            "command": "ibmcloud is instance-profiles --output JSON",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "profiles": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_regions": {
+            "command": "ibmcloud regions --output JSON",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "regions": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_zones": {
+            "command": "ibmcloud is zones --output JSON",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "zones": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_disk": {
+            "command": "ibmcloud is volume-create {disk_name} {zone} --capacity {size_gb} --iops {iops} --profile {disk_type} --output JSON",
+            "params": [
+                "disk_name",
+                "zone",
+                "size_gb",
+                "iops",
+                "disk_type"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "status": {
+                        "regex": "\"status\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_disks": {
+            "command": "ibmcloud is volumes --output JSON",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "volumes": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_disk": {
+            "command": "ibmcloud is volume-delete {disk_id} --output JSON",
+            "params": [
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "attach_disk": {
+            "command": "ibmcloud is instance-volume-attachment-add {worker_id} {disk_id} --auto-delete {auto_delete} --output JSON",
+            "params": [
+                "worker_id",
+                "disk_id"
+            ],
+            "default_settings": {
+                "auto_delete": "false"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "status": {
+                        "regex": "\"status\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "detach_disk": {
+            "command": "ibmcloud is instance-volume-attachment-remove {worker_id} {attachment_id} --output JSON",
+            "params": [
+                "worker_id",
+                "attachment_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "resize_worker": {
+            "command": "ibmcloud is instance-update {worker_id} --profile {worker_type} --output JSON",
+            "params": [
+                "worker_id",
+                "worker_type"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_vpcs": {
+            "command": "ibmcloud is vpcs --output JSON",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "vpcs": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_subnets": {
+            "command": "ibmcloud is subnets --output JSON",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "subnets": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_security_groups": {
+            "command": "ibmcloud is security-groups --output JSON",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "groups": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_security_group": {
+            "command": "ibmcloud is security-group-create {name} {vpc_id} --output JSON",
+            "params": [
+                "name",
+                "vpc_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_firewall_rule": {
+            "command": "ibmcloud is security-group-rule-add {security_group_id} {direction} {protocol} --{port_param} {port} --remote {source} --output JSON",
+            "params": [
+                "security_group_id",
+                "direction",
+                "protocol",
+                "port",
+                "source"
+            ],
+            "default_settings": {
+                "port_param": "port-min-max"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_ssh_keys": {
+            "command": "ibmcloud is keys --output JSON",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "keys": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_ssh_key": {
+            "command": "ibmcloud is key-create {name} {ssh_public_key} --output JSON",
+            "params": [
+                "name",
+                "ssh_public_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        }
+    }
+}

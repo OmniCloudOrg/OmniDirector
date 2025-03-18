@@ -1,0 +1,453 @@
+{
+    "name": "huawei-cloud",
+    "type": "command",
+    "default_settings": {
+        "region": "ap-southeast-1",
+        "zone": "ap-southeast-1a",
+        "instance_type": "s6.large.2",
+        "image_id": "a6bed861-7ae3-43a3-a735-cc82d439b0c2",
+        "vpc_id": "default-vpc",
+        "subnet_id": "default-subnet",
+        "security_group": "default",
+        "volume_type": "SSD",
+        "admin_pass": null,
+        "key_name": "default-key"
+    },
+    "actions": {
+        "test_install": {
+            "command": "hcloud --version",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "([0-9.]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_workers": {
+            "command": "hcloud ECS NovaListServers --cli-region={region}",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "instances": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_worker": {
+            "command": "hcloud ECS CreatePostPaidServers --cli-region={region} --server '{\"name\": \"{name}\", \"imageRef\": \"{image_id}\", \"flavorRef\": \"{worker_type}\", \"vpcid\": \"{vpc_id}\", \"nics\": [{\"subnet_id\": \"{subnet_id}\"}], \"availability_zone\": \"{zone}\", \"security_groups\": [{\"id\": \"{security_group}\"}], {key_param}, \"root_volume\": {\"volumetype\": \"{volume_type}\", \"size\": 40}, \"count\": 1}'",
+            "params": [
+                "region",
+                "name",
+                "image_id",
+                "worker_type",
+                "vpc_id",
+                "subnet_id",
+                "zone",
+                "security_group"
+            ],
+            "default_settings": {
+                "key_param": "\"key_name\": \"{key_name}\""
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "server_ids": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_worker": {
+            "command": "hcloud ECS DeleteServers --cli-region={region} --delete-publicip=true --delete-volume=true --server-id {worker_id} --delete-type=forcibly",
+            "params": [
+                "region",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_worker": {
+            "command": "hcloud ECS ShowServer --cli-region={region} --server-id {worker_id}",
+            "params": [
+                "region",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "instance": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "start_worker": {
+            "command": "hcloud ECS StartServer --cli-region={region} --server-id {worker_id}",
+            "params": [
+                "region",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "stop_worker": {
+            "command": "hcloud ECS StopServer --cli-region={region} --server-id {worker_id} --type {stop_type}",
+            "params": [
+                "region",
+                "worker_id"
+            ],
+            "default_settings": {
+                "stop_type": "SOFT"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "reboot_worker": {
+            "command": "hcloud ECS RebootServer --cli-region={region} --server-id {worker_id} --type {reboot_type}",
+            "params": [
+                "region",
+                "worker_id"
+            ],
+            "default_settings": {
+                "reboot_type": "SOFT"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "resize_worker": {
+            "command": "hcloud ECS ResizePostPaidServer --cli-region={region} --server-id {worker_id} --flavorRef {worker_type}",
+            "params": [
+                "region",
+                "worker_id",
+                "worker_type"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_images": {
+            "command": "hcloud IMS ListImages --cli-region={region} --__imagetype=gold --__os_version=Ubuntu 20.04 server 64bit",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "images": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_worker_types": {
+            "command": "hcloud ECS ListFlavors --cli-region={region}",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "flavors": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_regions": {
+            "command": "hcloud ECS ListRegions",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "regions": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_zones": {
+            "command": "hcloud ECS ListAvailabilityZones --cli-region={region}",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "zones": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_disk": {
+            "command": "hcloud EVS CreateVolume --cli-region={region} --volume '{\"name\": \"{disk_name}\", \"availability_zone\": \"{zone}\", \"volume_type\": \"{disk_type}\", \"size\": {size_gb}}'",
+            "params": [
+                "region",
+                "disk_name",
+                "zone",
+                "disk_type",
+                "size_gb"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "volume_id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_disks": {
+            "command": "hcloud EVS ListVolumes --cli-region={region}",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "volumes": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_disk": {
+            "command": "hcloud EVS DeleteVolume --cli-region={region} --volume-id {disk_id}",
+            "params": [
+                "region",
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "attach_disk": {
+            "command": "hcloud ECS AttachServerVolume --cli-region={region} --server-id {worker_id} --body '{\"volumeAttachment\": {\"volumeId\": \"{disk_id}\", \"device\": \"/dev/sdb\"}}'",
+            "params": [
+                "region",
+                "worker_id",
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "detach_disk": {
+            "command": "hcloud ECS DetachServerVolume --cli-region={region} --server-id {worker_id} --volume-id {disk_id}",
+            "params": [
+                "region",
+                "worker_id",
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_security_groups": {
+            "command": "hcloud VPC ListSecurityGroups --cli-region={region}",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "security_groups": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_security_group": {
+            "command": "hcloud VPC CreateSecurityGroup --cli-region={region} --body '{\"security_group\": {\"name\": \"{name}\", \"vpc_id\": \"{vpc_id}\", \"description\": \"{description}\"}}'",
+            "params": [
+                "region",
+                "name",
+                "vpc_id",
+                "description"
+            ],
+            "default_settings": {
+                "description": "Security group created via CPI"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "security_group_id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_firewall_rule": {
+            "command": "hcloud VPC CreateSecurityGroupRule --cli-region={region} --security-group-id {security_group_id} --body '{\"security_group_rule\": {\"direction\": \"{direction}\", \"protocol\": \"{protocol}\", \"port_range_min\": {port_min}, \"port_range_max\": {port_max}, \"remote_ip_prefix\": \"{source}\"}}'",
+            "params": [
+                "region",
+                "security_group_id",
+                "direction",
+                "protocol",
+                "port_min",
+                "port_max",
+                "source"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "rule_id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_snapshot": {
+            "command": "hcloud EVS CreateSnapshot --cli-region={region} --volume-id {disk_id} --snapshot '{\"name\": \"{snapshot_name}\", \"description\": \"{description}\"}'",
+            "params": [
+                "region",
+                "disk_id",
+                "snapshot_name",
+                "description"
+            ],
+            "default_settings": {
+                "description": "Snapshot created via CPI"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "snapshot_id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_snapshots": {
+            "command": "hcloud EVS ListSnapshots --cli-region={region}",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "snapshots": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_snapshot": {
+            "command": "hcloud EVS DeleteSnapshot --cli-region={region} --snapshot-id {snapshot_id}",
+            "params": [
+                "region",
+                "snapshot_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_vpcs": {
+            "command": "hcloud VPC ListVpcs --cli-region={region}",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "vpcs": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_subnets": {
+            "command": "hcloud VPC ListSubnets --cli-region={region}",
+            "params": [
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "subnets": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        }
+    }
+}

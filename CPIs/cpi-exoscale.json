@@ -1,0 +1,364 @@
+{
+    "name": "exoscale",
+    "type": "command",
+    "default_settings": {
+        "zone": "ch-gva-2",
+        "instance_type": "standard.medium",
+        "image": "Linux Ubuntu 20.04 LTS 64-bit",
+        "security_group": "default",
+        "volume_type": "ssd",
+        "disk_size": "50"
+    },
+    "actions": {
+        "test_install": {
+            "command": "exo version",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "([0-9.]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_workers": {
+            "command": "exo compute instance list --zone {zone} --output json",
+            "params": [
+                "zone"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "instances": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_worker": {
+            "command": "exo compute instance create {name} --instance-type {worker_type} --template {image} --security-group {security_group} --ssh-key {ssh_key_name} --disk-size {disk_size} --zone {zone} --output json",
+            "params": [
+                "name",
+                "worker_type",
+                "image",
+                "security_group",
+                "ssh_key_name",
+                "zone"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "public_ip": {
+                        "regex": "\"public-ip\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_worker": {
+            "command": "exo compute instance delete {worker_id} --force {force} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "default_settings": {
+                "force": "true"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_worker": {
+            "command": "exo compute instance show {worker_id} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "instance": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "start_worker": {
+            "command": "exo compute instance start {worker_id} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "stop_worker": {
+            "command": "exo compute instance stop {worker_id} --force {force} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "default_settings": {
+                "force": "false"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "reboot_worker": {
+            "command": "exo compute instance reboot {worker_id} --force {force} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "default_settings": {
+                "force": "false"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_zones": {
+            "command": "exo zone list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "zones": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_worker_types": {
+            "command": "exo compute instance-type list --zone {zone} --output json",
+            "params": [
+                "zone"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "instance_types": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_images": {
+            "command": "exo compute template list --zone {zone} --output json",
+            "params": [
+                "zone"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "templates": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_security_group": {
+            "command": "exo compute security-group create {name} --description {description} --output json",
+            "params": [
+                "name",
+                "description"
+            ],
+            "default_settings": {
+                "description": "Security group created via CPI"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_security_groups": {
+            "command": "exo compute security-group list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "security_groups": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_firewall_rule": {
+            "command": "exo compute security-group rule add {security_group_id} --description {description} --protocol {protocol} --port {port} --network {source} --output json",
+            "params": [
+                "security_group_id",
+                "protocol",
+                "port",
+                "source"
+            ],
+            "default_settings": {
+                "description": "Rule created via CPI"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_firewall_rules": {
+            "command": "exo compute security-group show {security_group_id} --output json",
+            "params": [
+                "security_group_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "rules": {
+                        "regex": "\"rules\":\\s*(\\[.*\\])",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_ssh_key": {
+            "command": "exo compute ssh-key add {name} {ssh_public_key} --output json",
+            "params": [
+                "name",
+                "ssh_public_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "fingerprint": {
+                        "regex": "\"fingerprint\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_ssh_keys": {
+            "command": "exo compute ssh-key list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "keys": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_snapshot": {
+            "command": "exo compute snapshot create {worker_id} --name {snapshot_name} --output json",
+            "params": [
+                "worker_id",
+                "snapshot_name"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_snapshots": {
+            "command": "exo compute snapshot list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "snapshots": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_snapshot": {
+            "command": "exo compute snapshot delete {snapshot_id} --force {force} --output json",
+            "params": [
+                "snapshot_id"
+            ],
+            "default_settings": {
+                "force": "true"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "resize_worker": {
+            "command": "exo compute instance-type update {worker_id} {worker_type} --output json",
+            "params": [
+                "worker_id",
+                "worker_type"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        }
+    }
+}
