@@ -1,0 +1,423 @@
+{
+    "name": "atlantic",
+    "type": "command",
+    "default_settings": {
+        "region": "nyc1",
+        "plan": "g2.xsmall",
+        "image": "ubuntu-20-04",
+        "hostname": "atlantic-server",
+        "ssh_key_id": "default-key",
+        "enable_backups": "false",
+        "enable_monitoring": "true"
+    },
+    "actions": {
+        "test_install": {
+            "command": "atlantic version",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "([0-9.]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_workers": {
+            "command": "atlantic server list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "servers": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_worker": {
+            "command": "atlantic server create --name {name} --hostname {name} --image {image} --size {worker_type} --region {region} --ssh-key {ssh_key_id} --enable-backups {enable_backups} --enable-monitoring {enable_monitoring} --output json",
+            "params": [
+                "name",
+                "image",
+                "worker_type",
+                "region",
+                "ssh_key_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "ipv4": {
+                        "regex": "\"ipv4\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_worker": {
+            "command": "atlantic server delete {worker_id} --force --output json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_worker": {
+            "command": "atlantic server info {worker_id} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "server": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "start_worker": {
+            "command": "atlantic server start {worker_id} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "stop_worker": {
+            "command": "atlantic server stop {worker_id} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "reboot_worker": {
+            "command": "atlantic server reboot {worker_id} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_regions": {
+            "command": "atlantic region list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "regions": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_worker_types": {
+            "command": "atlantic size list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "sizes": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_images": {
+            "command": "atlantic image list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "images": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_snapshot": {
+            "command": "atlantic snapshot create --server-id {worker_id} --name {snapshot_name} --output json",
+            "params": [
+                "worker_id",
+                "snapshot_name"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_snapshots": {
+            "command": "atlantic snapshot list --server-id {worker_id} --output json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "snapshots": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_snapshot": {
+            "command": "atlantic snapshot delete {snapshot_id} --output json",
+            "params": [
+                "snapshot_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "resize_worker": {
+            "command": "atlantic server resize {worker_id} --size {worker_type} --output json",
+            "params": [
+                "worker_id",
+                "worker_type"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_ssh_key": {
+            "command": "atlantic ssh-key create --name {name} --public-key \"{ssh_public_key}\" --output json",
+            "params": [
+                "name",
+                "ssh_public_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_ssh_keys": {
+            "command": "atlantic ssh-key list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "keys": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_ssh_key": {
+            "command": "atlantic ssh-key delete {ssh_key_id} --output json",
+            "params": [
+                "ssh_key_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_volume": {
+            "command": "atlantic volume create --name {disk_name} --size {size_gb} --region {region} --output json",
+            "params": [
+                "disk_name",
+                "size_gb",
+                "region"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_volumes": {
+            "command": "atlantic volume list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "volumes": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "attach_volume": {
+            "command": "atlantic volume attach {disk_id} --server-id {worker_id} --output json",
+            "params": [
+                "disk_id",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "detach_volume": {
+            "command": "atlantic volume detach {disk_id} --output json",
+            "params": [
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_volume": {
+            "command": "atlantic volume delete {disk_id} --output json",
+            "params": [
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_firewall": {
+            "command": "atlantic firewall create --name {name} --server-id {worker_id} --output json",
+            "params": [
+                "name",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_firewalls": {
+            "command": "atlantic firewall list --output json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "firewalls": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "add_firewall_rule": {
+            "command": "atlantic firewall rule add {security_group_id} --protocol {protocol} --port {port} --source {source} --description \"{description}\" --output json",
+            "params": [
+                "security_group_id",
+                "protocol",
+                "port",
+                "source",
+                "description"
+            ],
+            "default_settings": {
+                "description": "Rule created via CPI"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        }
+    }
+}

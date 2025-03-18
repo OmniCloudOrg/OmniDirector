@@ -1,0 +1,393 @@
+{
+    "name": "kamatera",
+    "type": "command",
+    "default_settings": {
+        "datacenter": "EU-LO",
+        "cpu_type": "B",
+        "cpu_cores": "2",
+        "ram_mb": "2048",
+        "disk_size_gb": "40",
+        "image": "ubuntu_server_20.04_64-bit",
+        "power_on": "true",
+        "network_name": "wan",
+        "billing_cycle": "hourly"
+    },
+    "actions": {
+        "test_install": {
+            "command": "kamatera version",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "([0-9.]+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_workers": {
+            "command": "kamatera server list --format json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "servers": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_worker": {
+            "command": "kamatera server create --name {name} --datacenter {datacenter} --cpu {cpu_type} --cpu-count {cpu_cores} --ram {ram_mb} --disk size={disk_size_gb} --image {image} --network name={network_name},ip=auto --password random --ssh-key {ssh_key_name} --power-on {power_on} --format json",
+            "params": [
+                "name",
+                "datacenter",
+                "cpu_type",
+                "cpu_cores",
+                "ram_mb",
+                "disk_size_gb",
+                "image",
+                "network_name",
+                "ssh_key_name",
+                "power_on"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_worker": {
+            "command": "kamatera server terminate {worker_id} --force {force} --format json",
+            "params": [
+                "worker_id"
+            ],
+            "default_settings": {
+                "force": "true"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_worker": {
+            "command": "kamatera server info {worker_id} --format json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "server": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "start_worker": {
+            "command": "kamatera server power {worker_id} --operation on --format json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "stop_worker": {
+            "command": "kamatera server power {worker_id} --operation off --format json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "reboot_worker": {
+            "command": "kamatera server power {worker_id} --operation restart --format json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_datacenters": {
+            "command": "kamatera datacenter list --format json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "datacenters": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_images": {
+            "command": "kamatera image list --datacenter {datacenter} --format json",
+            "params": [
+                "datacenter"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "images": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "resize_worker": {
+            "command": "kamatera server resize {worker_id} --cpu {cpu_type} --cpu-count {cpu_cores} --ram {ram_mb} --format json",
+            "params": [
+                "worker_id",
+                "cpu_type",
+                "cpu_cores",
+                "ram_mb"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_snapshot": {
+            "command": "kamatera server backup create {worker_id} --name {snapshot_name} --format json",
+            "params": [
+                "worker_id",
+                "snapshot_name"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "backup_id": {
+                        "regex": "\"backup_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_snapshots": {
+            "command": "kamatera server backup list {worker_id} --format json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "backups": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "restore_snapshot": {
+            "command": "kamatera server backup restore {worker_id} --backup-id {snapshot_id} --format json",
+            "params": [
+                "worker_id",
+                "snapshot_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_snapshot": {
+            "command": "kamatera server backup delete {worker_id} --backup-id {snapshot_id} --format json",
+            "params": [
+                "worker_id",
+                "snapshot_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_disk": {
+            "command": "kamatera server disk add {worker_id} --size {size_gb} --format json",
+            "params": [
+                "worker_id",
+                "size_gb"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "disk_id": {
+                        "regex": "\"disk_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "resize_disk": {
+            "command": "kamatera server disk resize {worker_id} --disk-id {disk_id} --size {size_gb} --format json",
+            "params": [
+                "worker_id",
+                "disk_id",
+                "size_gb"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_disk": {
+            "command": "kamatera server disk remove {worker_id} --disk-id {disk_id} --format json",
+            "params": [
+                "worker_id",
+                "disk_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "command_id": {
+                        "regex": "\"command_id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_disks": {
+            "command": "kamatera server info {worker_id} --format json",
+            "params": [
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "disks": {
+                        "regex": "\"disks\":\\s*(\\[.*?\\])",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_ssh_key": {
+            "command": "kamatera ssh-key create --name {name} --public-key \"{ssh_public_key}\" --format json",
+            "params": [
+                "name",
+                "ssh_public_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "name": {
+                        "regex": "\"name\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_ssh_keys": {
+            "command": "kamatera ssh-key list --format json",
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "ssh_keys": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_ssh_key": {
+            "command": "kamatera ssh-key delete {ssh_key_id} --format json",
+            "params": [
+                "ssh_key_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_command_status": {
+            "command": "kamatera command info {command_id} --format json",
+            "params": [
+                "command_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "status": {
+                        "regex": "\"status\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "progress": {
+                        "regex": "\"progress\":\\s*([0-9]+)",
+                        "group": 1
+                    }
+                }
+            }
+        }
+    }
+}
