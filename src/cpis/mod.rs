@@ -197,7 +197,11 @@ impl CpiSystem {
             
             return Err(CpiError::NoProvidersLoaded);
         }
-        info!("Successfully loaded {} out of {} CPI providers", loaded_count, total_files);
+        // Report successful loading with clear formatting for visibility
+        info!("============================================");
+        info!("✅ Successfully loaded {}/{} CPI providers", loaded_count, total_files);
+        info!("============================================");
+
         
         // Show warnings about failed providers
         if !validation_errors.is_empty() || !loading_errors.is_empty() {

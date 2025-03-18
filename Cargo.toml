@@ -24,6 +24,7 @@ once_cell = "1.21.1"
 dashmap = "6.1.0"
 rayon = "1.10.0"
 run_script = "0.11.0"
+indicatif = "0.17.11"
 
 [profile.dev]
 codegen-units = 32

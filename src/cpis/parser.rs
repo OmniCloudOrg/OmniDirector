@@ -1,7 +1,7 @@
 // parser.rs - Optimized for performance
 use super::provider::{ParseRules, Pattern, ArrayPattern};
 use super::error::CpiError;
-use crate::{debug, trace, warn};
+use super::logger::{debug, trace, warn};
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use serde_json::{Value, Map, Number};

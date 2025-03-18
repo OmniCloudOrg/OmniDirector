@@ -7677,3 +7677,15 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
         "hours": String("1"),
     },
 }
+[2025-03-17 23:35:40] Logging system initialized
+[2025-03-17 23:35:42] Server running at http://0.0.0.0:8081
+[2025-03-17 23:35:44] Loaded CPI providers: ["virtualbox_windows", "std_kvm", "linode", "aws", "azure", "detee_cpi", "hetzner_cloud", "scaleway", "upcloud", "gcp", "ovh_cloud", "vmware_esxi", "digital_ocean", "qemu", "dummy", "oracle_cloud", "vultr", "proxmox"]
+[2025-03-18 09:52:57] Logging system initialized
+[2025-03-18 09:52:59] Server running at http://0.0.0.0:8081
+[2025-03-18 09:53:01] Loaded CPI providers: ["virtualbox_windows", "detee_cpi", "qemu", "vmware_esxi", "upcloud", "dummy", "gcp", "scaleway", "hetzner_cloud", "aws", "digital_ocean", "std_kvm", "oracle_cloud", "proxmox", "ovh_cloud", "vultr", "azure", "linode"]
+[2025-03-18 10:00:12] Logging system initialized
+[2025-03-18 10:00:14] Server running at http://0.0.0.0:8081
+[2025-03-18 10:00:16] Loaded CPI providers: ["hetzner_cloud", "proxmox", "ovh_cloud", "vultr", "dummy", "std_kvm", "qemu", "linode", "oracle_cloud", "aws", "azure", "scaleway", "detee_cpi", "virtualbox_windows", "upcloud", "gcp", "digital_ocean", "vmware_esxi"]
+[2025-03-18 10:01:37] Logging system initialized
+[2025-03-18 10:01:39] Server running at http://0.0.0.0:8081
+[2025-03-18 10:01:40] Loaded CPI providers: ["detee_cpi", "upcloud", "aws", "hetzner_cloud", "gcp", "ovh_cloud", "vultr", "azure", "oracle_cloud", "proxmox", "vmware_esxi", "linode", "virtualbox_windows", "dummy", "std_kvm", "qemu", "scaleway", "digital_ocean"]
