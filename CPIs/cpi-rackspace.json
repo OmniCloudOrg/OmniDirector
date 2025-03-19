@@ -1,0 +1,236 @@
+{
+  "name": "rackspace",
+  "type": "command",
+  "default_settings": {
+    "region": "DFW",
+    "worker_type": "general1-1",
+    "image": "Ubuntu 20.04 LTS (Focal Fossa)",
+    "ssh_key_name": "default-key",
+    "network": "public-network",
+    "volume_type": "SSD"
+  },
+  "actions": {
+    "test_install": {
+      "command": "rack --version",
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "rack version ([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_workers": {
+      "command": "rack servers instance list --region {region} --output json",
+      "params": ["region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "output": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_worker": {
+      "command": "rack servers instance create --name {name} --flavor-id {worker_type} --image-name {image} --region {region} --keypair {ssh_key_name} --output json",
+      "params": [
+        "name",
+        "worker_type",
+        "image",
+        "region",
+        "ssh_key_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "instance_id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"status\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_worker": {
+      "command": "rack servers instance delete --id {worker_id} --region {region} --output json",
+      "params": ["worker_id", "region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "get_worker": {
+      "command": "rack servers instance get --id {worker_id} --region {region} --output json",
+      "params": ["worker_id", "region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "output": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "start_worker": {
+      "command": "rack servers instance start --id {worker_id} --region {region} --output json",
+      "params": ["worker_id", "region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "stop_worker": {
+      "command": "rack servers instance stop --id {worker_id} --region {region} --output json",
+      "params": ["worker_id", "region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "reboot_worker": {
+      "command": "rack servers instance reboot --id {worker_id} --region {region} --type {reboot_type} --output json",
+      "params": ["worker_id", "region", "reboot_type"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_images": {
+      "command": "rack servers image list --region {region} --output json",
+      "params": ["region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "output": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_snapshot": {
+      "command": "rack servers image create --instance-id {worker_id} --name {snapshot_name} --region {region} --output json",
+      "params": ["worker_id", "snapshot_name", "region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "snapshot_id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_disks": {
+      "command": "rack block-storage volume list --region {region} --output json",
+      "params": ["region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "output": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_disk": {
+      "command": "rack block-storage volume create --name {disk_name} --size {size_gb} --type {volume_type} --region {region} --output json",
+      "params": ["disk_name", "size_gb", "volume_type", "region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "disk_id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "attach_disk": {
+      "command": "rack servers volume attach --server-id {worker_id} --volume-id {disk_id} --region {region} --output json",
+      "params": ["worker_id", "disk_id", "region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "detach_disk": {
+      "command": "rack servers volume detach --server-id {worker_id} --volume-id {disk_id} --region {region} --output json",
+      "params": ["worker_id", "disk_id", "region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_regions": {
+      "command": "rack regions list --output json",
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "output": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "configure_auth": {
+      "command": "rack configure --username {username} --api-key {api_key} --use-profile {profile}",
+      "params": ["username", "api_key", "profile"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

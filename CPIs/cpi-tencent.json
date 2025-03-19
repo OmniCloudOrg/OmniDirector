@@ -1,0 +1,299 @@
+{
+    "name": "tencent",
+    "type": "command",
+    "default_settings": {
+      "region": "ap-guangzhou",
+      "zone": "ap-guangzhou-3",
+      "worker_type": "SA2.SMALL1",
+      "image": "img-9qabwvbn",
+      "security_group": "sg-icy671l9",
+      "volume_type": "CLOUD_PREMIUM",
+      "vpc_id": "vpc-default",
+      "subnet_id": "subnet-default"
+    },
+    "actions": {
+      "test_install": {
+        "command": "tccli --version",
+        "params": [],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "version": {
+              "regex": "tccli version ([\\d\\.]+)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_workers": {
+        "command": "tccli cvm DescribeInstances --region {region} --cli-unfold-argument",
+        "params": ["region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_worker": {
+        "command": "tccli cvm RunInstances --InstanceChargeType POSTPAID_BY_HOUR --Placement.Zone {zone} --InstanceType {worker_type} --ImageId {image} --VirtualPrivateCloud.VpcId {vpc_id} --VirtualPrivateCloud.SubnetId {subnet_id} --InternetAccessible.InternetChargeType TRAFFIC_POSTPAID_BY_HOUR --InternetAccessible.InternetMaxBandwidthOut 10 --InternetAccessible.PublicIpAssigned TRUE --InstanceName {name} --SecurityGroupIds {security_group} --LoginSettings.KeyIds {ssh_key_name} --region {region} --cli-unfold-argument",
+        "params": [
+          "zone",
+          "worker_type",
+          "image",
+          "vpc_id",
+          "subnet_id",
+          "name",
+          "security_group",
+          "ssh_key_name",
+          "region"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "instance_id": {
+              "regex": "\"InstanceIdSet\":\\s*\\[\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_worker": {
+        "command": "tccli cvm TerminateInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument",
+        "params": ["worker_id", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "get_worker": {
+        "command": "tccli cvm DescribeInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument",
+        "params": ["worker_id", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "start_worker": {
+        "command": "tccli cvm StartInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument",
+        "params": ["worker_id", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "stop_worker": {
+        "command": "tccli cvm StopInstances --InstanceIds {worker_id} --region {region} --StopType {stop_type} --cli-unfold-argument",
+        "params": ["worker_id", "region", "stop_type"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "reboot_worker": {
+        "command": "tccli cvm RebootInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument",
+        "params": ["worker_id", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "resize_worker": {
+        "command": "tccli cvm ResetInstance --InstanceId {worker_id} --InstanceType {worker_type} --region {region} --cli-unfold-argument",
+        "params": ["worker_id", "worker_type", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_disks": {
+        "command": "tccli cbs DescribeDisks --region {region} --cli-unfold-argument",
+        "params": ["region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_disk": {
+        "command": "tccli cbs CreateDisks --DiskChargeType POSTPAID_BY_HOUR --DiskType {volume_type} --DiskName {disk_name} --DiskSize {size_gb} --Placement.Zone {zone} --region {region} --cli-unfold-argument",
+        "params": ["volume_type", "disk_name", "size_gb", "zone", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "disk_id": {
+              "regex": "\"DiskIdSet\":\\s*\\[\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "attach_disk": {
+        "command": "tccli cbs AttachDisks --DiskIds {disk_id} --InstanceId {worker_id} --region {region} --cli-unfold-argument",
+        "params": ["disk_id", "worker_id", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "detach_disk": {
+        "command": "tccli cbs DetachDisks --DiskIds {disk_id} --region {region} --cli-unfold-argument",
+        "params": ["disk_id", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "delete_disk": {
+        "command": "tccli cbs TerminateDisks --DiskIds {disk_id} --region {region} --cli-unfold-argument",
+        "params": ["disk_id", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_snapshot": {
+        "command": "tccli cbs CreateSnapshot --DiskId {disk_id} --SnapshotName {snapshot_name} --region {region} --cli-unfold-argument",
+        "params": ["disk_id", "snapshot_name", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "snapshot_id": {
+              "regex": "\"SnapshotId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_snapshots": {
+        "command": "tccli cbs DescribeSnapshots --region {region} --cli-unfold-argument",
+        "params": ["region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_snapshot": {
+        "command": "tccli cbs DeleteSnapshots --SnapshotIds {snapshot_id} --region {region} --cli-unfold-argument",
+        "params": ["snapshot_id", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"RequestId\":\\s*\"([^\"]+)\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_images": {
+        "command": "tccli cvm DescribeImages --region {region} --cli-unfold-argument",
+        "params": ["region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_regions": {
+        "command": "tccli cvm DescribeRegions --cli-unfold-argument",
+        "params": [],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_zones": {
+        "command": "tccli cvm DescribeZones --region {region} --cli-unfold-argument",
+        "params": ["region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "output": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "configure_auth": {
+        "command": "tccli configure set --secretId {access_key} --secretKey {secret_key} --region {region}",
+        "params": ["access_key", "secret_key", "region"],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
