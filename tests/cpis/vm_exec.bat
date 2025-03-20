@@ -3,7 +3,7 @@ set VM_NAME=OmniVM
 set MEMORY_MB=2048
 set CPU_COUNT=2
 set OS_TYPE=Ubuntu_64
-set BOX_PATH=C:\Users\redst\Downloads\trusty-server-cloudimg-amd64-vagrant-disk1.box
+set BOX_PATH=C:\Users\trident\Downloads\bionic-server-cloudimg-amd64-vagrant.box
 set EXTRACTED_DIR=%TEMP%\vagrant_box_extracted
 set API_ENDPOINT=http://localhost:8081/vms/action
 
@@ -22,8 +22,8 @@ for %%i in (%EXTRACTED_DIR%\*.vmdk %EXTRACTED_DIR%\*.vdi %EXTRACTED_DIR%\*.vhd) 
 echo Creating VM...
 (
 echo {
-echo   "provider": "virtualbox_cpi_windows",
-echo   "action": "create_vm",
+echo   "provider": "virtualbox_windows",
+echo   "action": "create_worker",
 echo   "params": {
 echo     "vm_name": "%VM_NAME%",
 echo     "os_type": "%OS_TYPE%",
@@ -38,8 +38,8 @@ curl -s -X POST -H "Content-Type: application/json" -d @"%TEMP%\vm_request.json"
 echo Attaching disk...
 (
 echo {
-echo   "provider": "virtualbox_cpi_windows",
-echo   "action": "attach_disk",
+echo   "provider": "virtualbox_windows",
+echo   "action": "attach_volume",
 echo   "params": {
 echo     "vm_name": "%VM_NAME%",
 echo     "controller_name": "SATAController",
@@ -54,15 +54,15 @@ curl -s -X POST -H "Content-Type: application/json" -d @"%TEMP%\attach_disk.json
 echo Starting VM...
 (
 echo {
-echo   "provider": "virtualbox_cpi_windows",
-echo   "action": "start_vm",
+echo   "provider": "virtualbox_windows",
+echo   "action": "start_worker",
 echo   "params": {
 echo     "vm_name": "%VM_NAME%"
 echo   }
 echo }
-) > "%TEMP%\start_vm.json"
+) > "%TEMP%\start_worker.json"
 
-curl -s -X POST -H "Content-Type: application/json" -d @"%TEMP%\start_vm.json" %API_ENDPOINT%
+curl -s -X POST -H "Content-Type: application/json" -d @"%TEMP%\start_worker.json" %API_ENDPOINT%
 
 echo Waiting 90 seconds for VM to boot...
 timeout /t 1 /nobreak > nul
@@ -70,7 +70,7 @@ timeout /t 1 /nobreak > nul
 echo Executing command in VM...
 (
 echo {
-echo   "provider": "virtualbox_cpi_windows",
+echo   "provider": "virtualbox_windows",
 echo   "action": "execute_command",
 echo   "params": {
 echo     "vm_name": "%VM_NAME%",

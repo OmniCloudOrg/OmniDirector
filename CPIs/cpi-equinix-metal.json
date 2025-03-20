@@ -12,7 +12,7 @@
     },
     "actions": {
         "test_install": {
-            "command": "metal --version",
+            "target": {"Command": "metal --version"},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -24,7 +24,7 @@
             }
         },
         "list_workers": {
-            "command": "metal device list --project-id {project_id} -o json",
+            "target": {"Command": "metal device list --project-id {project_id} -o json"},
             "params": [
                 "project_id"
             ],
@@ -39,7 +39,7 @@
             }
         },
         "create_worker": {
-            "command": "metal device create --hostname {name} --plan {worker_type} --metro {metro} --operating-system {operating_system} --project-id {project_id} --billing-cycle {billing_cycle} {ssh_key_param} {user_data_param} -o json",
+            "target": {"Command": "metal device create --hostname {name} --plan {worker_type} --metro {metro} --operating-system {operating_system} --project-id {project_id} --billing-cycle {billing_cycle} {ssh_key_param} {user_data_param} -o json"},
             "params": [
                 "name",
                 "worker_type",
@@ -75,7 +75,7 @@
             }
         },
         "delete_worker": {
-            "command": "metal device delete {worker_id} --force -o json",
+            "target": {"Command": "metal device delete {worker_id} --force -o json"},
             "params": [
                 "worker_id"
             ],
@@ -90,7 +90,7 @@
             }
         },
         "get_worker": {
-            "command": "metal device get {worker_id} -o json",
+            "target": {"Command": "metal device get {worker_id} -o json"},
             "params": [
                 "worker_id"
             ],
@@ -105,7 +105,7 @@
             }
         },
         "reboot_worker": {
-            "command": "metal device reboot {worker_id} -o json",
+            "target": {"Command": "metal device reboot {worker_id} -o json"},
             "params": [
                 "worker_id"
             ],
@@ -120,7 +120,7 @@
             }
         },
         "shutdown_worker": {
-            "command": "metal device power-off {worker_id} -o json",
+            "target": {"Command": "metal device power-off {worker_id} -o json"},
             "params": [
                 "worker_id"
             ],
@@ -135,7 +135,7 @@
             }
         },
         "power_on_worker": {
-            "command": "metal device power-on {worker_id} -o json",
+            "target": {"Command": "metal device power-on {worker_id} -o json"},
             "params": [
                 "worker_id"
             ],
@@ -150,7 +150,7 @@
             }
         },
         "list_metros": {
-            "command": "metal metro list -o json",
+            "target": {"Command": "metal metro list -o json"},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -162,7 +162,7 @@
             }
         },
         "list_worker_types": {
-            "command": "metal plan list -o json",
+            "target": {"Command": "metal plan list -o json"},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -174,7 +174,7 @@
             }
         },
         "list_operating_systems": {
-            "command": "metal operating-system list -o json",
+            "target": {"Command": "metal operating-system list -o json"},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -186,7 +186,7 @@
             }
         },
         "list_projects": {
-            "command": "metal project list -o json",
+            "target": {"Command": "metal project list -o json"},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -198,7 +198,7 @@
             }
         },
         "create_project": {
-            "command": "metal project create --name {name} {payment_method_param} -o json",
+            "target": {"Command": "metal project create --name {name} {payment_method_param} -o json"},
             "params": [
                 "name"
             ],
@@ -220,7 +220,7 @@
             }
         },
         "delete_project": {
-            "command": "metal project delete {project_id} --force -o json",
+            "target": {"Command": "metal project delete {project_id} --force -o json"},
             "params": [
                 "project_id"
             ],
@@ -235,7 +235,7 @@
             }
         },
         "create_ssh_key": {
-            "command": "metal ssh-key create --key \"{ssh_public_key}\" --label {name} -o json",
+            "target": {"Command": "metal ssh-key create --key \"}{ssh_public_key}\" --label {name} -o json"},
             "params": [
                 "name",
                 "ssh_public_key"
@@ -255,7 +255,7 @@
             }
         },
         "list_ssh_keys": {
-            "command": "metal ssh-key list -o json",
+            "target": {"Command": "metal ssh-key list -o json"},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -267,7 +267,7 @@
             }
         },
         "delete_ssh_key": {
-            "command": "metal ssh-key delete {ssh_key_id} -o json",
+            "target": {"Command": "metal ssh-key delete {ssh_key_id} -o json"},
             "params": [
                 "ssh_key_id"
             ],
@@ -282,7 +282,7 @@
             }
         },
         "create_volume": {
-            "command": "metal volume create --size {size_gb} --plan {disk_type} --project-id {project_id} --metro {metro} --description {description} -o json",
+            "target": {"Command": "metal volume create --size {size_gb} --plan {disk_type} --project-id {project_id} --metro {metro} --description {description} -o json"},
             "params": [
                 "size_gb",
                 "disk_type",
@@ -308,7 +308,7 @@
             }
         },
         "list_volumes": {
-            "command": "metal volume list --project-id {project_id} -o json",
+            "target": {"Command": "metal volume list --project-id {project_id} -o json"},
             "params": [
                 "project_id"
             ],
@@ -323,7 +323,7 @@
             }
         },
         "delete_volume": {
-            "command": "metal volume delete {disk_id} -o json",
+            "target": {"Command": "metal volume delete {disk_id} -o json"},
             "params": [
                 "disk_id"
             ],
@@ -338,7 +338,7 @@
             }
         },
         "attach_volume": {
-            "command": "metal volume attach {disk_id} --device-id {worker_id} -o json",
+            "target": {"Command": "metal volume attach {disk_id} --device-id {worker_id} -o json"},
             "params": [
                 "disk_id",
                 "worker_id"
@@ -354,7 +354,7 @@
             }
         },
         "detach_volume": {
-            "command": "metal volume detach {disk_id} -o json",
+            "target": {"Command": "metal volume detach {disk_id} -o json"},
             "params": [
                 "disk_id"
             ],
@@ -369,7 +369,7 @@
             }
         },
         "create_ip": {
-            "command": "metal ip request --type public_ipv4 --project-id {project_id} --metro {metro} --quantity {quantity} -o json",
+            "target": {"Command": "metal ip request --type public_ipv4 --project-id {project_id} --metro {metro} --quantity {quantity} -o json"},
             "params": [
                 "project_id",
                 "metro",
@@ -393,7 +393,7 @@
             }
         },
         "list_ips": {
-            "command": "metal ip list --project-id {project_id} -o json",
+            "target": {"Command": "metal ip list --project-id {project_id} -o json"},
             "params": [
                 "project_id"
             ],
@@ -408,7 +408,7 @@
             }
         },
         "assign_ip": {
-            "command": "metal ip assign {ip_id} --device-id {worker_id} -o json",
+            "target": {"Command": "metal ip assign {ip_id} --device-id {worker_id} -o json"},
             "params": [
                 "ip_id",
                 "worker_id"
@@ -424,7 +424,7 @@
             }
         },
         "unassign_ip": {
-            "command": "metal ip unassign {ip_id} -o json",
+            "target": {"Command": "metal ip unassign {ip_id} -o json"},
             "params": [
                 "ip_id"
             ],
@@ -439,7 +439,7 @@
             }
         },
         "create_bgp_session": {
-            "command": "metal bgp-session create --project-id {project_id} --device-id {worker_id} -o json",
+            "target": {"Command": "metal bgp-session create --project-id {project_id} --device-id {worker_id} -o json"},
             "params": [
                 "project_id",
                 "worker_id"
@@ -459,7 +459,7 @@
             }
         },
         "list_bgp_sessions": {
-            "command": "metal bgp-session list --device-id {worker_id} -o json",
+            "target": {"Command": "metal bgp-session list --device-id {worker_id} -o json"},
             "params": [
                 "worker_id"
             ],
@@ -474,7 +474,7 @@
             }
         },
         "enable_bgp": {
-            "command": "metal project bgp-enable --project-id {project_id} --asn {asn} -o json",
+            "target": {"Command": "metal project bgp-enable --project-id {project_id} --asn {asn} -o json"},
             "params": [
                 "project_id",
                 "asn"
@@ -490,7 +490,7 @@
             }
         },
         "get_bgp_ranges": {
-            "command": "metal project bgp-ranges --project-id {project_id} -o json",
+            "target": {"Command": "metal project bgp-ranges --project-id {project_id} -o json"},
             "params": [
                 "project_id"
             ],

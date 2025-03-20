@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use derive_more::Display;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::fs::File;
@@ -19,13 +20,39 @@ pub struct Provider {
     pub default_settings: Option<HashMap<String, Value>>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Display)]
+#[display(
+    "ActionDef(target={target:?}, params={params:?}, pre_exec={pre_exec:?}, post_exec={post_exec:?}, parse_rules={parse_rules:?})"
+)]
 pub struct ActionDef {
-    pub command: String,
+    pub target: ActionTarget,
     pub params: Option<Vec<String>>,
     pub pre_exec: Option<Vec<ActionDef>>,
     pub post_exec: Option<Vec<ActionDef>>,
     pub parse_rules: ParseRules,
+}
+
+#[derive(Debug, Deserialize,Serialize,Clone,PartialEq, Display)]
+pub enum ActionTarget {
+    #[display("Endpoint(url={url}, method={method:?}, headers={headers:?})")]
+    Endpoint {
+        url: String,
+        method: EndPointMethod,
+        headers: Option<HashMap<String, String>>,
+    },
+    Command(String),
+}
+
+#[derive(Debug, Deserialize,Serialize,Clone,PartialEq)]
+pub enum EndPointMethod {
+    Get,
+    Post,
+    Put,
+    Patch,
+    Delete,
+    Option,
+    Custom(String)
+    
 }
 
 #[derive(Deserialize, Debug, Clone)]

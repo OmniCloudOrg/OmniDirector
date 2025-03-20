@@ -1,9 +1,11 @@
 // executor.rs - Using run_script crate for reliable shell execution
-use super::provider::{Provider, ActionDef};
+use super::provider::{Provider, ActionDef,ActionTarget};
 use super::error::CpiError;
 use super::parser;
 use log::{info, debug, trace, warn, error};
+use rayon::result;
 use std::collections::HashMap;
+use std::process::Command;
 use std::time::Instant;
 use serde_json::Value;
 use run_script::ScriptOptions;
@@ -89,19 +91,37 @@ fn execute_sub_action(action_def: &ActionDef, params: &HashMap<String, Value>) -
     
     // Execute the main command
     debug!("Executing main command");
-    let cmd = fill_template(&action_def.command, params)?;
-    let output = execute_command(&cmd)?;
+
+    let result: Value;
+    match &action_def.target {
+        ActionTarget::Command(command) => {
+            let cmd = fill_template(command, params)?;
+
+            // Here it is, the call you have been digging around for
+            // This is where we actually run the assembled command
+            // defined by the CPI ini the system shell.
+            let output = execute_command(&cmd)?;
     
-    // Parse the output according to the parse rules
-    debug!("Parsing command output ({} bytes)", output.len());
-    let result = match parser::parse_output(&output, &action_def.parse_rules, params) {
-        Ok(value) => value,
-        Err(e) => {
-            error!("Failed to parse command output: {}", e);
-            error!("Command output was: {}", truncate_output(&output, 1000));
-            return Err(e);
+            // Parse the output according to the parse rules
+            debug!("Parsing command output ({} bytes)", output.len());
+            result = match parser::parse_output(&output, &action_def.parse_rules, params) {
+                Ok(value) => value,
+                Err(e) => {
+                    error!("Failed to parse command output: {}", e);
+                    error!("Command output was: {}", truncate_output(&output, 1000));
+                    return Err(e);
+                }
+            };
+        },
+        ActionTarget::Endpoint { url, method, headers } => {
+
+            error!("No endpoint defined for action '{}'", action_def);
+            return Err(CpiError::ExecutionFailed(format!("No endpoint defined for action '{}'", action_def)));
         }
-    };
+    }
+    
+    
+
     
     // Execute post-exec actions if any
     if let Some(post_actions) = &action_def.post_exec {

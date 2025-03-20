@@ -12,7 +12,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "openstack --version",
+        "target": {"Command": "openstack --version"},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -25,7 +25,7 @@
         }
       },
       "list_workers": {
-        "command": "openstack server list -f json",
+        "target": {"Command": "openstack server list -f json"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -60,7 +60,7 @@
         }
       },
       "get_worker": {
-        "command": "openstack server show -f json {server_id}",
+        "target": {"Command": "openstack server show -f json {server_id}"},
         "params": [
           "server_id"
         ],
@@ -105,7 +105,7 @@
         }
       },
       "create_worker": {
-        "command": "openstack server create --flavor {flavor} --image {image} --network {network} {ssh_key_param} {project_param} --wait {name}",
+        "target": {"Command": "openstack server create --flavor {flavor} --image {image} --network {network} {ssh_key_param} {project_param} --wait {name}"},
         "params": [
           "flavor",
           "image",
@@ -141,7 +141,7 @@
         }
       },
       "delete_worker": {
-        "command": "openstack server delete --wait {server_id}",
+        "target": {"Command": "openstack server delete --wait {server_id}"},
         "params": [
           "server_id"
         ],
@@ -156,7 +156,7 @@
         }
       },
       "start_worker": {
-        "command": "openstack server start {server_id}",
+        "target": {"Command": "openstack server start {server_id}"},
         "params": [
           "server_id"
         ],
@@ -171,7 +171,7 @@
         }
       },
       "stop_worker": {
-        "command": "openstack server stop {server_id}",
+        "target": {"Command": "openstack server stop {server_id}"},
         "params": [
           "server_id"
         ],
@@ -186,7 +186,7 @@
         }
       },
       "reboot_worker": {
-        "command": "openstack server reboot --wait {server_id}",
+        "target": {"Command": "openstack server reboot --wait {server_id}"},
         "params": [
           "server_id"
         ],
@@ -201,7 +201,7 @@
         }
       },
       "resize_worker": {
-        "command": "openstack server resize --flavor {flavor} --wait {server_id}",
+        "target": {"Command": "openstack server resize --flavor {flavor} --wait {server_id}"},
         "params": [
           "flavor",
           "server_id"
@@ -217,7 +217,7 @@
         }
       },
       "confirm_resize": {
-        "command": "openstack server resize --confirm {server_id}",
+        "target": {"Command": "openstack server resize --confirm {server_id}"},
         "params": [
           "server_id"
         ],
@@ -232,7 +232,7 @@
         }
       },
       "revert_resize": {
-        "command": "openstack server resize --revert {server_id}",
+        "target": {"Command": "openstack server resize --revert {server_id}"},
         "params": [
           "server_id"
         ],
@@ -247,7 +247,7 @@
         }
       },
       "list_flavors": {
-        "command": "openstack flavor list -f json",
+        "target": {"Command": "openstack flavor list -f json"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -280,7 +280,7 @@
         }
       },
       "list_images": {
-        "command": "openstack image list -f json",
+        "target": {"Command": "openstack image list -f json"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -308,7 +308,7 @@
         }
       },
       "create_volume": {
-        "command": "openstack volume create --size {size_gb} --description {description} {name}",
+        "target": {"Command": "openstack volume create --size {size_gb} --description {description} {name}"},
         "params": [
           "size_gb",
           "description",
@@ -338,7 +338,7 @@
         }
       },
       "list_volumes": {
-        "command": "openstack volume list -f json",
+        "target": {"Command": "openstack volume list -f json"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -370,7 +370,7 @@
         }
       },
       "attach_volume": {
-        "command": "openstack server add volume {server_id} {volume_id}",
+        "target": {"Command": "openstack server add volume {server_id} {volume_id}"},
         "params": [
           "server_id",
           "volume_id"
@@ -386,7 +386,7 @@
         }
       },
       "detach_volume": {
-        "command": "openstack server remove volume {server_id} {volume_id}",
+        "target": {"Command": "openstack server remove volume {server_id} {volume_id}"},
         "params": [
           "server_id",
           "volume_id"
@@ -402,7 +402,7 @@
         }
       },
       "delete_volume": {
-        "command": "openstack volume delete {volume_id}",
+        "target": {"Command": "openstack volume delete {volume_id}"},
         "params": [
           "volume_id"
         ],
@@ -417,7 +417,7 @@
         }
       },
       "create_snapshot": {
-        "command": "openstack snapshot create --name {name} {volume_id}",
+        "target": {"Command": "openstack snapshot create --name {name} {volume_id}"},
         "params": [
           "name",
           "volume_id"
@@ -446,7 +446,7 @@
         }
       },
       "list_snapshots": {
-        "command": "openstack snapshot list -f json",
+        "target": {"Command": "openstack snapshot list -f json"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -473,7 +473,7 @@
         }
       },
       "delete_snapshot": {
-        "command": "openstack snapshot delete {snapshot_id}",
+        "target": {"Command": "openstack snapshot delete {snapshot_id}"},
         "params": [
           "snapshot_id"
         ],
@@ -488,7 +488,7 @@
         }
       },
       "create_ssh_key": {
-        "command": "openstack keypair create --public-key {public_key_file} {key_name}",
+        "target": {"Command": "openstack keypair create --public-key {public_key_file} {key_name}"},
         "params": [
           "public_key_file",
           "key_name"
@@ -512,7 +512,7 @@
         }
       },
       "list_ssh_keys": {
-        "command": "openstack keypair list -f json",
+        "target": {"Command": "openstack keypair list -f json"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -534,7 +534,7 @@
         }
       },
       "delete_ssh_key": {
-        "command": "openstack keypair delete {key_name}",
+        "target": {"Command": "openstack keypair delete {key_name}"},
         "params": [
           "key_name"
         ],
@@ -549,7 +549,7 @@
         }
       },
       "list_regions": {
-        "command": "openstack region list -f json",
+        "target": {"Command": "openstack region list -f json"},
         "params": [],
         "parse_rules": {
           "type": "array",

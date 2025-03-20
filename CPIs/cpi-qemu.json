@@ -1,368 +1,402 @@
 {
-    "name": "qemu",
-    "type": "command",
-    "default_settings": {
-      "memory_mb": "2048",
-      "cpus": "2",
-      "disk_size_gb": "20",
-      "disk_format": "qcow2",
-      "image_dir": "/var/lib/libvirt/images",
-      "qemu_binary": "qemu-system-x86_64",
-      "vnc_port": "5900",
-      "network_model": "virtio"
+  "name": "qemu",
+  "type": "command",
+  "default_settings": {
+    "memory_mb": "2048",
+    "cpus": "2",
+    "disk_size_gb": "20",
+    "disk_format": "qcow2",
+    "image_dir": "/var/lib/libvirt/images",
+    "qemu_binary": "qemu-system-x86_64",
+    "vnc_port": "5900",
+    "network_model": "virtio"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": "qemu-img --version"
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "qemu-img version ([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "command": "qemu-img --version",
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "version": {
-              "regex": "qemu-img version ([\\d\\.]+)",
-              "group": 1
-            }
+    "create_volume": {
+      "target": {
+        "Command": "qemu-img create -f {disk_format} {image_dir}/{disk_name}.{disk_format} {disk_size_gb}G"
+      },
+      "params": [
+        "disk_format",
+        "image_dir",
+        "disk_name",
+        "disk_size_gb"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Formatting .+, fmt=.+ size=.+",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "delete_volume": {
+      "target": {
+        "Command": "rm -f {image_dir}/{disk_name}.{disk_format}"
       },
-      "create_volume": {
-        "command": "qemu-img create -f {disk_format} {image_dir}/{disk_name}.{disk_format} {disk_size_gb}G",
-        "params": [
-          "disk_format",
-          "image_dir",
-          "disk_name",
-          "disk_size_gb"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Formatting .+, fmt=.+ size=.+",
-              "transform": "boolean"
-            }
+      "params": [
+        "image_dir",
+        "disk_name",
+        "disk_format"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "resize_volume": {
+      "target": {
+        "Command": "qemu-img resize {image_dir}/{disk_name}.{disk_format} {new_size_gb}G"
       },
-      "delete_volume": {
-        "command": "rm -f {image_dir}/{disk_name}.{disk_format}",
-        "params": [
-          "image_dir",
-          "disk_name",
-          "disk_format"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "image_dir",
+        "disk_name",
+        "disk_format",
+        "new_size_gb"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Image resized",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "get_volume_info": {
+      "target": {
+        "Command": "qemu-img info {image_dir}/{disk_name}.{disk_format}"
       },
-      "resize_volume": {
-        "command": "qemu-img resize {image_dir}/{disk_name}.{disk_format} {new_size_gb}G",
-        "params": [
-          "image_dir",
-          "disk_name",
-          "disk_format",
-          "new_size_gb"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Image resized",
-              "transform": "boolean"
-            }
+      "params": [
+        "image_dir",
+        "disk_name",
+        "disk_format"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "filename": {
+            "regex": "image:\\s+(.+)",
+            "group": 1
+          },
+          "format": {
+            "regex": "file format:\\s+(.+)",
+            "group": 1
+          },
+          "virtual_size": {
+            "regex": "virtual size:\\s+([\\d\\.]+)\\s+([GMK])iB",
+            "group": 1
+          },
+          "disk_size": {
+            "regex": "disk size:\\s+(.+)",
+            "group": 1
+          },
+          "cluster_size": {
+            "regex": "cluster_size:\\s+(\\d+)",
+            "group": 1,
+            "transform": "number",
+            "optional": true
           }
         }
+      }
+    },
+    "create_snapshot": {
+      "target": {
+        "Command": "qemu-img snapshot -c {snapshot_name} {image_dir}/{disk_name}.{disk_format}"
       },
-      "get_volume_info": {
-        "command": "qemu-img info {image_dir}/{disk_name}.{disk_format}",
-        "params": [
-          "image_dir",
-          "disk_name",
-          "disk_format"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "filename": {
-              "regex": "image:\\s+(.+)",
-              "group": 1
-            },
-            "format": {
-              "regex": "file format:\\s+(.+)",
-              "group": 1
-            },
-            "virtual_size": {
-              "regex": "virtual size:\\s+([\\d\\.]+)\\s+([GMK])iB",
-              "group": 1
-            },
-            "disk_size": {
-              "regex": "disk size:\\s+(.+)",
-              "group": 1
-            },
-            "cluster_size": {
-              "regex": "cluster_size:\\s+(\\d+)",
-              "group": 1,
-              "transform": "number",
-              "optional": true
-            }
+      "params": [
+        "snapshot_name",
+        "image_dir",
+        "disk_name",
+        "disk_format"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "list_snapshots": {
+      "target": {
+        "Command": "qemu-img snapshot -l {image_dir}/{disk_name}.{disk_format}"
       },
-      "create_snapshot": {
-        "command": "qemu-img snapshot -c {snapshot_name} {image_dir}/{disk_name}.{disk_format}",
-        "params": [
-          "snapshot_name",
-          "image_dir",
-          "disk_name",
-          "disk_format"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "image_dir",
+        "disk_name",
+        "disk_format"
+      ],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^(\\d+)\\s+",
+            "group": 1
+          },
+          "tag": {
+            "regex": "^\\d+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "vm_size": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "date": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+\\s+[^\\s]+)",
+            "group": 1
+          },
+          "vm_clock": {
+            "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+(.+)$",
+            "group": 1
           }
         }
+      }
+    },
+    "apply_snapshot": {
+      "target": {
+        "Command": "qemu-img snapshot -a {snapshot_name} {image_dir}/{disk_name}.{disk_format}"
       },
-      "list_snapshots": {
-        "command": "qemu-img snapshot -l {image_dir}/{disk_name}.{disk_format}",
-        "params": [
-          "image_dir",
-          "disk_name",
-          "disk_format"
-        ],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "id": {
-              "regex": "^(\\d+)\\s+",
-              "group": 1
-            },
-            "tag": {
-              "regex": "^\\d+\\s+([^\\s]+)",
-              "group": 1
-            },
-            "vm_size": {
-              "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)",
-              "group": 1
-            },
-            "date": {
-              "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+\\s+[^\\s]+)",
-              "group": 1
-            },
-            "vm_clock": {
-              "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+(.+)$",
-              "group": 1
-            }
+      "params": [
+        "snapshot_name",
+        "image_dir",
+        "disk_name",
+        "disk_format"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "delete_snapshot": {
+      "target": {
+        "Command": "qemu-img snapshot -d {snapshot_name} {image_dir}/{disk_name}.{disk_format}"
       },
-      "apply_snapshot": {
-        "command": "qemu-img snapshot -a {snapshot_name} {image_dir}/{disk_name}.{disk_format}",
-        "params": [
-          "snapshot_name",
-          "image_dir",
-          "disk_name",
-          "disk_format"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "snapshot_name",
+        "image_dir",
+        "disk_name",
+        "disk_format"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "has_snapshot": {
+      "target": {
+        "Command": "qemu-img snapshot -l {image_dir}/{disk_name}.{disk_format} | grep {snapshot_name}"
       },
-      "delete_snapshot": {
-        "command": "qemu-img snapshot -d {snapshot_name} {image_dir}/{disk_name}.{disk_format}",
-        "params": [
-          "snapshot_name",
-          "image_dir",
-          "disk_name",
-          "disk_format"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "image_dir",
+        "disk_name",
+        "disk_format",
+        "snapshot_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "exists": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "convert_volume": {
+      "target": {
+        "Command": "qemu-img convert -f {source_format} -O {target_format} {source_path} {target_path}"
       },
-      "has_snapshot": {
-        "command": "qemu-img snapshot -l {image_dir}/{disk_name}.{disk_format} | grep {snapshot_name}",
-        "params": [
-          "image_dir",
-          "disk_name",
-          "disk_format",
-          "snapshot_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "exists": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "source_format",
+        "target_format",
+        "source_path",
+        "target_path"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Command": "{qemu_binary} -name {vm_name} -m {memory_mb} -smp {cpus} -drive file={image_dir}/{disk_name}.{disk_format},format={disk_format} -vnc :{vnc_display} -netdev user,id=net0 -device {network_model},netdev=net0 -daemonize"
       },
-      "convert_volume": {
-        "command": "qemu-img convert -f {source_format} -O {target_format} {source_path} {target_path}",
-        "params": [
-          "source_format",
-          "target_format",
-          "source_path",
-          "target_path"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "qemu_binary",
+        "vm_name",
+        "memory_mb",
+        "cpus",
+        "image_dir",
+        "disk_name",
+        "disk_format",
+        "vnc_display",
+        "network_model"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Command": "pkill -f \"}{qemu_binary}.*-name {vm_name}\""
       },
-      "start_worker": {
-        "command": "{qemu_binary} -name {vm_name} -m {memory_mb} -smp {cpus} -drive file={image_dir}/{disk_name}.{disk_format},format={disk_format} -vnc :{vnc_display} -netdev user,id=net0 -device {network_model},netdev=net0 -daemonize",
-        "params": [
-          "qemu_binary",
-          "vm_name",
-          "memory_mb",
-          "cpus",
-          "image_dir",
-          "disk_name",
-          "disk_format",
-          "vnc_display",
-          "network_model"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "qemu_binary",
+        "vm_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "list_workers": {
+      "target": {
+        "Command": "ps -eo args | grep \"}{qemu_binary}\" | grep \"-name\" | sed -e 's/.*-name \\([^ ]*\\).*/\\1/'"
       },
-      "stop_worker": {
-        "command": "pkill -f \"{qemu_binary}.*-name {vm_name}\"",
-        "params": [
-          "qemu_binary",
-          "vm_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "qemu_binary"
+      ],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "name": {
+            "regex": "(.+)",
+            "group": 1
           }
         }
+      }
+    },
+    "has_worker": {
+      "target": {
+        "Command": "ps -eo args | grep \"}{qemu_binary}.*-name {vm_name}\""
       },
-      "list_workers": {
-        "command": "ps -eo args | grep \"{qemu_binary}\" | grep \"-name\" | sed -e 's/.*-name \\([^ ]*\\).*/\\1/'",
-        "params": [
-          "qemu_binary"
-        ],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "name": {
-              "regex": "(.+)",
-              "group": 1
-            }
+      "params": [
+        "qemu_binary",
+        "vm_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "exists": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "get_worker_info": {
+      "target": {
+        "Command": "ps -eo pid,args | grep \"}{qemu_binary}.*-name {vm_name}\""
       },
-      "has_worker": {
-        "command": "ps -eo args | grep \"{qemu_binary}.*-name {vm_name}\"",
-        "params": [
-          "qemu_binary",
-          "vm_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "exists": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "qemu_binary",
+        "vm_name"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "pid": {
+            "regex": "^\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "memory": {
+            "regex": "-m\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "cpus": {
+            "regex": "-smp\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk": {
+            "regex": "file=([^,]+)",
+            "group": 1
+          },
+          "vnc": {
+            "regex": "-vnc\\s+:([\\d]+)",
+            "group": 1
+          },
+          "network": {
+            "regex": "device\\s+([^,]+)",
+            "group": 1
           }
         }
+      }
+    },
+    "create_worker_template": {
+      "target": {
+        "Command": "echo '{qemu_start_target}' > {template_dir}/{template_name}.sh && chmod +x {template_dir}/{template_name}.sh"
       },
-      "get_worker_info": {
-        "command": "ps -eo pid,args | grep \"{qemu_binary}.*-name {vm_name}\"",
-        "params": [
-          "qemu_binary",
-          "vm_name"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "pid": {
-              "regex": "^\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "memory": {
-              "regex": "-m\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "cpus": {
-              "regex": "-smp\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "disk": {
-              "regex": "file=([^,]+)",
-              "group": 1
-            },
-            "vnc": {
-              "regex": "-vnc\\s+:([\\d]+)",
-              "group": 1
-            },
-            "network": {
-              "regex": "device\\s+([^,]+)",
-              "group": 1
-            }
-          }
-        }
-      },
-      "create_worker_template": {
-        "command": "echo '{qemu_start_command}' > {template_dir}/{template_name}.sh && chmod +x {template_dir}/{template_name}.sh",
-        "params": [
-          "qemu_start_command",
-          "template_dir",
-          "template_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "qemu_start_target",
+        "template_dir",
+        "template_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
       }
     }
   }
+}

@@ -91,10 +91,12 @@ fn validate_action(action_name: &str, action_def: &Value, context: &str) -> Resu
         return Err(CpiError::InvalidCpiFormat(err_msg));
     }
     
-    // Required field: command
-    let command = action_def.get("command");
-    if command.is_none() || !command.unwrap().is_string() {
-        let err_msg = format!("Action '{}' must have a string 'command' field", action_name);
+    // Required field: target
+
+    // TODO: Later we need to validate within the target field
+    let target = action_def.get("target");
+    if target.is_none() || !target.unwrap().is_object() {
+        let err_msg = format!("Action '{}' must have a 'target' field", action_name);
         error!("Validation failed: {} {}", err_msg, context);
         return Err(CpiError::InvalidCpiFormat(err_msg));
     }

@@ -13,7 +13,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "tccli --version",
+        "target": {"Command": "tccli --version"},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -26,7 +26,7 @@
         }
       },
       "list_workers": {
-        "command": "tccli cvm DescribeInstances --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm DescribeInstances --region {region} --cli-unfold-argument"},
         "params": ["region"],
         "parse_rules": {
           "type": "object",
@@ -39,7 +39,7 @@
         }
       },
       "create_worker": {
-        "command": "tccli cvm RunInstances --InstanceChargeType POSTPAID_BY_HOUR --Placement.Zone {zone} --InstanceType {worker_type} --ImageId {image} --VirtualPrivateCloud.VpcId {vpc_id} --VirtualPrivateCloud.SubnetId {subnet_id} --InternetAccessible.InternetChargeType TRAFFIC_POSTPAID_BY_HOUR --InternetAccessible.InternetMaxBandwidthOut 10 --InternetAccessible.PublicIpAssigned TRUE --InstanceName {name} --SecurityGroupIds {security_group} --LoginSettings.KeyIds {ssh_key_name} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm RunInstances --InstanceChargeType POSTPAID_BY_HOUR --Placement.Zone {zone} --InstanceType {worker_type} --ImageId {image} --VirtualPrivateCloud.VpcId {vpc_id} --VirtualPrivateCloud.SubnetId {subnet_id} --InternetAccessible.InternetChargeType TRAFFIC_POSTPAID_BY_HOUR --InternetAccessible.InternetMaxBandwidthOut 10 --InternetAccessible.PublicIpAssigned TRUE --InstanceName {name} --SecurityGroupIds {security_group} --LoginSettings.KeyIds {ssh_key_name} --region {region} --cli-unfold-argument"},
         "params": [
           "zone",
           "worker_type",
@@ -62,7 +62,7 @@
         }
       },
       "delete_worker": {
-        "command": "tccli cvm TerminateInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm TerminateInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument"},
         "params": ["worker_id", "region"],
         "parse_rules": {
           "type": "object",
@@ -75,7 +75,7 @@
         }
       },
       "get_worker": {
-        "command": "tccli cvm DescribeInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm DescribeInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument"},
         "params": ["worker_id", "region"],
         "parse_rules": {
           "type": "object",
@@ -88,7 +88,7 @@
         }
       },
       "start_worker": {
-        "command": "tccli cvm StartInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm StartInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument"},
         "params": ["worker_id", "region"],
         "parse_rules": {
           "type": "object",
@@ -101,7 +101,7 @@
         }
       },
       "stop_worker": {
-        "command": "tccli cvm StopInstances --InstanceIds {worker_id} --region {region} --StopType {stop_type} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm StopInstances --InstanceIds {worker_id} --region {region} --StopType {stop_type} --cli-unfold-argument"},
         "params": ["worker_id", "region", "stop_type"],
         "parse_rules": {
           "type": "object",
@@ -114,7 +114,7 @@
         }
       },
       "reboot_worker": {
-        "command": "tccli cvm RebootInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm RebootInstances --InstanceIds {worker_id} --region {region} --cli-unfold-argument"},
         "params": ["worker_id", "region"],
         "parse_rules": {
           "type": "object",
@@ -127,7 +127,7 @@
         }
       },
       "resize_worker": {
-        "command": "tccli cvm ResetInstance --InstanceId {worker_id} --InstanceType {worker_type} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm ResetInstance --InstanceId {worker_id} --InstanceType {worker_type} --region {region} --cli-unfold-argument"},
         "params": ["worker_id", "worker_type", "region"],
         "parse_rules": {
           "type": "object",
@@ -140,7 +140,7 @@
         }
       },
       "list_disks": {
-        "command": "tccli cbs DescribeDisks --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cbs DescribeDisks --region {region} --cli-unfold-argument"},
         "params": ["region"],
         "parse_rules": {
           "type": "object",
@@ -153,7 +153,7 @@
         }
       },
       "create_disk": {
-        "command": "tccli cbs CreateDisks --DiskChargeType POSTPAID_BY_HOUR --DiskType {volume_type} --DiskName {disk_name} --DiskSize {size_gb} --Placement.Zone {zone} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cbs CreateDisks --DiskChargeType POSTPAID_BY_HOUR --DiskType {volume_type} --DiskName {disk_name} --DiskSize {size_gb} --Placement.Zone {zone} --region {region} --cli-unfold-argument"},
         "params": ["volume_type", "disk_name", "size_gb", "zone", "region"],
         "parse_rules": {
           "type": "object",
@@ -166,7 +166,7 @@
         }
       },
       "attach_disk": {
-        "command": "tccli cbs AttachDisks --DiskIds {disk_id} --InstanceId {worker_id} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cbs AttachDisks --DiskIds {disk_id} --InstanceId {worker_id} --region {region} --cli-unfold-argument"},
         "params": ["disk_id", "worker_id", "region"],
         "parse_rules": {
           "type": "object",
@@ -179,7 +179,7 @@
         }
       },
       "detach_disk": {
-        "command": "tccli cbs DetachDisks --DiskIds {disk_id} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cbs DetachDisks --DiskIds {disk_id} --region {region} --cli-unfold-argument"},
         "params": ["disk_id", "region"],
         "parse_rules": {
           "type": "object",
@@ -192,7 +192,7 @@
         }
       },
       "delete_disk": {
-        "command": "tccli cbs TerminateDisks --DiskIds {disk_id} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cbs TerminateDisks --DiskIds {disk_id} --region {region} --cli-unfold-argument"},
         "params": ["disk_id", "region"],
         "parse_rules": {
           "type": "object",
@@ -205,7 +205,7 @@
         }
       },
       "create_snapshot": {
-        "command": "tccli cbs CreateSnapshot --DiskId {disk_id} --SnapshotName {snapshot_name} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cbs CreateSnapshot --DiskId {disk_id} --SnapshotName {snapshot_name} --region {region} --cli-unfold-argument"},
         "params": ["disk_id", "snapshot_name", "region"],
         "parse_rules": {
           "type": "object",
@@ -218,7 +218,7 @@
         }
       },
       "list_snapshots": {
-        "command": "tccli cbs DescribeSnapshots --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cbs DescribeSnapshots --region {region} --cli-unfold-argument"},
         "params": ["region"],
         "parse_rules": {
           "type": "object",
@@ -231,7 +231,7 @@
         }
       },
       "delete_snapshot": {
-        "command": "tccli cbs DeleteSnapshots --SnapshotIds {snapshot_id} --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cbs DeleteSnapshots --SnapshotIds {snapshot_id} --region {region} --cli-unfold-argument"},
         "params": ["snapshot_id", "region"],
         "parse_rules": {
           "type": "object",
@@ -244,7 +244,7 @@
         }
       },
       "list_images": {
-        "command": "tccli cvm DescribeImages --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm DescribeImages --region {region} --cli-unfold-argument"},
         "params": ["region"],
         "parse_rules": {
           "type": "object",
@@ -257,7 +257,7 @@
         }
       },
       "list_regions": {
-        "command": "tccli cvm DescribeRegions --cli-unfold-argument",
+        "target": {"Command": "tccli cvm DescribeRegions --cli-unfold-argument"},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -270,7 +270,7 @@
         }
       },
       "list_zones": {
-        "command": "tccli cvm DescribeZones --region {region} --cli-unfold-argument",
+        "target": {"Command": "tccli cvm DescribeZones --region {region} --cli-unfold-argument"},
         "params": ["region"],
         "parse_rules": {
           "type": "object",
@@ -283,7 +283,7 @@
         }
       },
       "configure_auth": {
-        "command": "tccli configure set --secretId {access_key} --secretKey {secret_key} --region {region}",
+        "target": {"Command": "tccli configure set --secretId {access_key} --secretKey {secret_key} --region {region}"},
         "params": ["access_key", "secret_key", "region"],
         "parse_rules": {
           "type": "object",

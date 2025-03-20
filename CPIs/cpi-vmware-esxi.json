@@ -14,7 +14,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "vim-cmd about",
+        "target": {"Command": "vim-cmd about"},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -27,7 +27,7 @@
         }
       },
       "list_workers": {
-        "command": "vim-cmd vmsvc/getallvms",
+        "target": {"Command": "vim-cmd vmsvc/getallvms"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -58,7 +58,7 @@
         }
       },
       "get_worker_info": {
-        "command": "vim-cmd vmsvc/get.summary {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/get.summary {vmid}"},
         "params": [
           "vmid"
         ],
@@ -100,7 +100,7 @@
         }
       },
       "power_on_worker": {
-        "command": "vim-cmd vmsvc/power.on {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/power.on {vmid}"},
         "params": [
           "vmid"
         ],
@@ -115,7 +115,7 @@
         }
       },
       "shutdown_worker": {
-        "command": "vim-cmd vmsvc/power.off {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/power.off {vmid}"},
         "params": [
           "vmid"
         ],
@@ -130,7 +130,7 @@
         }
       },
       "reset_worker": {
-        "command": "vim-cmd vmsvc/power.reset {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/power.reset {vmid}"},
         "params": [
           "vmid"
         ],
@@ -145,7 +145,7 @@
         }
       },
       "suspend_worker": {
-        "command": "vim-cmd vmsvc/power.suspend {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/power.suspend {vmid}"},
         "params": [
           "vmid"
         ],
@@ -160,14 +160,14 @@
         }
       },
       "create_worker": {
-        "command": "vim-cmd vmsvc/createdummyvm {vm_name} [{datastore}]",
+        "target": {"Command": "vim-cmd vmsvc/createdummyvm {vm_name} [{datastore}]"},
         "params": [
           "vm_name",
           "datastore"
         ],
         "post_exec": [
           {
-            "command": "vim-cmd vmsvc/getallvms | grep {vm_name} | awk '{print $1}'",
+            "target": {"Command": "vim-cmd vmsvc/getallvms | grep {vm_name} | awk '{print $1}'"},
             "parse_rules": {
               "type": "object",
               "patterns": {
@@ -180,7 +180,7 @@
             }
           },
           {
-            "command": "vim-cmd vmsvc/device.getdevices {vmid}",
+            "target": {"Command": "vim-cmd vmsvc/device.getdevices {vmid}"},
             "parse_rules": {
               "type": "object",
               "patterns": {
@@ -203,7 +203,7 @@
         }
       },
       "delete_worker": {
-        "command": "vim-cmd vmsvc/destroy {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/destroy {vmid}"},
         "params": [
           "vmid"
         ],
@@ -218,7 +218,7 @@
         }
       },
       "register_worker": {
-        "command": "vim-cmd solo/registervm [{datastore}] {vmx_path}",
+        "target": {"Command": "vim-cmd solo/registervm [{datastore}] {vmx_path}"},
         "params": [
           "datastore",
           "vmx_path"
@@ -235,7 +235,7 @@
         }
       },
       "unregister_worker": {
-        "command": "vim-cmd vmsvc/unregister {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/unregister {vmid}"},
         "params": [
           "vmid"
         ],
@@ -250,7 +250,7 @@
         }
       },
       "create_snapshot": {
-        "command": "vim-cmd vmsvc/snapshot.create {vmid} {snapshot_name} {snapshot_description} 1 0",
+        "target": {"Command": "vim-cmd vmsvc/snapshot.create {vmid} {snapshot_name} {snapshot_description} 1 0"},
         "params": [
           "vmid",
           "snapshot_name",
@@ -267,7 +267,7 @@
         }
       },
       "list_snapshots": {
-        "command": "vim-cmd vmsvc/snapshot.get {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/snapshot.get {vmid}"},
         "params": [
           "vmid"
         ],
@@ -288,7 +288,7 @@
         }
       },
       "revert_to_snapshot": {
-        "command": "vim-cmd vmsvc/snapshot.revert {vmid} {snapshot_id} 0",
+        "target": {"Command": "vim-cmd vmsvc/snapshot.revert {vmid} {snapshot_id} 0"},
         "params": [
           "vmid",
           "snapshot_id"
@@ -304,7 +304,7 @@
         }
       },
       "remove_snapshot": {
-        "command": "vim-cmd vmsvc/snapshot.remove {vmid} {snapshot_id}",
+        "target": {"Command": "vim-cmd vmsvc/snapshot.remove {vmid} {snapshot_id}"},
         "params": [
           "vmid",
           "snapshot_id"
@@ -320,7 +320,7 @@
         }
       },
       "remove_all_snapshots": {
-        "command": "vim-cmd vmsvc/snapshot.removeall {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/snapshot.removeall {vmid}"},
         "params": [
           "vmid"
         ],
@@ -335,7 +335,7 @@
         }
       },
       "list_datastores": {
-        "command": "esxcli storage filesystem list | grep VMFS",
+        "target": {"Command": "esxcli storage filesystem list | grep VMFS"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -367,7 +367,7 @@
         }
       },
       "list_networks": {
-        "command": "esxcli network vswitch standard list",
+        "target": {"Command": "esxcli network vswitch standard list"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -395,7 +395,7 @@
         }
       },
       "get_worker_guest_info": {
-        "command": "vim-cmd vmsvc/get.guest {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/get.guest {vmid}"},
         "params": [
           "vmid"
         ],
@@ -433,7 +433,7 @@
         }
       },
       "upgrade_worker_hardware": {
-        "command": "vim-cmd vmsvc/upgrade {vmid}",
+        "target": {"Command": "vim-cmd vmsvc/upgrade {vmid}"},
         "params": [
           "vmid"
         ],

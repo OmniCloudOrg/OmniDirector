@@ -14,7 +14,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "hcloud version",
+        "target": {"Command": "hcloud version"},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -27,7 +27,7 @@
         }
       },
       "list_workers": {
-        "command": "hcloud server list -o noheader -o columns=id,name,status,ipv4,datacenter,type",
+        "target": {"Command": "hcloud server list -o noheader -o columns=id,name,status,ipv4,datacenter,type"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -62,7 +62,7 @@
         }
       },
       "create_worker": {
-        "command": "hcloud server create --name {name} --type {server_type} --image {image} --datacenter {datacenter} {ssh_key_param} {user_data_param} {volume_param} {network_param} {firewall_param}",
+        "target": {"Command": "hcloud server create --name {name} --type {server_type} --image {image} --datacenter {datacenter} {ssh_key_param} {user_data_param} {volume_param} {network_param} {firewall_param}"},
         "params": [
           "name",
           "server_type",
@@ -99,7 +99,7 @@
         }
       },
       "get_worker": {
-        "command": "hcloud server describe {server_id}",
+        "target": {"Command": "hcloud server describe {server_id}"},
         "params": [
           "server_id"
         ],
@@ -151,7 +151,7 @@
         }
       },
       "delete_worker": {
-        "command": "hcloud server delete {server_id}",
+        "target": {"Command": "hcloud server delete {server_id}"},
         "params": [
           "server_id"
         ],
@@ -166,7 +166,7 @@
         }
       },
       "start_worker": {
-        "command": "hcloud server poweron {server_id}",
+        "target": {"Command": "hcloud server poweron {server_id}"},
         "params": [
           "server_id"
         ],
@@ -181,7 +181,7 @@
         }
       },
       "stop_worker": {
-        "command": "hcloud server poweroff {server_id}",
+        "target": {"Command": "hcloud server poweroff {server_id}"},
         "params": [
           "server_id"
         ],
@@ -196,7 +196,7 @@
         }
       },
       "reboot_worker": {
-        "command": "hcloud server reboot {server_id}",
+        "target": {"Command": "hcloud server reboot {server_id}"},
         "params": [
           "server_id"
         ],
@@ -211,7 +211,7 @@
         }
       },
       "list_worker_types": {
-        "command": "hcloud server-type list -o noheader",
+        "target": {"Command": "hcloud server-type list -o noheader"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -245,7 +245,7 @@
         }
       },
       "list_images": {
-        "command": "hcloud image list -o noheader",
+        "target": {"Command": "hcloud image list -o noheader"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -273,7 +273,7 @@
         }
       },
       "create_snapshot": {
-        "command": "hcloud server create-image --type snapshot --description {description} {server_id}",
+        "target": {"Command": "hcloud server create-image --type snapshot --description {description} {server_id}"},
         "params": [
           "server_id",
           "description"
@@ -290,7 +290,7 @@
         }
       },
       "list_snapshots": {
-        "command": "hcloud image list --type snapshot -o noheader",
+        "target": {"Command": "hcloud image list --type snapshot -o noheader"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -322,7 +322,7 @@
         }
       },
       "delete_snapshot": {
-        "command": "hcloud image delete {snapshot_id}",
+        "target": {"Command": "hcloud image delete {snapshot_id}"},
         "params": [
           "snapshot_id"
         ],
@@ -337,7 +337,7 @@
         }
       },
       "list_datacenters": {
-        "command": "hcloud datacenter list -o noheader",
+        "target": {"Command": "hcloud datacenter list -o noheader"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -364,7 +364,7 @@
         }
       },
       "list_locations": {
-        "command": "hcloud location list -o noheader",
+        "target": {"Command": "hcloud location list -o noheader"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -391,7 +391,7 @@
         }
       },
       "create_volume": {
-        "command": "hcloud volume create --name {name} --size {size_gb} --server {server_id} --format {format}",
+        "target": {"Command": "hcloud volume create --name {name} --size {size_gb} --server {server_id} --format {format}"},
         "params": [
           "name",
           "size_gb",

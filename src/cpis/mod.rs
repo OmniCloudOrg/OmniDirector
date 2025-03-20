@@ -18,6 +18,21 @@ use self::validator::validate_cpi_format;
 use log::{info, warn, error, debug, trace};
 use rayon::prelude::*;
 
+
+#[cfg(debug_assertions)]
+fn time<T,A: ToString, F: FnOnce() -> T>(name: A ,f: F) -> T {
+    let time = std::time::Instant::now();
+    let out = f();
+    let action = name.to_string();
+    debug!("{} Took {:?}",action, time.elapsed());
+    out
+}
+
+#[cfg(not(debug_assertions))]
+fn time<T, F: FnOnce() -> T>(f: F) -> T {
+    f()
+}
+
 pub fn initialize() -> Result<CpiSystem, error::CpiError> {
     info!("Initializing CPI system");
     let start = std::time::Instant::now();
@@ -164,7 +179,7 @@ impl CpiSystem {
             }
             
             // Load the provider
-            match self.register_provider(path.clone()) {
+            match self.register_provider(path.clone(), false) {
                 Ok(_) => {
                     info!("Successfully loaded CPI from {:?}", path);
                     loaded_count += 1;
@@ -275,7 +290,7 @@ impl CpiSystem {
     }
     
     // Enhanced provider registration with better error reporting
-    pub fn register_provider(&mut self, path: PathBuf) -> Result<(), CpiError> {
+    pub fn register_provider(&mut self, path: PathBuf, should_test: bool) -> Result<(), CpiError> {
         info!("Registering provider from: {:?}", path);
         
         let provider = match provider::load_provider(path.clone()) {
@@ -288,6 +303,22 @@ impl CpiSystem {
         
         info!("Successfully loaded provider '{}' ({} actions) from {:?}", 
              provider.name, provider.actions.len(), path);
+
+        if should_test {
+            info!("Running test command on provider '{}'", provider.name);
+            let test_result = executor::execute_action(&provider, "test_install", HashMap::new());
+    
+            match test_result {
+                Ok(_) => {
+                    info!("Test command succeeded for provider '{}'", provider.name);
+                },
+                Err(e) => {
+                    error!("Test command failed for provider '{}': {}", provider.name, e);
+                    return Err(e);
+                }
+                
+            }
+        }
         
         self.providers.insert(provider.name.clone(), Arc::new(provider));
         Ok(())
@@ -331,7 +362,7 @@ impl CpiSystem {
         info!("Executing action '{}' from provider '{}'", action_name, provider_name);
         let start = std::time::Instant::now();
         
-        let result = executor::execute_action(provider, action_name, params);
+        let result = time(|| executor::execute_action(provider, action_name, params));
         
         let duration = start.elapsed();
         if let Ok(_) = &result {

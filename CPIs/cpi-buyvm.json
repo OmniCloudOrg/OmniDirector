@@ -11,7 +11,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "buyvm version",
+        "target": {"Command": "buyvm version"},
         "parse_rules": {
           "type": "object",
           "patterns": {
@@ -23,7 +23,7 @@
         }
       },
       "list_workers": {
-        "command": "buyvm vm list --format json",
+        "target": {"Command": "buyvm vm list --format json"},
         "parse_rules": {
           "type": "object",
           "patterns": {
@@ -35,7 +35,7 @@
         }
       },
       "create_worker": {
-        "command": "buyvm vm create --location {location} --plan {worker_type} --os {image} --hostname {name} --ssh-key {ssh_key_id} --ipv6 {enable_ipv6} --format json",
+        "target": {"Command": "buyvm vm create --location {location} --plan {worker_type} --os {image} --hostname {name} --ssh-key {ssh_key_id} --ipv6 {enable_ipv6} --format json"},
         "params": [
           "location",
           "worker_type",
@@ -67,7 +67,7 @@
         }
       },
       "delete_worker": {
-        "command": "buyvm vm delete {worker_id} --confirm --format json",
+        "target": {"Command": "buyvm vm delete {worker_id} --confirm --format json"},
         "params": ["worker_id"],
         "parse_rules": {
           "type": "object",
@@ -80,7 +80,7 @@
         }
       },
       "get_worker": {
-        "command": "buyvm vm info {worker_id} --format json",
+        "target": {"Command": "buyvm vm info {worker_id} --format json"},
         "params": ["worker_id"],
         "parse_rules": {
           "type": "object",
@@ -93,7 +93,7 @@
         }
       },
       "start_worker": {
-        "command": "buyvm vm start {worker_id} --format json",
+        "target": {"Command": "buyvm vm start {worker_id} --format json"},
         "params": ["worker_id"],
         "parse_rules": {
           "type": "object",
@@ -106,7 +106,7 @@
         }
       },
       "stop_worker": {
-        "command": "buyvm vm stop {worker_id} --format json",
+        "target": {"Command": "buyvm vm stop {worker_id} --format json"},
         "params": ["worker_id"],
         "parse_rules": {
           "type": "object",
@@ -119,7 +119,7 @@
         }
       },
       "reboot_worker": {
-        "command": "buyvm vm reboot {worker_id} --format json",
+        "target": {"Command": "buyvm vm reboot {worker_id} --format json"},
         "params": ["worker_id"],
         "parse_rules": {
           "type": "object",
@@ -132,7 +132,7 @@
         }
       },
       "list_locations": {
-        "command": "buyvm location list --format json",
+        "target": {"Command": "buyvm location list --format json"},
         "parse_rules": {
           "type": "object",
           "patterns": {
@@ -144,7 +144,7 @@
         }
       },
       "list_plans": {
-        "command": "buyvm plan list --location {location} --format json",
+        "target": {"Command": "buyvm plan list --location {location} --format json"},
         "params": ["location"],
         "parse_rules": {
           "type": "object",
@@ -157,7 +157,7 @@
         }
       },
       "list_os": {
-        "command": "buyvm os list --format json",
+        "target": {"Command": "buyvm os list --format json"},
         "parse_rules": {
           "type": "object",
           "patterns": {
@@ -169,7 +169,7 @@
         }
       },
       "create_snapshot": {
-        "command": "buyvm vm snapshot create {worker_id} --name {snapshot_name} --format json",
+        "target": {"Command": "buyvm vm snapshot create {worker_id} --name {snapshot_name} --format json"},
         "params": [
           "worker_id",
           "snapshot_name"
@@ -185,7 +185,7 @@
         }
       },
       "list_snapshots": {
-        "command": "buyvm vm snapshot list {worker_id} --format json",
+        "target": {"Command": "buyvm vm snapshot list {worker_id} --format json"},
         "params": ["worker_id"],
         "parse_rules": {
           "type": "object",
@@ -198,7 +198,7 @@
         }
       },
       "restore_snapshot": {
-        "command": "buyvm vm snapshot restore {worker_id} --snapshot {snapshot_id} --format json",
+        "target": {"Command": "buyvm vm snapshot restore {worker_id} --snapshot {snapshot_id} --format json"},
         "params": [
           "worker_id",
           "snapshot_id"
@@ -214,7 +214,7 @@
         }
       },
       "delete_snapshot": {
-        "command": "buyvm vm snapshot delete {worker_id} --snapshot {snapshot_id} --format json",
+        "target": {"Command": "buyvm vm snapshot delete {worker_id} --snapshot {snapshot_id} --format json"},
         "params": [
           "worker_id",
           "snapshot_id"
@@ -230,7 +230,7 @@
         }
       },
       "create_ssh_key": {
-        "command": "buyvm ssh-key add --name {name} --public-key \"{ssh_public_key}\" --format json",
+        "target": {"Command": "buyvm ssh-key add --name {name} --public-key \"}{ssh_public_key}\" --format json"},
         "params": [
           "name",
           "ssh_public_key"
@@ -250,7 +250,7 @@
         }
       },
       "list_ssh_keys": {
-        "command": "buyvm ssh-key list --format json",
+        "target": {"Command": "buyvm ssh-key list --format json"},
         "parse_rules": {
           "type": "object",
           "patterns": {
@@ -262,7 +262,7 @@
         }
       },
       "delete_ssh_key": {
-        "command": "buyvm ssh-key delete {ssh_key_id} --format json",
+        "target": {"Command": "buyvm ssh-key delete {ssh_key_id} --format json"},
         "params": ["ssh_key_id"],
         "parse_rules": {
           "type": "object",
@@ -275,7 +275,7 @@
         }
       },
       "reinstall_os": {
-        "command": "buyvm vm reinstall {worker_id} --os {image} --format json",
+        "target": {"Command": "buyvm vm reinstall {worker_id} --os {image} --format json"},
         "params": [
           "worker_id",
           "image"
@@ -291,7 +291,7 @@
         }
       },
       "resize_worker": {
-        "command": "buyvm vm resize {worker_id} --plan {worker_type} --format json",
+        "target": {"Command": "buyvm vm resize {worker_id} --plan {worker_type} --format json"},
         "params": [
           "worker_id",
           "worker_type"
@@ -307,7 +307,7 @@
         }
       },
       "get_console": {
-        "command": "buyvm vm console {worker_id} --format json",
+        "target": {"Command": "buyvm vm console {worker_id} --format json"},
         "params": ["worker_id"],
         "parse_rules": {
           "type": "object",
@@ -320,7 +320,7 @@
         }
       },
       "list_block_volume": {
-        "command": "buyvm storage list --format json",
+        "target": {"Command": "buyvm storage list --format json"},
         "parse_rules": {
           "type": "object",
           "patterns": {
@@ -332,7 +332,7 @@
         }
       },
       "create_block_volume": {
-        "command": "buyvm storage create --location {location} --size {size_gb} --format json",
+        "target": {"Command": "buyvm storage create --location {location} --size {size_gb} --format json"},
         "params": [
           "location",
           "size_gb"
@@ -348,7 +348,7 @@
         }
       },
       "attach_block_volume": {
-        "command": "buyvm storage attach {disk_id} --vm {worker_id} --format json",
+        "target": {"Command": "buyvm storage attach {disk_id} --vm {worker_id} --format json"},
         "params": [
           "disk_id",
           "worker_id"
@@ -364,7 +364,7 @@
         }
       },
       "detach_block_volume": {
-        "command": "buyvm storage detach {disk_id} --format json",
+        "target": {"Command": "buyvm storage detach {disk_id} --format json"},
         "params": ["disk_id"],
         "parse_rules": {
           "type": "object",
@@ -377,7 +377,7 @@
         }
       },
       "delete_block_volume": {
-        "command": "buyvm storage delete {disk_id} --confirm --format json",
+        "target": {"Command": "buyvm storage delete {disk_id} --confirm --format json"},
         "params": ["disk_id"],
         "parse_rules": {
           "type": "object",

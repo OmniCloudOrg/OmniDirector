@@ -1,366 +1,394 @@
 {
-    "name": "vultr",
-    "type": "command",
-    "default_settings": {
-      "region": "ewr",
-      "plan": "vc2-1c-1gb",
-      "os_id": "387",
-      "label": "vultr-server",
-      "tag": "",
-      "hostname": "",
-      "enable_ipv6": "true",
-      "ssh_key_ids": ""
+  "name": "vultr",
+  "type": "command",
+  "default_settings": {
+    "region": "ewr",
+    "plan": "vc2-1c-1gb",
+    "os_id": "387",
+    "label": "vultr-server",
+    "tag": "",
+    "hostname": "",
+    "enable_ipv6": "true",
+    "ssh_key_ids": ""
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": "vultr-cli version"
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "command": "vultr-cli version",
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "version": {
-              "regex": "([\\d\\.]+)",
-              "group": 1
-            }
+    "list_workers": {
+      "target": {
+        "Command": "vultr-cli instance list"
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^([a-f0-9-]+)\\s+",
+            "group": 1
+          },
+          "hostname": {
+            "regex": "^[a-f0-9-]+\\s+([^\\s]+)\\s+",
+            "group": 1
+          },
+          "os": {
+            "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+([^\\s]+(?:\\s+[^\\s]+)*)\\s+",
+            "group": 1
+          },
+          "main_ip": {
+            "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+([0-9\\.]+)\\s+",
+            "group": 1
+          },
+          "vcpu_count": {
+            "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+(\\d+)\\s+",
+            "group": 1,
+            "transform": "number"
+          },
+          "ram_mb": {
+            "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+\\d+\\s+(\\d+)\\s+",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk_gb": {
+            "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+\\d+\\s+\\d+\\s+(\\d+)\\s+",
+            "group": 1,
+            "transform": "number"
+          },
+          "region": {
+            "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+([^\\s]+)\\s+",
+            "group": 1
+          },
+          "status": {
+            "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
           }
         }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": "vultr-cli instance create --region {region} --plan {plan} --os {os_id} --label {label} {hostname_param} {ipv6_param} {ssh_keys_param} {tag_param}"
       },
-      "list_workers": {
-        "command": "vultr-cli instance list",
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "id": {
-              "regex": "^([a-f0-9-]+)\\s+",
-              "group": 1
-            },
-            "hostname": {
-              "regex": "^[a-f0-9-]+\\s+([^\\s]+)\\s+",
-              "group": 1
-            },
-            "os": {
-              "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+([^\\s]+(?:\\s+[^\\s]+)*)\\s+",
-              "group": 1
-            },
-            "main_ip": {
-              "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+([0-9\\.]+)\\s+",
-              "group": 1
-            },
-            "vcpu_count": {
-              "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+(\\d+)\\s+",
-              "group": 1,
-              "transform": "number"
-            },
-            "ram_mb": {
-              "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+\\d+\\s+(\\d+)\\s+",
-              "group": 1,
-              "transform": "number"
-            },
-            "disk_gb": {
-              "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+\\d+\\s+\\d+\\s+(\\d+)\\s+",
-              "group": 1,
-              "transform": "number"
-            },
-            "region": {
-              "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+([^\\s]+)\\s+",
-              "group": 1
-            },
-            "status": {
-              "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[0-9\\.]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+[^\\s]+\\s+([^\\s]+)",
-              "group": 1
-            }
+      "params": [
+        "region",
+        "plan",
+        "os_id",
+        "label",
+        "hostname_param",
+        "ipv6_param",
+        "ssh_keys_param",
+        "tag_param"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "ID\\s+([a-f0-9-]+)",
+            "group": 1
+          },
+          "os": {
+            "regex": "OS\\s+([^\\n]+)",
+            "group": 1
+          },
+          "ram": {
+            "regex": "RAM\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk": {
+            "regex": "DISK\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "main_ip": {
+            "regex": "MAIN IP\\s+([0-9\\.]+)",
+            "group": 1
+          },
+          "status": {
+            "regex": "STATUS\\s+([^\\n]+)",
+            "group": 1
           }
         }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Command": "vultr-cli instance get {instance_id}"
       },
-      "create_worker": {
-        "command": "vultr-cli instance create --region {region} --plan {plan} --os {os_id} --label {label} {hostname_param} {ipv6_param} {ssh_keys_param} {tag_param}",
-        "params": [
-          "region",
-          "plan",
-          "os_id",
-          "label",
-          "hostname_param",
-          "ipv6_param",
-          "ssh_keys_param",
-          "tag_param"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "ID\\s+([a-f0-9-]+)",
-              "group": 1
-            },
-            "os": {
-              "regex": "OS\\s+([^\\n]+)",
-              "group": 1
-            },
-            "ram": {
-              "regex": "RAM\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "disk": {
-              "regex": "DISK\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "main_ip": {
-              "regex": "MAIN IP\\s+([0-9\\.]+)",
-              "group": 1
-            },
-            "status": {
-              "regex": "STATUS\\s+([^\\n]+)",
-              "group": 1
-            }
+      "params": [
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "ID\\s+([a-f0-9-]+)",
+            "group": 1
+          },
+          "os": {
+            "regex": "OS\\s+([^\\n]+)",
+            "group": 1
+          },
+          "ram": {
+            "regex": "RAM\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk": {
+            "regex": "DISK\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "main_ip": {
+            "regex": "MAIN IP\\s+([0-9\\.]+)",
+            "group": 1
+          },
+          "vcpu_count": {
+            "regex": "CPU COUNT\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "region": {
+            "regex": "REGION\\s+([^\\n]+)",
+            "group": 1
+          },
+          "status": {
+            "regex": "STATUS\\s+([^\\n]+)",
+            "group": 1
+          },
+          "date_created": {
+            "regex": "DATE CREATED\\s+([^\\n]+)",
+            "group": 1
+          },
+          "tag": {
+            "regex": "TAG\\s+([^\\n]+)",
+            "group": 1,
+            "optional": true
           }
         }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Command": "vultr-cli instance delete {instance_id}"
       },
-      "get_worker": {
-        "command": "vultr-cli instance get {instance_id}",
-        "params": [
-          "instance_id"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "ID\\s+([a-f0-9-]+)",
-              "group": 1
-            },
-            "os": {
-              "regex": "OS\\s+([^\\n]+)",
-              "group": 1
-            },
-            "ram": {
-              "regex": "RAM\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "disk": {
-              "regex": "DISK\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "main_ip": {
-              "regex": "MAIN IP\\s+([0-9\\.]+)",
-              "group": 1
-            },
-            "vcpu_count": {
-              "regex": "CPU COUNT\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "region": {
-              "regex": "REGION\\s+([^\\n]+)",
-              "group": 1
-            },
-            "status": {
-              "regex": "STATUS\\s+([^\\n]+)",
-              "group": 1
-            },
-            "date_created": {
-              "regex": "DATE CREATED\\s+([^\\n]+)",
-              "group": 1
-            },
-            "tag": {
-              "regex": "TAG\\s+([^\\n]+)",
-              "group": 1,
-              "optional": true
-            }
+      "params": [
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Command": "vultr-cli instance start {instance_id}"
       },
-      "delete_worker": {
-        "command": "vultr-cli instance delete {instance_id}",
-        "params": [
-          "instance_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Command": "vultr-cli instance stop {instance_id}"
       },
-      "start_worker": {
-        "command": "vultr-cli instance start {instance_id}",
-        "params": [
-          "instance_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "reboot_worker": {
+      "target": {
+        "Command": "vultr-cli instance reboot {instance_id}"
       },
-      "stop_worker": {
-        "command": "vultr-cli instance stop {instance_id}",
-        "params": [
-          "instance_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "reinstall_worker": {
+      "target": {
+        "Command": "vultr-cli instance reinstall {instance_id} {hostname_param}"
       },
-      "reboot_worker": {
-        "command": "vultr-cli instance reboot {instance_id}",
-        "params": [
-          "instance_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "instance_id",
+        "hostname_param"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
+      }
+    },
+    "list_regions": {
+      "target": {
+        "Command": "vultr-cli regions list"
       },
-      "reinstall_worker": {
-        "command": "vultr-cli instance reinstall {instance_id} {hostname_param}",
-        "params": [
-          "instance_id",
-          "hostname_param"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^([^\\s]+)\\s+",
+            "group": 1
+          },
+          "city": {
+            "regex": "^[^\\s]+\\s+([^\\s]+(?:\\s+[^\\s]+)*)\\s+",
+            "group": 1
+          },
+          "country": {
+            "regex": "^[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+([^\\s]+(?:\\s+[^\\s]+)*)\\s+",
+            "group": 1
+          },
+          "continent": {
+            "regex": "^[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+([^\\s]+)",
+            "group": 1
           }
         }
+      }
+    },
+    "list_plans": {
+      "target": {
+        "Command": "vultr-cli plans list --type vc2"
       },
-      "list_regions": {
-        "command": "vultr-cli regions list",
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "id": {
-              "regex": "^([^\\s]+)\\s+",
-              "group": 1
-            },
-            "city": {
-              "regex": "^[^\\s]+\\s+([^\\s]+(?:\\s+[^\\s]+)*)\\s+",
-              "group": 1
-            },
-            "country": {
-              "regex": "^[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+([^\\s]+(?:\\s+[^\\s]+)*)\\s+",
-              "group": 1
-            },
-            "continent": {
-              "regex": "^[^\\s]+\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+[^\\s]+(?:\\s+[^\\s]+)*\\s+([^\\s]+)",
-              "group": 1
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^([^\\s]+)\\s+",
+            "group": 1
+          },
+          "vcpu_count": {
+            "regex": "^[^\\s]+\\s+(\\d+)\\s+",
+            "group": 1,
+            "transform": "number"
+          },
+          "ram": {
+            "regex": "^[^\\s]+\\s+\\d+\\s+(\\d+)\\s+",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk": {
+            "regex": "^[^\\s]+\\s+\\d+\\s+\\d+\\s+(\\d+)\\s+",
+            "group": 1,
+            "transform": "number"
+          },
+          "bandwidth": {
+            "regex": "^[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)\\s+",
+            "group": 1,
+            "transform": "number"
+          },
+          "monthly_cost": {
+            "regex": "^[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+([\\d\\.]+)",
+            "group": 1,
+            "transform": "number"
           }
         }
+      }
+    },
+    "list_os": {
+      "target": {
+        "Command": "vultr-cli os list"
       },
-      "list_plans": {
-        "command": "vultr-cli plans list --type vc2",
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "id": {
-              "regex": "^([^\\s]+)\\s+",
-              "group": 1
-            },
-            "vcpu_count": {
-              "regex": "^[^\\s]+\\s+(\\d+)\\s+",
-              "group": 1,
-              "transform": "number"
-            },
-            "ram": {
-              "regex": "^[^\\s]+\\s+\\d+\\s+(\\d+)\\s+",
-              "group": 1,
-              "transform": "number"
-            },
-            "disk": {
-              "regex": "^[^\\s]+\\s+\\d+\\s+\\d+\\s+(\\d+)\\s+",
-              "group": 1,
-              "transform": "number"
-            },
-            "bandwidth": {
-              "regex": "^[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)\\s+",
-              "group": 1,
-              "transform": "number"
-            },
-            "monthly_cost": {
-              "regex": "^[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+([\\d\\.]+)",
-              "group": 1,
-              "transform": "number"
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^(\\d+)\\s+",
+            "group": 1,
+            "transform": "number"
+          },
+          "name": {
+            "regex": "^\\d+\\s+([^\\s].+?)\\s+(?:yes|no)$",
+            "group": 1
+          },
+          "arch": {
+            "regex": "^\\d+\\s+[^\\s].+?\\s+(yes|no)$",
+            "group": 1
           }
         }
+      }
+    },
+    "list_ssh_keys": {
+      "target": {
+        "Command": "vultr-cli ssh-key list"
       },
-      "list_os": {
-        "command": "vultr-cli os list",
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "id": {
-              "regex": "^(\\d+)\\s+",
-              "group": 1,
-              "transform": "number"
-            },
-            "name": {
-              "regex": "^\\d+\\s+([^\\s].+?)\\s+(?:yes|no)$",
-              "group": 1
-            },
-            "arch": {
-              "regex": "^\\d+\\s+[^\\s].+?\\s+(yes|no)$",
-              "group": 1
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^([a-f0-9-]+)\\s+",
+            "group": 1
+          },
+          "name": {
+            "regex": "^[a-f0-9-]+\\s+([^\\s]+)\\s+",
+            "group": 1
+          },
+          "date_created": {
+            "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+(.+)",
+            "group": 1
           }
         }
+      }
+    },
+    "create_ssh_key": {
+      "target": {
+        "Command": "vultr-cli ssh-key create --name {key_name} --key \"}{ssh_key}\""
       },
-      "list_ssh_keys": {
-        "command": "vultr-cli ssh-key list",
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "id": {
-              "regex": "^([a-f0-9-]+)\\s+",
-              "group": 1
-            },
-            "name": {
-              "regex": "^[a-f0-9-]+\\s+([^\\s]+)\\s+",
-              "group": 1
-            },
-            "date_created": {
-              "regex": "^[a-f0-9-]+\\s+[^\\s]+\\s+(.+)",
-              "group": 1
-            }
-          }
-        }
-      },
-      "create_ssh_key": {
-        "command": "vultr-cli ssh-key create --name {key_name} --key \"{ssh_key}\"",
         "params": [
           "key_name",
           "ssh_key"
@@ -384,7 +412,9 @@
         }
       },
       "delete_ssh_key": {
-        "command": "vultr-cli ssh-key delete {key_id}",
+        "target": {
+          "Command": "vultr-cli ssh-key delete {key_id}"
+        },
         "params": [
           "key_id"
         ],
@@ -399,7 +429,9 @@
         }
       },
       "create_snapshot": {
-        "command": "vultr-cli snapshot create --instance-id {instance_id} --description {description}",
+        "target": {
+          "Command": "vultr-cli snapshot create --instance-id {instance_id} --description {description}"
+        },
         "params": [
           "instance_id",
           "description"
@@ -432,7 +464,9 @@
         }
       },
       "list_snapshots": {
-        "command": "vultr-cli snapshot list",
+        "target": {
+          "Command": "vultr-cli snapshot list"
+        },
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -463,7 +497,9 @@
         }
       },
       "delete_snapshot": {
-        "command": "vultr-cli snapshot delete {snapshot_id}",
+        "target": {
+          "Command": "vultr-cli snapshot delete {snapshot_id}"
+        },
         "params": [
           "snapshot_id"
         ],
@@ -478,7 +514,9 @@
         }
       },
       "create_block_volume": {
-        "command": "vultr-cli block-storage create --region {region} --size {size_gb} {label_param}",
+        "target": {
+          "Command": "vultr-cli block-storage create --region {region} --size {size_gb} {label_param}"
+        },
         "params": [
           "region",
           "size_gb",
@@ -518,7 +556,9 @@
         }
       },
       "list_block_volumes": {
-        "command": "vultr-cli block-storage list",
+        "target": {
+          "Command": "vultr-cli block-storage list"
+        },
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -555,7 +595,9 @@
         }
       },
       "attach_block_volume": {
-        "command": "vultr-cli block-storage attach {block_id} --instance-id {instance_id}",
+        "target": {
+          "Command": "vultr-cli block-storage attach {block_id} --instance-id {instance_id}"
+        },
         "params": [
           "block_id",
           "instance_id"
@@ -571,7 +613,9 @@
         }
       },
       "detach_block_volume": {
-        "command": "vultr-cli block-storage detach {block_id}",
+        "target": {
+          "Command": "vultr-cli block-storage detach {block_id}"
+        },
         "params": [
           "block_id"
         ],
@@ -586,7 +630,9 @@
         }
       },
       "delete_block_volume": {
-        "command": "vultr-cli block-storage delete {block_id}",
+        "target": {
+          "Command": "vultr-cli block-storage delete {block_id}"
+        },
         "params": [
           "block_id"
         ],
@@ -601,7 +647,9 @@
         }
       },
       "create_firewall_group": {
-        "command": "vultr-cli firewall-group create {description_param}",
+        "target": {
+          "Command": "vultr-cli firewall-group create {description_param}"
+        },
         "params": [
           "description_param"
         ],
@@ -629,7 +677,9 @@
         }
       },
       "add_firewall_rule": {
-        "command": "vultr-cli firewall-rule create {firewall_group_id} --protocol {protocol} --port {port} --ip-type {ip_type} --source {source} --notes {notes}",
+        "target": {
+          "Command": "vultr-cli firewall-rule create {firewall_group_id} --protocol {protocol} --port {port} --ip-type {ip_type} --source {source} --notes {notes}"
+        },
         "params": [
           "firewall_group_id",
           "protocol",

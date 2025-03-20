@@ -13,7 +13,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "linode-cli --version",
+        "target": {"Command": "linode-cli --version"},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -26,7 +26,9 @@
         }
       },
       "list_workers": {
-        "command": "linode-cli linodes list --format 'id,label,region,type,status,ipv4' --no-headers",
+        "target": {
+          "Command": "linode-cli linodes list --format 'id,label,region,type,status,ipv4' --no-headers"
+        },
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -61,7 +63,7 @@
         }
       },
       "create_worker": {
-        "command": "linode-cli linodes create --label {label} --region {region} --type {type} --image {image} --root_pass {root_pass} --backups_enabled {backups_enabled} --private_ip {private_ip} --tags {tags} --format 'id,label,ipv4' --no-headers",
+        "target": {"Command": "linode-cli linodes create --label {label} --region {region} --type {type} --image {image} --root_pass {root_pass} --backups_enabled {backups_enabled} --private_ip {private_ip} --tags {tags} --format 'id,label,ipv4' --no-headers"},
         "params": [
           "label",
           "region",
@@ -92,7 +94,7 @@
         }
       },
       "delete_worker": {
-        "command": "linode-cli linodes delete {linode_id}",
+        "target": {"Command": "linode-cli linodes delete {linode_id}"},
         "params": [
           "linode_id"
         ],
@@ -107,7 +109,7 @@
         }
       },
       "get_worker": {
-        "command": "linode-cli linodes view {linode_id}",
+        "target": {"Command": "linode-cli linodes view {linode_id}"},
         "params": [
           "linode_id"
         ],
@@ -162,7 +164,7 @@
         }
       },
       "boot_worker": {
-        "command": "linode-cli linodes boot {linode_id}",
+        "target": {"Command": "linode-cli linodes boot {linode_id}"},
         "params": [
           "linode_id"
         ],
@@ -177,7 +179,7 @@
         }
       },
       "reboot_worker": {
-        "command": "linode-cli linodes reboot {linode_id}",
+        "target": {"Command": "linode-cli linodes reboot {linode_id}"},
         "params": [
           "linode_id"
         ],
@@ -192,7 +194,7 @@
         }
       },
       "shutdown_worker": {
-        "command": "linode-cli linodes shutdown {linode_id}",
+        "target": {"Command": "linode-cli linodes shutdown {linode_id}"},
         "params": [
           "linode_id"
         ],
@@ -207,7 +209,7 @@
         }
       },
       "resize_worker": {
-        "command": "linode-cli linodes resize {linode_id} --type {new_type}",
+        "target": {"Command": "linode-cli linodes resize {linode_id} --type {new_type}"},
         "params": [
           "linode_id",
           "new_type"
@@ -223,7 +225,7 @@
         }
       },
       "list_worker_volumes": {
-        "command": "linode-cli linodes disks-list {linode_id} --format 'id,label,size,filesystem' --no-headers",
+        "target": {"Command": "linode-cli linodes disks-list {linode_id} --format 'id,label,size,filesystem' --no-headers"},
         "params": [
           "linode_id"
         ],
@@ -253,7 +255,7 @@
         }
       },
       "create_volume": {
-        "command": "linode-cli linodes disk-create {linode_id} --label {disk_label} --size {size_mb} --filesystem {filesystem}",
+        "target": {"Command": "linode-cli linodes disk-create {linode_id} --label {disk_label} --size {size_mb} --filesystem {filesystem}"},
         "params": [
           "linode_id",
           "disk_label",
@@ -281,7 +283,7 @@
         }
       },
       "delete_volume": {
-        "command": "linode-cli linodes disk-delete {linode_id} {disk_id}",
+        "target": {"Command": "linode-cli linodes disk-delete {linode_id} {disk_id}"},
         "params": [
           "linode_id",
           "disk_id"
@@ -297,7 +299,7 @@
         }
       },
       "resize_volume": {
-        "command": "linode-cli linodes disk-resize {linode_id} {disk_id} --size {new_size_mb}",
+        "target": {"Command": "linode-cli linodes disk-resize {linode_id} {disk_id} --size {new_size_mb}"},
         "params": [
           "linode_id",
           "disk_id",
@@ -314,7 +316,7 @@
         }
       },
       "create_snapshot": {
-        "command": "linode-cli linodes snapshot-create {linode_id} --label {snapshot_label}",
+        "target": {"Command": "linode-cli linodes snapshot-create {linode_id} --label {snapshot_label}"},
         "params": [
           "linode_id",
           "snapshot_label"
@@ -338,7 +340,7 @@
         }
       },
       "list_snapshots": {
-        "command": "linode-cli images list --is_public false --format 'id,label,created,size,linode_id' --no-headers",
+        "target": {"Command": "linode-cli images list --is_public false --format 'id,label,created,size,linode_id' --no-headers"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -370,7 +372,7 @@
         }
       },
       "delete_snapshot": {
-        "command": "linode-cli images delete {image_id}",
+        "target": {"Command": "linode-cli images delete {image_id}"},
         "params": [
           "image_id"
         ],
@@ -385,7 +387,7 @@
         }
       },
       "list_regions": {
-        "command": "linode-cli regions list --format 'id,country' --no-headers",
+        "target": {"Command": "linode-cli regions list --format 'id,country' --no-headers"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -403,7 +405,7 @@
         }
       },
       "list_worker_types": {
-        "command": "linode-cli linodes types --format 'id,label,vcpus,memory,disk,price_monthly' --no-headers",
+        "target": {"Command": "linode-cli linodes types --format 'id,label,vcpus,memory,disk,price_monthly' --no-headers"},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -441,7 +443,7 @@
         }
       },
       "list_images": {
-        "command": "linode-cli images list --is_public true --format 'id,label,size,created,description' --no-headers",
+        "target": {"Command": "linode-cli images list --is_public true --format 'id,label,size,created,description' --no-headers"},
         "params": [],
         "parse_rules": {
           "type": "array",

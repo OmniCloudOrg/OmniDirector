@@ -13,7 +13,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "oci --version",
+        "target": {"Command": "oci --version"},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -26,7 +26,7 @@
         }
       },
       "list_workers": {
-        "command": "oci compute instance list --compartment-id {compartment_id} --region {region} --all",
+        "target": {"Command": "oci compute instance list --compartment-id {compartment_id} --region {region} --all"},
         "params": [
           "compartment_id",
           "region"
@@ -42,7 +42,7 @@
         }
       },
       "get_worker": {
-        "command": "oci compute instance get --instance-id {instance_id} --region {region}",
+        "target": {"Command": "oci compute instance get --instance-id {instance_id} --region {region}"},
         "params": [
           "instance_id",
           "region"
@@ -82,7 +82,7 @@
         }
       },
       "create_worker": {
-        "command": "oci compute instance launch --availability-domain {availability_domain} --compartment-id {compartment_id} --shape {shape} --image-id {image_id} --subnet-id {subnet_id} --boot-volume-size-in-gbs {boot_volume_size_gb} --ssh-authorized-keys-file {ssh_authorized_keys} --display-name {display_name} --region {region}",
+        "target": {"Command": "oci compute instance launch --availability-domain {availability_domain} --compartment-id {compartment_id} --shape {shape} --image-id {image_id} --subnet-id {subnet_id} --boot-volume-size-in-gbs {boot_volume_size_gb} --ssh-authorized-keys-file {ssh_authorized_keys} --display-name {display_name} --region {region}"},
         "params": [
           "availability_domain",
           "compartment_id",
@@ -113,7 +113,7 @@
         }
       },
       "terminate_worker": {
-        "command": "oci compute instance terminate --instance-id {instance_id} --region {region} --force",
+        "target": {"Command": "oci compute instance terminate --instance-id {instance_id} --region {region} --force"},
         "params": [
           "instance_id",
           "region"
@@ -129,7 +129,7 @@
         }
       },
       "start_worker": {
-        "command": "oci compute instance action --instance-id {instance_id} --action START --region {region}",
+        "target": {"Command": "oci compute instance action --instance-id {instance_id} --action START --region {region}"},
         "params": [
           "instance_id",
           "region"
@@ -149,7 +149,7 @@
         }
       },
       "stop_worker": {
-        "command": "oci compute instance action --instance-id {instance_id} --action STOP --region {region}",
+        "target": {"Command": "oci compute instance action --instance-id {instance_id} --action STOP --region {region}"},
         "params": [
           "instance_id",
           "region"
@@ -169,7 +169,7 @@
         }
       },
       "reboot_worker": {
-        "command": "oci compute instance action --instance-id {instance_id} --action RESET --region {region}",
+        "target": {"Command": "oci compute instance action --instance-id {instance_id} --action RESET --region {region}"},
         "params": [
           "instance_id",
           "region"
@@ -189,7 +189,7 @@
         }
       },
       "list_shapes": {
-        "command": "oci compute shape list --compartment-id {compartment_id} --region {region} --all",
+        "target": {"Command": "oci compute shape list --compartment-id {compartment_id} --region {region} --all"},
         "params": [
           "compartment_id",
           "region"
@@ -205,7 +205,7 @@
         }
       },
       "list_images": {
-        "command": "oci compute image list --compartment-id {compartment_id} --region {region} --all",
+        "target": {"Command": "oci compute image list --compartment-id {compartment_id} --region {region} --all"},
         "params": [
           "compartment_id",
           "region"
@@ -221,7 +221,7 @@
         }
       },
       "list_boot_volumes": {
-        "command": "oci bv boot-volume list --availability-domain {availability_domain} --compartment-id {compartment_id} --region {region} --all",
+        "target": {"Command": "oci bv boot-volume list --availability-domain {availability_domain} --compartment-id {compartment_id} --region {region} --all"},
         "params": [
           "availability_domain",
           "compartment_id",
@@ -238,7 +238,7 @@
         }
       },
       "create_boot_volume_backup": {
-        "command": "oci bv boot-volume-backup create --boot-volume-id {boot_volume_id} --display-name {backup_name} --region {region}",
+        "target": {"Command": "oci bv boot-volume-backup create --boot-volume-id {boot_volume_id} --display-name {backup_name} --region {region}"},
         "params": [
           "boot_volume_id",
           "backup_name",
@@ -267,7 +267,7 @@
         }
       },
       "list_boot_volume_backups": {
-        "command": "oci bv boot-volume-backup list --compartment-id {compartment_id} --region {region} --all",
+        "target": {"Command": "oci bv boot-volume-backup list --compartment-id {compartment_id} --region {region} --all"},
         "params": [
           "compartment_id",
           "region"
@@ -283,7 +283,7 @@
         }
       },
       "get_worker_console_connection": {
-        "command": "oci compute instance-console-connection get-plink-connection-string --instance-console-connection-id {connection_id} --region {region}",
+        "target": {"Command": "oci compute instance-console-connection get-plink-connection-string --instance-console-connection-id {connection_id} --region {region}"},
         "params": [
           "connection_id",
           "region"
@@ -299,7 +299,7 @@
         }
       },
       "create_worker_console_connection": {
-        "command": "oci compute instance-console-connection create --instance-id {instance_id} --public-key-file {ssh_public_key_file} --region {region}",
+        "target": {"Command": "oci compute instance-console-connection create --instance-id {instance_id} --public-key-file {ssh_public_key_file} --region {region}"},
         "params": [
           "instance_id",
           "ssh_public_key_file",

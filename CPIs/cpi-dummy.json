@@ -10,7 +10,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "cmd /c \"echo dummy-cli version 1.2.3\"",
+        "target": {"Command": "cmd /c \"}echo dummy-cli version 1.2.3\""},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -23,7 +23,7 @@
         }
       },
       "list_workers": {
-        "command": "cmd /c \"echo 1 test-vm-1 dummy-region-1 small running 192.168.1.1 & echo 2 test-vm-2 dummy-region-2 medium stopped 192.168.1.2\"",
+        "target": {"Command": "cmd /c \"}echo 1 test-vm-1 dummy-region-1 small running 192.168.1.1 & echo 2 test-vm-2 dummy-region-2 medium stopped 192.168.1.2\""},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -58,7 +58,7 @@
         }
       },
       "create_worker": {
-        "command": "cmd /c \"echo 3 {label} 192.168.1.3\"",
+        "target": {"Command": "cmd /c \"}echo 3 {label} 192.168.1.3\""},
         "params": [
           "label",
           "region",
@@ -86,7 +86,7 @@
         }
       },
       "delete_worker": {
-        "command": "cmd /c \"echo Instance {instance_id} deleted successfully\"",
+        "target": {"Command": "cmd /c \"}echo Instance {instance_id} deleted successfully\""},
         "params": [
           "instance_id"
         ],
@@ -101,7 +101,7 @@
         }
       },
       "get_worker": {
-        "command": "cmd /c \"echo {\\\"id\\\": {instance_id}, \\\"label\\\": \\\"test-vm-{instance_id}\\\", \\\"region\\\": \\\"dummy-region-1\\\", \\\"type\\\": \\\"small\\\", \\\"status\\\": \\\"running\\\", \\\"ipv4\\\": [\\\"192.168.1.{instance_id}\\\"], \\\"ipv6\\\": \\\"fe80::{instance_id}\\\", \\\"specs\\\": {\\\"memory\\\": 1024, \\\"disk\\\": 25600, \\\"vcpus\\\": 1}}\"",
+        "target": {"Command": "cmd /c \"}echo {\\\"id\\\": {instance_id}, \\\"label\\\": \\\"test-vm-{instance_id}\\\", \\\"region\\\": \\\"dummy-region-1\\\", \\\"type\\\": \\\"small\\\", \\\"status\\\": \\\"running\\\", \\\"ipv4\\\": [\\\"192.168.1.{instance_id}\\\"], \\\"ipv6\\\": \\\"fe80::{instance_id}\\\", \\\"specs\\\": {\\\"memory\\\": 1024, \\\"disk\\\": 25600, \\\"vcpus\\\": 1}}\""},
         "params": [
           "instance_id"
         ],
@@ -156,7 +156,7 @@
         }
       },
       "boot_worker": {
-        "command": "cmd /c \"echo Instance {instance_id} booted successfully\"",
+        "target": {"Command": "cmd /c \"}echo Instance {instance_id} booted successfully\""},
         "params": [
           "instance_id"
         ],
@@ -171,7 +171,7 @@
         }
       },
       "reboot_worker": {
-        "command": "cmd /c \"echo Instance {instance_id} rebooted successfully\"",
+        "target": {"Command": "cmd /c \"}echo Instance {instance_id} rebooted successfully\""},
         "params": [
           "instance_id"
         ],
@@ -186,7 +186,7 @@
         }
       },
       "shutdown_worker": {
-        "command": "cmd /c \"echo Instance {instance_id} shutdown successfully\"",
+        "target": {"Command": "cmd /c \"}echo Instance {instance_id} shutdown successfully\""},
         "params": [
           "instance_id"
         ],
@@ -201,7 +201,7 @@
         }
       },
       "list_volumes": {
-        "command": "cmd /c \"echo 1 system-disk 10240 ext4 & echo 2 data-disk 15360 ext4\"",
+        "target": {"Command": "cmd /c \"}echo 1 system-disk 10240 ext4 & echo 2 data-disk 15360 ext4\""},
         "params": [
           "instance_id"
         ],
@@ -231,7 +231,7 @@
         }
       },
       "create_volume": {
-        "command": "cmd /c \"echo {\\\"id\\\": 3, \\\"label\\\": \\\"{disk_label}\\\", \\\"size\\\": {size_mb}}\"",
+        "target": {"Command": "cmd /c \"}echo {\\\"id\\\": 3, \\\"label\\\": \\\"{disk_label}\\\", \\\"size\\\": {size_mb}}\""},
         "params": [
           "instance_id",
           "disk_label",
@@ -259,7 +259,7 @@
         }
       },
       "delete_volume": {
-        "command": "cmd /c \"echo Disk {disk_id} deleted successfully\"",
+        "target": {"Command": "cmd /c \"}echo Disk {disk_id} deleted successfully\""},
         "params": [
           "instance_id",
           "disk_id"
@@ -275,7 +275,7 @@
         }
       },
       "create_snapshot": {
-        "command": "cmd /c \"echo {\\\"id\\\": \\\"snap-123\\\", \\\"label\\\": \\\"{snapshot_label}\\\", \\\"created\\\": \\\"2025-03-17T12:00:00\\\"}\"",
+        "target": {"Command": "cmd /c \"}echo {\\\"id\\\": \\\"snap-123\\\", \\\"label\\\": \\\"{snapshot_label}\\\", \\\"created\\\": \\\"2025-03-17T12:00:00\\\"}\""},
         "params": [
           "instance_id",
           "snapshot_label"
@@ -299,7 +299,7 @@
         }
       },
       "list_snapshots": {
-        "command": "cmd /c \"echo snap-123 backup-1 2025-03-15 12:00:00 5120 1 & echo snap-456 backup-2 2025-03-16 12:00:00 5120 2\"",
+        "target": {"Command": "cmd /c \"}echo snap-123 backup-1 2025-03-15 12:00:00 5120 1 & echo snap-456 backup-2 2025-03-16 12:00:00 5120 2\""},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -331,7 +331,7 @@
         }
       },
       "delete_snapshot": {
-        "command": "cmd /c \"echo Snapshot {snapshot_id} deleted successfully\"",
+        "target": {"Command": "cmd /c \"}echo Snapshot {snapshot_id} deleted successfully\""},
         "params": [
           "snapshot_id"
         ],
@@ -346,7 +346,7 @@
         }
       },
       "list_regions": {
-        "command": "cmd /c \"echo dummy-region-1 US & echo dummy-region-2 EU & echo dummy-region-3 AP\"",
+        "target": {"Command": "cmd /c \"}echo dummy-region-1 US & echo dummy-region-2 EU & echo dummy-region-3 AP\""},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -364,7 +364,7 @@
         }
       },
       "list_sizes": {
-        "command": "cmd /c \"echo dummy-small Basic 1 1024 25600 10.00 & echo dummy-medium Standard 2 2048 51200 20.00 & echo dummy-large Premium 4 4096 102400 40.00\"",
+        "target": {"Command": "cmd /c \"}echo dummy-small Basic 1 1024 25600 10.00 & echo dummy-medium Standard 2 2048 51200 20.00 & echo dummy-large Premium 4 4096 102400 40.00\""},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -402,7 +402,7 @@
         }
       },
       "list_images": {
-        "command": "cmd /c \"echo dummy/ubuntu20.04 ubuntu-20.04 5120 2025-01-01 12:00:00 Ubuntu 20.04 LTS & echo dummy/debian11 debian-11 4096 2025-01-01 12:00:00 Debian 11 & echo dummy/centos8 centos-8 4096 2025-01-01 12:00:00 CentOS 8\"",
+        "target": {"Command": "cmd /c \"}echo dummy/ubuntu20.04 ubuntu-20.04 5120 2025-01-01 12:00:00 Ubuntu 20.04 LTS & echo dummy/debian11 debian-11 4096 2025-01-01 12:00:00 Debian 11 & echo dummy/centos8 centos-8 4096 2025-01-01 12:00:00 CentOS 8\""},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -432,10 +432,10 @@
           }
         }
       },
-      "direct_command": {
-        "command": "{command}",
+      "direct_target": {
+        "target": {"Command": "{target}"},
         "params": [
-          "command"
+          "target"
         ],
         "parse_rules": {
           "type": "object",
@@ -447,10 +447,10 @@
           }
         }
       },
-      "direct_command_json": {
-        "command": "{command}",
+      "direct_target_json": {
+        "target": {"Command": "{target}"},
         "params": [
-          "command"
+          "target"
         ],
         "parse_rules": {
           "type": "properties",
@@ -463,7 +463,7 @@
         }
       },
       "get_dummy_error": {
-        "command": "cmd /c \"echo ERROR: This is a simulated error & exit /b 1\"",
+        "target": {"Command": "cmd /c \"}echo ERROR: This is a simulated error & exit /b 1\""},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -476,7 +476,7 @@
         }
       },
       "get_dummy_malformed": {
-        "command": "cmd /c \"echo This output does not match any expected format\"",
+        "target": {"Command": "cmd /c \"}echo This output does not match any expected format\""},
         "params": [],
         "parse_rules": {
           "type": "object",

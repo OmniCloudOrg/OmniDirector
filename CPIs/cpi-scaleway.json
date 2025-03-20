@@ -13,7 +13,7 @@
     },
     "actions": {
       "test_install": {
-        "command": "scw version",
+        "target": {"Command": "scw version"},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -26,7 +26,7 @@
         }
       },
       "list_workers": {
-        "command": "scw instance server list zone={zone} -o json",
+        "target": {"Command": "scw instance server list zone={zone} -o json"},
         "params": [
           "zone"
         ],
@@ -41,7 +41,7 @@
         }
       },
       "create_worker": {
-        "command": "scw instance server create type={type} image={image} zone={zone} root-volume={root_volume_size_gb}GB boot-type={boot_type} name={name} {project_param} {ssh_key_param} -o json",
+        "target": {"Command": "scw instance server create type={type} image={image} zone={zone} root-volume={root_volume_size_gb}GB boot-type={boot_type} name={name} {project_param} {ssh_key_param} -o json"},
         "params": [
           "type",
           "image",
@@ -84,7 +84,7 @@
         }
       },
       "get_worker": {
-        "command": "scw instance server get {server_id} zone={zone} -o json",
+        "target": {"Command": "scw instance server get {server_id} zone={zone} -o json"},
         "params": [
           "server_id",
           "zone"
@@ -140,7 +140,7 @@
         }
       },
       "delete_worker": {
-        "command": "scw instance server delete {server_id} zone={zone} -o json",
+        "target": {"Command": "scw instance server delete {server_id} zone={zone} -o json"},
         "params": [
           "server_id",
           "zone"
@@ -156,7 +156,7 @@
         }
       },
       "start_worker": {
-        "command": "scw instance server start {server_id} zone={zone} -o json",
+        "target": {"Command": "scw instance server start {server_id} zone={zone} -o json"},
         "params": [
           "server_id",
           "zone"
@@ -172,7 +172,7 @@
         }
       },
       "stop_worker": {
-        "command": "scw instance server stop {server_id} zone={zone} -o json",
+        "target": {"Command": "scw instance server stop {server_id} zone={zone} -o json"},
         "params": [
           "server_id",
           "zone"
@@ -188,7 +188,7 @@
         }
       },
       "reboot_worker": {
-        "command": "scw instance server reboot {server_id} zone={zone} -o json",
+        "target": {"Command": "scw instance server reboot {server_id} zone={zone} -o json"},
         "params": [
           "server_id",
           "zone"
@@ -204,7 +204,7 @@
         }
       },
       "list_images": {
-        "command": "scw instance image list zone={zone} -o json",
+        "target": {"Command": "scw instance image list zone={zone} -o json"},
         "params": [
           "zone"
         ],
@@ -219,7 +219,7 @@
         }
       },
       "list_volumes": {
-        "command": "scw instance volume list zone={zone} -o json",
+        "target": {"Command": "scw instance volume list zone={zone} -o json"},
         "params": [
           "zone"
         ],
@@ -234,7 +234,7 @@
         }
       },
       "create_volume": {
-        "command": "scw instance volume create size={size_gb}GB name={name} volume-type={volume_type} zone={zone} -o json",
+        "target": {"Command": "scw instance volume create size={size_gb}GB name={name} volume-type={volume_type} zone={zone} -o json"},
         "params": [
           "size_gb",
           "name",
@@ -269,7 +269,7 @@
         }
       },
       "attach_volume": {
-        "command": "scw instance server attach-volume {server_id} volume-id={volume_id} zone={zone} -o json",
+        "target": {"Command": "scw instance server attach-volume {server_id} volume-id={volume_id} zone={zone} -o json"},
         "params": [
           "server_id",
           "volume_id",
@@ -286,7 +286,7 @@
         }
       },
       "detach_volume": {
-        "command": "scw instance server detach-volume {server_id} volume-id={volume_id} zone={zone} -o json",
+        "target": {"Command": "scw instance server detach-volume {server_id} volume-id={volume_id} zone={zone} -o json"},
         "params": [
           "server_id",
           "volume_id",
@@ -303,7 +303,7 @@
         }
       },
       "delete_volume": {
-        "command": "scw instance volume delete {volume_id} zone={zone} -o json",
+        "target": {"Command": "scw instance volume delete {volume_id} zone={zone} -o json"},
         "params": [
           "volume_id",
           "zone"
@@ -319,7 +319,7 @@
         }
       },
       "create_snapshot": {
-        "command": "scw instance snapshot create volume-id={volume_id} name={name} zone={zone} -o json",
+        "target": {"Command": "scw instance snapshot create volume-id={volume_id} name={name} zone={zone} -o json"},
         "params": [
           "volume_id",
           "name",
@@ -349,7 +349,7 @@
         }
       },
       "list_snapshots": {
-        "command": "scw instance snapshot list zone={zone} -o json",
+        "target": {"Command": "scw instance snapshot list zone={zone} -o json"},
         "params": [
           "zone"
         ],
@@ -364,7 +364,7 @@
         }
       },
       "delete_snapshot": {
-        "command": "scw instance snapshot delete {snapshot_id} zone={zone} -o json",
+        "target": {"Command": "scw instance snapshot delete {snapshot_id} zone={zone} -o json"},
         "params": [
           "snapshot_id",
           "zone"
@@ -380,7 +380,7 @@
         }
       },
       "list_worker_types": {
-        "command": "scw instance server-type list zone={zone} -o json",
+        "target": {"Command": "scw instance server-type list zone={zone} -o json"},
         "params": [
           "zone"
         ],
@@ -395,7 +395,7 @@
         }
       },
       "create_security_group": {
-        "command": "scw instance security-group create name={name} description={description} zone={zone} -o json",
+        "target": {"Command": "scw instance security-group create name={name} description={description} zone={zone} -o json"},
         "params": [
           "name",
           "description",
@@ -416,7 +416,7 @@
         }
       },
       "add_security_group_rule": {
-        "command": "scw instance security-group add-rule {security_group_id} protocol={protocol} direction={direction} action={action} port={port} zone={zone} -o json",
+        "target": {"Command": "scw instance security-group add-rule {security_group_id} protocol={protocol} direction={direction} action={action} port={port} zone={zone} -o json"},
         "params": [
           "security_group_id",
           "protocol",
