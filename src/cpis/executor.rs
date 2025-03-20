@@ -159,9 +159,6 @@ fn execute_sub_action(action_def: &ActionDef, params: &HashMap<String, Value>) -
                     return Err(e);
                 }
             };
-
-            error!("No endpoint defined for action '{}'", action_def);
-            return Err(CpiError::ExecutionFailed(format!("No endpoint defined for action '{}'", action_def)));
         }
     }
 

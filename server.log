@@ -7713,3 +7713,4 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-03-18 13:49:19] Logging system initialized
 [2025-03-18 13:49:21] Server running at http://0.0.0.0:8081
 [2025-03-18 13:49:23] Loaded CPI providers: ["aws-ec2", "huawei-cloud", "ibm-cloud", "gcp", "atlantic", "detee_cpi", "oracle_cloud", "hetzner_cloud", "contabo", "alibaba-cloud", "exoscale", "qemu", "scaleway", "upcloud", "vmware_esxi", "proxmox", "azure", "buyvm", "dummy", "ovh_cloud", "equinix-metal", "digital_ocean", "kamatera", "std_kvm", "virtualbox_windows", "vultr", "linode", "aws-lightsail"]
+[2025-03-20 19:52:43] Logging system initialized

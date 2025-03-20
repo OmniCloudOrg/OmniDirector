@@ -90,13 +90,17 @@ fn validate_action(action_name: &str, action_def: &Value, context: &str) -> Resu
         error!("Validation failed: {} {}", err_msg, context);
         return Err(CpiError::InvalidCpiFormat(err_msg));
     }
-    
-    // Required field: target
 
-    // TODO: Later we need to validate within the target field
     let target = action_def.get("target");
     if target.is_none() || !target.unwrap().is_object() {
         let err_msg = format!("Action '{}' must have a 'target' field", action_name);
+        error!("Validation failed: {} {}", err_msg, context);
+        return Err(CpiError::InvalidCpiFormat(err_msg));
+    }
+
+    let target_obj = target.unwrap().as_object().unwrap();
+    if !target_obj.contains_key("Command") && !target_obj.contains_key("Endpoint") {
+        let err_msg = format!("Action '{}' 'target' must contain either 'Command' or 'Endpoint'", action_name);
         error!("Validation failed: {} {}", err_msg, context);
         return Err(CpiError::InvalidCpiFormat(err_msg));
     }
