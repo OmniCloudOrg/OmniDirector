@@ -113,16 +113,58 @@ fn execute_sub_action(action_def: &ActionDef, params: &HashMap<String, Value>) -
                 }
             };
         },
-        ActionTarget::Endpoint { url, method, headers } => {
+        ActionTarget::Endpoint { url, method, headers, body} => {
+            // Fill the URL and body templates with parameters
+            let filled_url = fill_template(url, params)?;
+            let filled_body = fill_template(body.as_deref().unwrap_or(""), params)?;
+            let filled_headers = headers.as_ref().map(|h| {
+                h.iter()
+                    .map(|(key, value)| {
+                        let filled_key = fill_template(key, params)?;
+                        let filled_value = fill_template(value, params)?;
+                        Ok((filled_key, filled_value))
+                    })
+                    .collect::<Result<HashMap<_, _>, CpiError>>()
+            }).transpose()?;
+
+            // Execute the HTTP request
+            debug!("Executing HTTP request to {} with method {:?}", filled_url, method);
+            let response = reqwest::blocking::Client::new()
+                .request(method.to_string().parse().map_err(|_| CpiError::InvalidParameterType("method".to_string(), "valid HTTP method".to_string()))?, &filled_url)
+                .headers(filled_headers.map_or_else(reqwest::header::HeaderMap::new, |headers| {
+                    headers.into_iter().filter_map(|(key, value)| {
+                        let header_name = reqwest::header::HeaderName::from_bytes(key.as_bytes()).ok()?;
+                        let header_value = reqwest::header::HeaderValue::from_str(&value).ok()?;
+                        Some((header_name, header_value))
+                    }).collect()
+                }))
+                .body(filled_body)
+                .send()
+                .map_err(|e| CpiError::ExecutionFailed(format!("HTTP request failed: {}", e)))?;
+
+            // Check for HTTP errors
+            if !response.status().is_success() {
+                return Err(CpiError::ExecutionFailed(format!("HTTP request failed with status: {}", response.status())));
+            }
+            // Parse the response body
+            let response_body = response.text().map_err(|e| CpiError::ExecutionFailed(format!("Failed to read response body: {}", e)))?;
+            debug!("HTTP response body: {}", truncate_output(&response_body, 1000));
+
+            // Parse the response according to the parse rules
+            result = match parser::parse_output(&response_body, &action_def.parse_rules, params) {
+                Ok(value) => value,
+                Err(e) => {
+                    error!("Failed to parse HTTP response: {}", e);
+                    error!("Response body was: {}", truncate_output(&response_body, 1000));
+                    return Err(e);
+                }
+            };
 
             error!("No endpoint defined for action '{}'", action_def);
             return Err(CpiError::ExecutionFailed(format!("No endpoint defined for action '{}'", action_def)));
         }
     }
-    
-    
 
-    
     // Execute post-exec actions if any
     if let Some(post_actions) = &action_def.post_exec {
         debug!("Executing {} post-exec actions", post_actions.len());

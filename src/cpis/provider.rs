@@ -39,11 +39,12 @@ pub enum ActionTarget {
         url: String,
         method: EndPointMethod,
         headers: Option<HashMap<String, String>>,
+        body: Option<String>,
     },
     Command(String),
 }
 
-#[derive(Debug, Deserialize,Serialize,Clone,PartialEq)]
+#[derive(Debug, Deserialize,Serialize,Clone,PartialEq, Display)]
 pub enum EndPointMethod {
     Get,
     Post,
