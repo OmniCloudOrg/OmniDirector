@@ -116,9 +116,6 @@ impl Provider {
     
     /// Create a new provider from a JSON value
     pub fn from_json(json: serde_json::Value) -> Result<Self, CpiError> {
-        // Validate the JSON format first
-        validator::validate_cpi_format(&json, None)?;
-        
         // Then deserialize
         let provider: Provider = serde_json::from_value(json)
             .map_err(|e| CpiError::SerdeError(e))?;
@@ -151,9 +148,6 @@ pub fn load_provider(path: PathBuf) -> Result<Provider, CpiError> {
         error!("Failed to parse provider JSON from {:?}: {}", path, e);
         CpiError::SerdeError(e)
     })?;
-    
-    // Validate the JSON format
-    validator::validate_cpi_format(&json, None)?;
     
     // Deserialize into Provider
     let provider: Provider = serde_json::from_value(json.clone()).map_err(|e| {

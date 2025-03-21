@@ -1,53 +1,59 @@
 // mod.rs - Complete improved initialization with better logging
 
-pub mod parser;
-pub mod executor;
-pub mod provider;
 pub mod error;
-pub mod validator;
+pub mod executor;
+pub mod loader;
 pub mod logger;
+pub mod parser;
+pub mod provider;
+pub mod validator;
 
-use std::path::{Path, PathBuf};
-use std::collections::HashMap;
-use std::fs::{self, File};
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Arc;
-use serde_json::Value;
-use std::sync::Mutex;
+use crate::cpis;
+
 use self::error::CpiError;
 use self::provider::Provider;
 use self::validator::validate_cpi_format;
-use log::{info, warn, error, debug, trace};
+use dashmap::DashMap;
+use log::{debug, error, info, trace, warn};
 use rayon::prelude::*;
-
+use serde_json::Value;
+use std::collections::HashMap;
+use std::fs::{self, File};
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::Arc;
+use std::sync::Mutex;
 
 #[cfg(debug_assertions)]
-fn time<T,A: ToString, F: FnOnce() -> T>(name: A ,f: F) -> T {
+fn time<T, A: ToString, F: FnOnce() -> T>(name: A, f: F) -> T {
     let time = std::time::Instant::now();
     let out = f();
     let action = name.to_string();
-    debug!("{} Took {:?}",action, time.elapsed());
+    debug!("{} Took {:?}", action, time.elapsed());
     out
-    }
+}
 #[cfg(not(debug_assertions))]
-fn time<T,A: ToString, F: FnOnce() -> T>(_: A ,f: F) -> T {
+fn time<T, A: ToString, F: FnOnce() -> T>(_: A, f: F) -> T {
     f()
 }
 
 pub fn initialize() -> Result<CpiSystem, error::CpiError> {
     info!("Initializing CPI system");
     let start = std::time::Instant::now();
-    
+
     // Configure logging based on environment
     logger::configure_from_env();
-    
+
     let mut system = CpiSystem::new();
     match system.load_all_providers() {
         Ok(count) => {
             let duration = start.elapsed();
-            info!("CPI system initialized with {} providers in {:?}", count, duration);
+            info!(
+                "CPI system initialized with {} providers in {:?}",
+                count, duration
+            );
             Ok(system)
-        },
+        }
         Err(e) => {
             error!("Failed to initialize CPI system: {}", e);
             Err(e)
@@ -57,284 +63,147 @@ pub fn initialize() -> Result<CpiSystem, error::CpiError> {
 
 // Public API for the CPI system
 pub struct CpiSystem {
-    providers: HashMap<String, Arc<Provider>>,
+    providers: DashMap<String, Provider>,
 }
 
 impl CpiSystem {
     pub fn new() -> Self {
         Self {
-            providers: HashMap::new(),
+            providers: DashMap::new(),
         }
     }
-    
+
     // Load all providers from the ./CPIs directory with enhanced error reporting
     pub fn load_all_providers(&mut self) -> Result<usize, CpiError> {
-        // Try multiple possible locations for the CPIs directory
-        let possible_paths = [
-            Path::new("./CPIs"),
-            Path::new("CPIs"),
-            Path::new("../CPIs"),
-            Path::new("./cpi_system/CPIs"),
-            // Add current executable directory + CPIs
-            &std::env::current_exe().ok().map(|mut p| {
-                p.pop();
-                p.push("CPIs");
-                p
-            }).unwrap_or_else(|| Path::new("./exe_dir/CPIs").to_path_buf()),
-        ];
-        
-        let mut cpi_dir = None;
-        for path in &possible_paths {
-            info!("Checking for CPIs directory at: {:?}", path);
-            if path.exists() && path.is_dir() {
-                cpi_dir = Some(path);
-                info!("Found CPIs directory at: {:?}", path);
-                break;
-            }
-        }
-        
-        let cpi_dir = match cpi_dir {
-            Some(dir) => dir,
-            None => {
-                let err_msg = format!(
-                    "Could not find CPIs directory. Checked paths: {:?}", 
-                    possible_paths
-                );
-                error!("{}", err_msg);
-                return Err(CpiError::InvalidPath(err_msg));
-            }
-        };
-        
-        // List all files in the directory for debugging
-        info!("Examining contents of CPIs directory:");
-        let dir_contents = match fs::read_dir(cpi_dir) {
-            Ok(entries) => entries,
-            Err(e) => {
-                error!("Failed to read CPIs directory: {}", e);
-                return Err(CpiError::IoError(e));
-            }
-        };
-        
-        for entry in dir_contents {
-            if let Ok(entry) = entry {
-                info!("Found file: {:?}", entry.path());
-            }
-        }
-        
-        // Now actually read the directory for processing
-        let entries = match fs::read_dir(cpi_dir) {
-            Ok(entries) => entries,
-            Err(e) => {
-                error!("Failed to read CPIs directory: {}", e);
-                return Err(CpiError::IoError(e));
-            }
-        };
-        
-        let mut all_files = Vec::new();
-        for entry in entries {
-            let entry = match entry {
-                Ok(e) => e,
-                Err(e) => {
-                    warn!("Error reading directory entry: {}", e);
-                    continue;
-                }
-            };
-            
-            let path = entry.path();
-            if path.is_file() {
-                if let Some(ext) = path.extension() {
-                    if ext == "json" {
-                        all_files.push(path);
-                    } else {
-                        debug!("Skipping non-JSON file: {:?}", path);
+        info!("Loading all CPI providers from ./CPIs directory");
+
+        // Load CPIs using the loader module
+        let cpis = loader::load_cpis();
+
+        let binding = cpis.iter().collect::<Vec<_>>();
+        let valid_cpis = binding.par_iter()
+            .filter_map(|cpi| {
+                println!("Validating provider file: {:?}", cpi.key());
+
+                match serde_json::from_str::<Value>(cpi.value()) {
+                    Ok(json_value) => {
+                        self.validate_provider_file(PathBuf::from(cpi.key()), json_value.to_string()).ok();
+                        return Some(cpi.key()) // Return the key if validation and registration are successful;
                     }
-                } else {
-                    debug!("Skipping file without extension: {:?}", path);
-                }
-            }
-        }
-        
-        if all_files.is_empty() {
-            let err_msg = format!("No JSON files found in CPIs directory: {:?}", cpi_dir);
-            error!("{}", err_msg);
-            return Err(CpiError::NoProvidersLoaded);
-        }
-        
-        info!("Found {} potential CPI definition files", all_files.len());
-        
-        // Process each file
-        let loaded_count = AtomicUsize::new(0);
-        let validation_errors = Mutex::new(Vec::new());
-        let loading_errors = Mutex::new(Vec::new());
-        
-        
-        let total_files = all_files.len();
-        let self_arc = Arc::new(Mutex::new(self));
-        all_files.par_iter().for_each(|path| {
-            info!("Processing CPI file: {:?}", path);
-            
-            // Validate the JSON before loading
-            if let Err(e) = self_arc.lock().unwrap().validate_provider_file(path) {
-                let err_msg = format!("Failed to validate CPI file {:?}: {}", path, e);
-                warn!("{}", err_msg);
-                validation_errors.lock().unwrap().push((path.clone(), err_msg));
-            }
-            
-            // Load the provider
-            match self_arc.lock().unwrap().register_provider(path.clone(), false) {
-                Ok(_) => {
-                    info!("Successfully loaded CPI from {:?}", path);
-                    loaded_count.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-                },
-                Err(e) => {
-                    let err_msg = format!("Failed to load CPI file {:?}: {}", path, e);
-                    warn!("{}", err_msg);
-                    if let Ok(mut errors) = loading_errors.lock() {
-                        errors.push((path.clone(), err_msg));
-                    } else {
-                        error!("Failed to acquire lock on loading_errors");
+                    Err(e) => {
+                        error!("Failed to parse JSON for CPI '{}': {}", cpi.key(), e);
+                        None::<&str>
                     }
-                }
+                };
+
+                Some(cpi.key())
+            })
+            .collect::<Vec<_>>();
+
+        println!("Found {} valid CPIs", valid_cpis.len());
+
+        // Register each valid provider
+        for cpi in valid_cpis.iter() {
+            let provider_content = cpis.get(*cpi).unwrap().value().clone();
+            if let Err(e) = self.register_provider(cpi.to_string(), provider_content, false) {
+                error!("Failed to register provider '{}': {}", cpi, e);
+            } else {
+                info!("Successfully registered provider '{}'", cpi);
             }
-        });
-        let loaded_count = loaded_count.load(Ordering::SeqCst);
-        let validation_errors = validation_errors.into_inner().unwrap();
-        let loading_errors = loading_errors.into_inner().unwrap();
-        // Report detailed errors if no providers were loaded
+        }
+
+        let loaded_count = self.providers.len() as usize;
         if loaded_count == 0 {
-            error!("No CPI providers were successfully loaded.");
-            
-            if !validation_errors.is_empty() {
-                error!("Validation errors:");
-                for (path, err) in &validation_errors {
-                    error!("  {:?}: {}", path, err);
-                }
-            }
-            
-            if !loading_errors.is_empty() {
-                error!("Loading errors:");
-                for (path, err) in &loading_errors {
-                    error!("  {:?}: {}", path, err);
-                }
-            }
-            
             return Err(CpiError::NoProvidersLoaded);
         }
         // Report successful loading with clear formatting for visibility
         info!("============================================");
-        info!("✅ Successfully loaded {}/{} CPI providers", loaded_count, total_files);
+        let total_files: usize = cpis.len();
+        info!(
+            "✅ Successfully loaded {}/{} CPI providers",
+            loaded_count,
+            total_files
+        );
         info!("============================================");
 
-        
-        // Show warnings about failed providers
-        if !validation_errors.is_empty() || !loading_errors.is_empty() {
-            let total_errors = validation_errors.len() + loading_errors.len();
-            warn!("{} CPI providers failed to load", total_errors);
-        }
-        
         Ok(loaded_count)
     }
 
     // Enhanced validation with better error reporting
-    fn validate_provider_file(&self, path: &Path) -> Result<(), CpiError> {
-        debug!("Validating CPI file: {:?}", path);
-        
-        // Check file exists and is readable
-        if !path.exists() {
-            let err_msg = format!("File does not exist: {:?}", path);
-            error!("{}", err_msg);
-            return Err(CpiError::InvalidPath(err_msg));
-        }
-        
-        // Try to read the file
-        let file_content = match fs::read_to_string(path) {
-            Ok(content) => content,
-            Err(e) => {
-                let err_msg = format!("Failed to read file {:?}: {}", path, e);
-                error!("{}", err_msg);
-                return Err(CpiError::IoError(e));
-            }
-        };
-        
-        // Check if file is empty
-        if file_content.trim().is_empty() {
-            let err_msg = format!("File is empty: {:?}", path);
-            error!("{}", err_msg);
-            return Err(CpiError::InvalidCpiFormat(err_msg));
-        }
-        
+    fn validate_provider_file(&self, path: PathBuf, cpi_content: String) -> Result<(), CpiError> {
+        info!("Validating CPI file: {}", path.display());
+
         // Try to parse the JSON
-        let json: Value = match serde_json::from_str(&file_content) {
-            Ok(json) => json,
+        let json: Value = match serde_json::from_str(&cpi_content) {
+            Ok(json) => {
+                info!("Successfully parsed JSON from file: {}", path.display());
+                json
+            }
             Err(e) => {
-                let err_msg = format!("Failed to parse JSON in file {:?}: {}", path, e);
-                error!("{}", err_msg);
-                
+                let err_msg = format!("Failed to parse JSON in file: {}", e);
+
                 // Provide more details about parse errors
-                let line_col = find_json_error_location(&file_content, &e);
+                let line_col = find_json_error_location(&cpi_content, &e);
                 if let Some((line, col)) = line_col {
                     error!("JSON error at line {}, column {}", line, col);
-                    if let Some(problematic_line) = file_content.lines().nth(line - 1) {
+                    if let Some(problematic_line) = cpi_content.lines().nth(line - 1) {
                         error!("Problematic line: {}", problematic_line);
                         error!("{}^", " ".repeat(col - 1));
                     }
                 }
-                
+
                 return Err(CpiError::SerdeError(e));
             }
         };
-        
+
         // Validate the JSON structure
-        match validate_cpi_format(&json, Some(path)) {
-            Ok(_) => {
-                debug!("CPI file {:?} validated successfully", path);
-                Ok(())
-            },
-            Err(e) => {
-                error!("CPI file {:?} validation failed: {}", path, e);
-                Err(e)
-            }
+        match path.to_str() {
+            Some(path_str) => validate_cpi_format(path_str, &json),
+            None => Err(CpiError::InvalidPath("Invalid path".to_string())),
         }
     }
-    
+
     // Enhanced provider registration with better error reporting
-    pub fn register_provider(&mut self, path: PathBuf, should_test: bool) -> Result<(), CpiError> {
-        info!("Registering provider from: {:?}", path);
-        
-        let provider = match provider::load_provider(path.clone()) {
-            Ok(p) => p,
-            Err(e) => {
-                error!("Failed to load provider from {:?}: {}", path, e);
-                return Err(e);
-            }
-        };
-        
-        info!("Successfully loaded provider '{}' ({} actions) from {:?}", 
-             provider.name, provider.actions.len(), path);
+    pub fn register_provider(
+        &mut self,
+        provider_name: String,
+        provider_content: String,
+        should_test: bool,
+    ) -> Result<(), CpiError> {
+        //map string to provider struct using serde
+        let provider: Provider = serde_json::from_str(&provider_content).map_err(|e| {
+            dbg!(&e);
+            error!("Failed to parse JSON for provider {} Error: {}", provider_name, e);
+            CpiError::SerdeError(e)
+        })?;
+        info!("Registering provider: {:?}", provider.name);
 
         if should_test {
             info!("Running test command on provider '{}'", provider.name);
             let test_result = executor::execute_action(&provider, "test_install", HashMap::new());
-    
+
             match test_result {
                 Ok(_) => {
                     info!("Test command succeeded for provider '{}'", provider.name);
-                },
+                }
                 Err(e) => {
-                    error!("Test command failed for provider '{}': {}", provider.name, e);
+                    error!(
+                        "Test command failed for provider '{}': {}",
+                        provider.name, e
+                    );
                     return Err(e);
                 }
-                
             }
         }
-        
-        self.providers.insert(provider.name.clone(), Arc::new(provider));
+
+        self.providers
+            .insert(provider.name.clone(), provider);
         Ok(())
     }
-    
+
     // Get available providers
     pub fn get_providers(&self) -> Vec<String> {
-        let providers = self.providers.keys().cloned().collect();
+        let providers = self.providers.iter().map(|entry| entry.key().clone()).collect();
         debug!("Available providers: {:?}", providers);
         providers
     }
@@ -348,52 +217,80 @@ impl CpiSystem {
     }
 
     // Get the required parameters for an action
-    pub fn get_action_params(&self, provider_name: &str, action_name: &str) -> Result<Vec<String>, CpiError> {
+    pub fn get_action_params(
+        &self,
+        provider_name: &str,
+        action_name: &str,
+    ) -> Result<Vec<String>, CpiError> {
         let provider = self.get_provider(provider_name)?;
         let action = provider.get_action(action_name)?;
-        
+
         let params = if let Some(params) = &action.params {
             params.clone()
         } else {
             Vec::new()
         };
-        
-        debug!("Parameters for action '{}' in provider '{}': {:?}", 
-              action_name, provider_name, params);
-        
+
+        debug!(
+            "Parameters for action '{}' in provider '{}': {:?}",
+            action_name, provider_name, params
+        );
+
         Ok(params)
     }
     // Execute a CPI action
-    pub fn execute(&self, provider_name: &str, action_name: &str, params: HashMap<String, Value>) -> Result<Value, CpiError> {
+    pub fn execute(
+        &self,
+        provider_name: &str,
+        action_name: &str,
+        params: HashMap<String, Value>,
+    ) -> Result<Value, CpiError> {
         let provider = self.get_provider(provider_name)?;
-        info!("Executing action '{}' from provider '{}'", action_name, provider_name);
+        info!(
+            "Executing action '{}' from provider '{}'",
+            action_name, provider_name
+        );
         let start = std::time::Instant::now();
-        
-        let result = time("Executing CPI actions",|| executor::execute_action(provider, action_name, params));
-        
+
+        let result = time("Executing CPI actions", || {
+            executor::execute_action(&provider, action_name, params)
+        });
+
         let duration = start.elapsed();
         if let Ok(_) = &result {
-            info!("Action '{}' from provider '{}' completed successfully in {:?}", 
-                 action_name, provider_name, duration);
+            info!(
+                "Action '{}' from provider '{}' completed successfully in {:?}",
+                action_name, provider_name, duration
+            );
         } else {
-            error!("Action '{}' from provider '{}' failed after {:?}", 
-                  action_name, provider_name, duration);
+            error!(
+                "Action '{}' from provider '{}' failed after {:?}",
+                action_name, provider_name, duration
+            );
         }
-        
+
         result
     }
 
     // Helper method to get a provider
-    fn get_provider(&self, provider_name: &str) -> Result<&Provider, CpiError> {
-        self.providers.get(provider_name)
-            .map(|arc| arc.as_ref())
-            .ok_or_else(|| {
-                let available = self.providers.keys().cloned().collect::<Vec<_>>().join(", ");
-                let err_msg = format!("Provider '{}' not found. Available providers: {}", 
-                                     provider_name, available);
-                error!("{}", err_msg);
-                CpiError::ProviderNotFound(provider_name.to_string())
-            })
+    fn get_provider(&self, provider_name: &str) -> Result<Provider, CpiError> {
+        match self.providers.get(provider_name) {
+            Some(provider) => Ok(provider.clone()),
+            None => {
+            let available = self
+                .providers
+                .iter()
+                .map(|entry| entry.key().clone())
+                .collect::<Vec<_>>()
+                .join(", ");
+            let err_msg = format!(
+                "Provider '{}' not found. Available providers: {}",
+                provider_name, available
+            );
+            error!("{}", err_msg);
+            Err(CpiError::ProviderNotFound(provider_name.to_string()))
+            }
+        }
     }
 }
 

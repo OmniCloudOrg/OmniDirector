@@ -5,11 +5,7 @@ use log::{info, debug, error, warn, trace};
 use std::path::Path;
 
 // Validate CPI JSON format with detailed logging
-pub fn validate_cpi_format(json: &Value, file_path: Option<&Path>) -> Result<(), CpiError> {
-    let context = match file_path {
-        Some(path) => format!("in file {:?}", path.display()),
-        None => "in provided JSON".to_string()
-    };
+pub fn validate_cpi_format(context: &str, json: &Value) -> Result<(), CpiError> {
 
     // Check if it's an object
     if !json.is_object() {
@@ -48,8 +44,8 @@ pub fn validate_cpi_format(json: &Value, file_path: Option<&Path>) -> Result<(),
     debug!("Provider type: {} {}", type_str, context);
     
     // Optional validation for type values
-    if !["command", "virt", "cloud", "container"].contains(&type_str) {
-        warn!("Provider type '{}' is not one of the recommended types (command, virt, cloud, container) {}", 
+    if !["command", "virt", "cloud", "container", "endpoint"].contains(&type_str) {
+        warn!("Provider type '{}' is not one of the recommended types (command, virt, cloud, container, endpoint) {}", 
               type_str, context);
     }
     
@@ -64,7 +60,7 @@ pub fn validate_cpi_format(json: &Value, file_path: Option<&Path>) -> Result<(),
     // Validate each action
     let actions_obj = actions.as_object().unwrap();
     for (action_name, action_def) in actions_obj {
-        if let Err(e) = validate_action(action_name, action_def, context.as_str()) {
+        if let Err(e) = validate_action(action_name, action_def, context) {
             error!("Action '{}' validation failed: {} {}", action_name, e, context);
             return Err(e);
         }

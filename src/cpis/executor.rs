@@ -3,7 +3,6 @@ use super::provider::{Provider, ActionDef,ActionTarget};
 use super::error::CpiError;
 use super::parser;
 use log::{info, debug, trace, warn, error};
-use rayon::result;
 use std::collections::HashMap;
 use std::process::Command;
 use std::time::Instant;
