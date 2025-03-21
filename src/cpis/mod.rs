@@ -1,4 +1,4 @@
-// mod.rs - Optimized initialization with better logging
+// mod.rs - Optimized initialization with better logging and singleton support
 
 pub mod error;
 pub mod executor;
@@ -17,7 +17,11 @@ use rayon::prelude::*;
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex, Once};
+use std::sync::atomic::{AtomicBool, Ordering};
+
+static INIT: Once = Once::new();
+static INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 #[cfg(debug_assertions)]
 fn time<T, A: ToString, F: FnOnce() -> T>(name: A, f: F) -> T {
@@ -33,6 +37,12 @@ fn time<T, A: ToString, F: FnOnce() -> T>(_: A, f: F) -> T {
 }
 
 pub fn initialize() -> Result<CpiSystem, error::CpiError> {
+    // Skip initialization if already done
+    if INITIALIZED.load(Ordering::SeqCst) {
+        debug!("CPI system already initialized, reusing existing instance");
+        return Ok(CpiSystem::new());
+    }
+
     info!("Initializing CPI system");
     let start = std::time::Instant::now();
 
@@ -40,7 +50,22 @@ pub fn initialize() -> Result<CpiSystem, error::CpiError> {
     let _ = logger::configure_from_env();
 
     let system = CpiSystem::new();
-    match system.load_all_providers() {
+    
+    // Use Once to ensure initialization happens exactly once
+    let mut result = Ok(0);
+    INIT.call_once(|| {
+        match system.load_all_providers() {
+            Ok(count) => {
+                result = Ok(count);
+                INITIALIZED.store(true, Ordering::SeqCst);
+            }
+            Err(e) => {
+                result = Err(e);
+            }
+        }
+    });
+
+    match result {
         Ok(count) => {
             let duration = start.elapsed();
             info!(
@@ -58,18 +83,37 @@ pub fn initialize() -> Result<CpiSystem, error::CpiError> {
 
 // Public API for the CPI system
 pub struct CpiSystem {
-    providers: DashMap<String, Provider>,
+    providers: Arc<DashMap<String, Provider>>,
+}
+
+impl Clone for CpiSystem {
+    fn clone(&self) -> Self {
+        Self {
+            providers: Arc::clone(&self.providers),
+        }
+    }
+}
+
+// Use a lazy static pattern for the providers to ensure they're shared
+lazy_static::lazy_static! {
+    static ref GLOBAL_PROVIDERS: Arc<DashMap<String, Provider>> = Arc::new(DashMap::new());
 }
 
 impl CpiSystem {
     pub fn new() -> Self {
         Self {
-            providers: DashMap::new(),
+            providers: Arc::clone(&GLOBAL_PROVIDERS),
         }
     }
 
     // Load all providers from the ./CPIs directory with enhanced error reporting
     pub fn load_all_providers(&self) -> Result<usize, CpiError> {
+        // If providers are already loaded, just return the count
+        if !self.providers.is_empty() {
+            debug!("Providers already loaded, count: {}", self.providers.len());
+            return Ok(self.providers.len());
+        }
+
         info!("Loading all CPI providers from ./CPIs directory");
 
         // Load CPIs using the loader module
@@ -80,7 +124,8 @@ impl CpiSystem {
         let valid_cpis = DashMap::new();
         
         // Process all CPIs in parallel
-        cpis.iter().par_bridge().for_each(|entry| {
+        let cpis_iter: Vec<_> = cpis.iter().collect();
+        cpis_iter.par_iter().for_each(|entry| {
             let cpi_key = entry.key();
             let cpi_value = entry.value();
             
@@ -148,7 +193,7 @@ impl CpiSystem {
             warn!("===============================================");
         }
         
-        info!("Successfully validated: {}/{} providers", valid_cpis.len(), total_cpis);
+        info!("🎉 Successfully validated: {}/{} providers", valid_cpis.len(), total_cpis);
         info!("============================================");
 
         Ok(loaded_count)
