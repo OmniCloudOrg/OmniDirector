@@ -1,13 +1,12 @@
-// parser.rs - Optimized for performance
 use super::provider::{ParseRules, Pattern, ArrayPattern};
-use super::error::CpiError;
 use super::logger::{debug, trace, warn};
-use log::info;
+use serde_json::{Value, Map, Number};
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
-use serde_json::{Value, Map, Number};
+use super::error::CpiError;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
+use log::info;
 
 // Cache for compiled regexes to avoid recompilation
 type RegexCache = HashMap<String, Regex>;
