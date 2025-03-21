@@ -29,7 +29,7 @@ fn time<T,A: ToString, F: FnOnce() -> T>(name: A ,f: F) -> T {
 }
 
 #[cfg(not(debug_assertions))]
-fn time<T, F: FnOnce() -> T>(f: F) -> T {
+fn time<T,A: ToString, F: FnOnce() -> T>(_: A ,f: F) -> T {
     f()
 }
 
@@ -75,7 +75,7 @@ impl CpiSystem {
             Path::new("../CPIs"),
             Path::new("./cpi_system/CPIs"),
             // Add current executable directory + CPIs
-            &std::env::current_exe().ok().map(|mut p| {
+            &std::env::current_exe().par_iter().ok().map(|mut p| {
                 p.pop();
                 p.push("CPIs");
                 p
@@ -355,14 +355,13 @@ impl CpiSystem {
         
         Ok(params)
     }
-
     // Execute a CPI action
     pub fn execute(&self, provider_name: &str, action_name: &str, params: HashMap<String, Value>) -> Result<Value, CpiError> {
         let provider = self.get_provider(provider_name)?;
         info!("Executing action '{}' from provider '{}'", action_name, provider_name);
         let start = std::time::Instant::now();
         
-        let result = time(|| executor::execute_action(provider, action_name, params));
+        let result = time("Executing CPI actions",|| executor::execute_action(provider, action_name, params));
         
         let duration = start.elapsed();
         if let Ok(_) = &result {

@@ -1,0 +1,1068 @@
+{
+    "name": "truenas",
+    "type": "endpoint",
+    "default_settings": {
+        "api_url": "http://localhost/api/v2.0",
+        "api_key": "",
+        "verify_ssl": "true",
+        "region": ""
+    },
+    "actions": {
+        "test_install": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/system/info",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "hostname": {
+                        "regex": "\"hostname\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    },
+                    "version": {
+                        "regex": "\"version\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_pools": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "pools": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_worker": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"name\":\"{name}\",\"topology\":{\"data\":[{\"type\":\"STRIPE\",\"disks\":{disk_names}}]}}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "name",
+                "disk_names"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*(\\d+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_worker": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool/id/{worker_id}",
+                    "method": "Delete",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_worker": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool/id/{worker_id}",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "pool": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_workers": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool/dataset",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "datasets": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_dataset": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool/dataset",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"name\":\"{name}\",\"type\":\"FILESYSTEM\",\"volsize\":{size_gb},\"comments\":\"{comments}\"}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "name",
+                "size_gb",
+                "comments"
+            ],
+            "default_settings": {
+                "comments": "",
+                "size_gb": 0
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_dataset": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool/dataset/id/{dataset_id}",
+                    "method": "Delete",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "dataset_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_zvols": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool/dataset?type=VOLUME",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "zvols": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_zvol": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/pool/dataset",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"name\":\"{name}\",\"type\":\"VOLUME\",\"volsize\":{size_gb},\"comments\":\"{comments}\"}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "name",
+                "size_gb"
+            ],
+            "default_settings": {
+                "comments": ""
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_snapshots": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/zfs/snapshot",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "snapshots": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_snapshot": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/zfs/snapshot",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"dataset\":\"{worker_id}\",\"name\":\"{name}\",\"recursive\":{recursive}}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "worker_id",
+                "name"
+            ],
+            "default_settings": {
+                "recursive": "false"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_snapshot": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/zfs/snapshot/id/{snapshot_id}",
+                    "method": "Delete",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "snapshot_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_jails": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/jail",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "jails": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_jail": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/jail",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"jail_name\":\"{name}\",\"release\":\"{image}\",\"dhcp\":{dhcp},\"vnet\":{vnet}}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "name",
+                "image"
+            ],
+            "default_settings": {
+                "dhcp": "true",
+                "vnet": "true"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*(\\d+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "start_worker": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/jail/id/{worker_id}/start",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "stop_worker": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/jail/id/{worker_id}/stop",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "worker_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "reboot_worker": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/jail/id/{worker_id}",
+                    "method": "Delete",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"force\":{force}}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "worker_id"
+            ],
+            "default_settings": {
+                "force": "false"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_vms": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/vm",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "vms": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_vm": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/vm",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"name\":\"{name}\",\"cpu\":{vcpus},\"memory\":{memory},\"bootloader\":\"UEFI\",\"devices\":[{\"dtype\":\"NIC\",\"attributes\":{\"type\":\"VIRTIO\",\"mac\":\"{mac}\",\"nic_attach\":\"vnet0\"}}]}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "name",
+                "worker_type",
+                "memory"
+            ],
+            "default_settings": {
+                "mac": "00:a0:98:00:00:00"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*(\\d+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "start_vm": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/vm/id/{vm_id}/start",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "vm_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "stop_vm": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/vm/id/{vm_id}/stop",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"force\":{force}}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "vm_id"
+            ],
+            "default_settings": {
+                "force": "false"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_vm": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/vm/id/{vm_id}",
+                    "method": "Delete",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "vm_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_worker_types": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/disk",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "disks": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_services": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/service",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "services": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "start_service": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/service/id/{service_id}/start",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "service_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "stop_service": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/service/id/{service_id}/stop",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "service_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "restart_service": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/service/id/{service_id}/restart",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "service_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_disks": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/sharing/smb",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "shares": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_share_smb": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/sharing/smb",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"name\":\"{name}\",\"path\":\"{path}\",\"comment\":\"{comment}\",\"browsable\":true,\"guestok\":{guest_ok}}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "name",
+                "path"
+            ],
+            "default_settings": {
+                "comment": "",
+                "guest_ok": "false"
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*(\\d+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_share_smb": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/sharing/smb/id/{share_id}",
+                    "method": "Delete",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "share_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_shares_nfs": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/sharing/nfs",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "shares": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "create_share_nfs": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/sharing/nfs",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"paths\":[\"{path}\"],\"comment\":\"{comment}\",\"networks\":[\"{network}\"],\"hosts\":[\"{hosts}\"],\"enabled\":true}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "path"
+            ],
+            "default_settings": {
+                "comment": "",
+                "network": "0.0.0.0/0",
+                "hosts": ""
+            },
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "id": {
+                        "regex": "\"id\":\\s*(\\d+)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "delete_share_nfs": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/sharing/nfs/id/{share_id}",
+                    "method": "Delete",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key",
+                "share_id"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "system_reboot": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/system/reboot",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"delay\":0}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "system_shutdown": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/system/shutdown",
+                    "method": "Post",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"delay\":0}"
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "result": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "get_account_info": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/system/info",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "info": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "list_images": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/system/version",
+                    "method": "Get",
+                    "headers": {
+                        "Authorization": "Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            "params": [
+                "api_url",
+                "api_key"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "version": {
+                        "regex": "(.*)",
+                        "group": 1
+                    }
+                }
+            }
+        },
+        "configure_auth": {
+            "target": {
+                "Endpoint": {
+                    "url": "{api_url}/auth/token",
+                    "method": "Post",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"username\":\"{username}\",\"password\":\"{password}\"}"
+                }
+            },
+            "params": [
+                "api_url",
+                "username",
+                "password"
+            ],
+            "parse_rules": {
+                "type": "object",
+                "patterns": {
+                    "api_key": {
+                        "regex": "\"token\":\\s*\"([^\"]+)\"",
+                        "group": 1
+                    }
+                }
+            }
+        }
+    }
+}

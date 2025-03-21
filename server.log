@@ -7714,3 +7714,11 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-03-18 13:49:21] Server running at http://0.0.0.0:8081
 [2025-03-18 13:49:23] Loaded CPI providers: ["aws-ec2", "huawei-cloud", "ibm-cloud", "gcp", "atlantic", "detee_cpi", "oracle_cloud", "hetzner_cloud", "contabo", "alibaba-cloud", "exoscale", "qemu", "scaleway", "upcloud", "vmware_esxi", "proxmox", "azure", "buyvm", "dummy", "ovh_cloud", "equinix-metal", "digital_ocean", "kamatera", "std_kvm", "virtualbox_windows", "vultr", "linode", "aws-lightsail"]
 [2025-03-20 19:52:43] Logging system initialized
+[2025-03-20 20:36:51] Logging system initialized
+[2025-03-20 20:36:54] Server running at http://0.0.0.0:8081
+[2025-03-20 20:36:56] Loaded CPI providers: ["aws-ec2", "ibm-cloud", "equinix-metal", "gcp", "kamatera", "dummy", "qemu", "virtualbox_windows", "buyvm", "contabo", "scaleway", "truenas", "alibaba-cloud", "aws-lightsail", "detee_cpi", "digital_ocean", "exoscale", "vmware_esxi", "vultr", "hetzner_cloud", "azure", "ovh_cloud", "proxmox", "huawei-cloud", "oracle_cloud", "upcloud", "linode", "atlantic", "std_kvm", "rackspace", "tencent"]
+[2025-03-20 20:36:57] Received action request: CpiActionRequest {
+    provider: "aws-ec2",
+    action: "create_worker",
+    params: {},
+}
