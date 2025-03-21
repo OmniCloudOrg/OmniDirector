@@ -1,8 +1,8 @@
+use anyhow::{Error, Result};
+use chrono::Local;
 use colored::Colorize;
 use serde_json::Value;
 use std::fmt::Display;
-use anyhow::{Result, Error};
-use chrono::Local;
 
 pub struct Logger {
     show_timestamp: bool,
@@ -42,12 +42,7 @@ impl Logger {
     }
 
     pub fn warn<T: Display>(&self, message: T) {
-        println!(
-            "{}{}{}",
-            self.timestamp(),
-            "WARN ".yellow().bold(),
-            message
-        );
+        println!("{}{}{}", self.timestamp(), "WARN ".yellow().bold(), message);
     }
 
     pub fn error<T: Display>(&self, message: T) {
@@ -172,7 +167,7 @@ impl Logger {
 // Example usage:
 pub fn example() -> Result<()> {
     let logger = Logger::new(true);
-    
+
     // Basic logging
     logger.info("Starting application...");
     logger.success("Successfully connected to database");

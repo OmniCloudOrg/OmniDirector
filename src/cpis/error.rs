@@ -1,6 +1,6 @@
 // error.rs - Enhanced error handling
-use std::fmt;
 use std::error::Error;
+use std::fmt;
 
 #[derive(Debug)]
 pub enum CpiError {
@@ -25,8 +25,11 @@ impl fmt::Display for CpiError {
             CpiError::ProviderNotFound(name) => write!(f, "Provider not found: {}", name),
             CpiError::ActionNotFound(name) => write!(f, "Action not found: {}", name),
             CpiError::MissingParameter(name) => write!(f, "Missing required parameter: {}", name),
-            CpiError::InvalidParameterType(name, expected) => 
-                write!(f, "Invalid parameter type for {}, expected {}", name, expected),
+            CpiError::InvalidParameterType(name, expected) => write!(
+                f,
+                "Invalid parameter type for {}, expected {}",
+                name, expected
+            ),
             CpiError::ExecutionFailed(reason) => write!(f, "Command execution failed: {}", reason),
             CpiError::ParseError(reason) => write!(f, "Failed to parse command output: {}", reason),
             CpiError::InvalidPath(reason) => write!(f, "Invalid path: {}", reason),

@@ -1,6 +1,6 @@
 use crate::cpis::{self, error::CpiError};
 use ez_logging::println;
-use rocket::{self, post, get, response::Responder, routes, serde::json::Json};
+use rocket::{self, get, post, response::Responder, routes, serde::json::Json};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, env, sync::Arc};
 
@@ -31,10 +31,10 @@ struct CpiActionResponse {
 enum ApiError {
     #[response(status = 400)]
     BadRequest(String),
-    
+
     #[response(status = 404)]
     NotFound(String),
-    
+
     #[response(status = 500)]
     Internal(String),
 }
@@ -42,11 +42,19 @@ enum ApiError {
 impl From<CpiError> for ApiError {
     fn from(err: CpiError) -> Self {
         match err {
-            CpiError::ProviderNotFound(name) => ApiError::NotFound(format!("Provider not found: {}", name)),
-            CpiError::ActionNotFound(name) => ApiError::NotFound(format!("Action not found: {}", name)),
-            CpiError::MissingParameter(name) => ApiError::BadRequest(format!("Missing required parameter: {}", name)),
-            CpiError::InvalidParameterType(name, expected) => 
-                ApiError::BadRequest(format!("Invalid parameter type for {}, expected {}", name, expected)),
+            CpiError::ProviderNotFound(name) => {
+                ApiError::NotFound(format!("Provider not found: {}", name))
+            }
+            CpiError::ActionNotFound(name) => {
+                ApiError::NotFound(format!("Action not found: {}", name))
+            }
+            CpiError::MissingParameter(name) => {
+                ApiError::BadRequest(format!("Missing required parameter: {}", name))
+            }
+            CpiError::InvalidParameterType(name, expected) => ApiError::BadRequest(format!(
+                "Invalid parameter type for {}, expected {}",
+                name, expected
+            )),
             _ => ApiError::Internal(err.to_string()),
         }
     }
@@ -63,30 +71,30 @@ type ApiResult<T> = Result<Json<T>, ApiError>;
 // Route handlers
 #[post("/vms/action", format = "json", data = "<action_request>")]
 async fn execute_action(
-    action_request: Json<CpiActionRequest>, 
-    cpi_state: &rocket::State<CpiState>
+    action_request: Json<CpiActionRequest>,
+    cpi_state: &rocket::State<CpiState>,
 ) -> ApiResult<CpiActionResponse> {
     let request = action_request.into_inner();
     println!("Received action request: {:#?}", request);
-    
+
     // Execute the CPI action
-    let result = match cpi_state.cpi_system.execute(
-        &request.provider, 
-        &request.action, 
-        request.params
-    ) {
-        Ok(value) => CpiActionResponse {
-            success: true,
-            result: Some(value),
-            error: None,
-        },
-        Err(err) => CpiActionResponse {
-            success: false,
-            result: None,
-            error: Some(err.to_string()),
-        },
-    };
-    
+    let result =
+        match cpi_state
+            .cpi_system
+            .execute(&request.provider, &request.action, request.params)
+        {
+            Ok(value) => CpiActionResponse {
+                success: true,
+                result: Some(value),
+                error: None,
+            },
+            Err(err) => CpiActionResponse {
+                success: false,
+                result: None,
+                error: Some(err.to_string()),
+            },
+        };
+
     Ok(Json(result))
 }
 
@@ -99,7 +107,10 @@ async fn get_providers(cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<Str
 
 // Get available actions for a provider
 #[get("/vms/actions/<provider>")]
-async fn get_actions(provider: String, cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<String>> {
+async fn get_actions(
+    provider: String,
+    cpi_state: &rocket::State<CpiState>,
+) -> ApiResult<Vec<String>> {
     let actions = cpi_state.cpi_system.get_provider_actions(&provider)?;
     Ok(Json(actions))
 }
@@ -109,36 +120,36 @@ async fn get_actions(provider: String, cpi_state: &rocket::State<CpiState>) -> A
 async fn get_all_unique_actions(cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<String>> {
     let providers = cpi_state.cpi_system.get_providers();
     let mut all_actions = Vec::new();
-    
+
     // Collect actions from all providers
     for provider in providers {
         match cpi_state.cpi_system.get_provider_actions(&provider) {
             Ok(provider_actions) => {
                 all_actions.extend(provider_actions);
-            },
+            }
             Err(err) => {
                 println!("Error getting actions for provider {}: {}", provider, err);
                 // Continue with other providers even if one fails
             }
         }
     }
-    
+
     // Remove duplicates by using a HashSet
     let unique_actions: Vec<String> = all_actions
         .into_iter()
         .collect::<std::collections::HashSet<_>>()
         .into_iter()
         .collect();
-    
+
     Ok(Json(unique_actions))
 }
 
 // Get required parameters for an action
 #[get("/vms/params/<provider>/<action>")]
 async fn get_action_params(
-    provider: String, 
-    action: String, 
-    cpi_state: &rocket::State<CpiState>
+    provider: String,
+    action: String,
+    cpi_state: &rocket::State<CpiState>,
 ) -> ApiResult<Vec<String>> {
     let params = cpi_state.cpi_system.get_action_params(&provider, &action)?;
     Ok(Json(params))
@@ -159,7 +170,7 @@ pub async fn rocket() -> rocket::Rocket<rocket::Build> {
             std::process::exit(1);
         }
     };
-    
+
     // Log loaded providers
     let providers = cpi_system.get_providers();
     println!("Loaded CPI providers: {:?}", providers);

@@ -1,9 +1,9 @@
 // logger.rs - Enhanced logging with colors and symbols
 
-use log::{Level, LevelFilter, Metadata, Record, SetLoggerError};
-use std::io::{self, Write};
-use std::env;
 use chrono::Local;
+use log::{Level, LevelFilter, Metadata, Record, SetLoggerError};
+use std::env;
+use std::io::{self, Write};
 
 // Re-export standard log macros (for compatibility)
 pub use log::{debug, error, info, trace, warn};
@@ -55,10 +55,13 @@ pub fn log_with_color(level: Level, args: std::fmt::Arguments) {
             Level::Debug => (BLUE, DEBUG_SYMBOL),
             Level::Trace => (MAGENTA, TRACE_SYMBOL),
         };
-        
+
         let target = module_path!();
-        let thread_name = std::thread::current().name().unwrap_or("unknown").to_string();
-        
+        let thread_name = std::thread::current()
+            .name()
+            .unwrap_or("unknown")
+            .to_string();
+
         // Format: [timestamp] [thread] SYMBOL LEVEL target: message
         writeln!(
             io::stderr(),
@@ -68,7 +71,8 @@ pub fn log_with_color(level: Level, args: std::fmt::Arguments) {
             CYAN,
             target,
             args
-        ).ok();
+        )
+        .ok();
     }
 }
 
@@ -106,15 +110,18 @@ impl log::Log for ColorLogger {
                 Level::Debug => (BLUE, DEBUG_SYMBOL),
                 Level::Trace => (MAGENTA, TRACE_SYMBOL),
             };
-            
+
             let target = if !record.target().is_empty() {
                 format!("[{}] ", record.target())
             } else {
                 String::new()
             };
-            
-            let thread_name = std::thread::current().name().unwrap_or("unknown").to_string();
-            
+
+            let thread_name = std::thread::current()
+                .name()
+                .unwrap_or("unknown")
+                .to_string();
+
             // Format: [timestamp] [thread] SYMBOL LEVEL target: message
             writeln!(
                 io::stderr(),
@@ -124,7 +131,8 @@ impl log::Log for ColorLogger {
                 CYAN,
                 target,
                 record.args()
-            ).ok();
+            )
+            .ok();
         }
     }
 
@@ -138,7 +146,7 @@ static LOGGER: ColorLogger = ColorLogger;
 pub fn configure_from_env() -> Result<(), SetLoggerError> {
     // Check for no-color flag or environment variable
     let use_colors = !env::var("NO_COLOR").is_ok() && !env::args().any(|arg| arg == "--no-color");
-    
+
     // Check for log level from environment or use default
     let log_level = match env::var("RUST_LOG").ok() {
         Some(level) => match level.to_lowercase().as_str() {
@@ -151,7 +159,7 @@ pub fn configure_from_env() -> Result<(), SetLoggerError> {
         },
         None => LevelFilter::Info,
     };
-    
+
     // Initialize the global logger
     log::set_logger(&LOGGER).map(|()| log::set_max_level(log_level))
 }
@@ -163,7 +171,7 @@ pub fn create_progress_bar(total: usize) -> indicatif::ProgressBar {
         indicatif::ProgressStyle::default_bar()
             .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} {msg}")
             .unwrap()
-            .progress_chars("#>-")
+            .progress_chars("#>-"),
     );
     pb
 }
@@ -191,24 +199,27 @@ impl GroupLogger {
             start_time: std::time::Instant::now(),
         }
     }
-    
+
     pub fn end(self) {
         let duration = self.start_time.elapsed();
-        println!("{}▲{} Completed: {} in {:?}", BLUE, RESET, self.name, duration);
+        println!(
+            "{}▲{} Completed: {} in {:?}",
+            BLUE, RESET, self.name, duration
+        );
     }
-    
+
     pub fn step(&self, message: &str) {
         println!("{}│{} {}", CYAN, RESET, message);
     }
-    
+
     pub fn success_step(&self, message: &str) {
         println!("{}│{} {}✓{} {}", CYAN, RESET, GREEN, RESET, message);
     }
-    
+
     pub fn warn_step(&self, message: &str) {
         println!("{}│{} {}⚠{} {}", CYAN, RESET, YELLOW, RESET, message);
     }
-    
+
     pub fn error_step(&self, message: &str) {
         println!("{}│{} {}✖{} {}", CYAN, RESET, RED, RESET, message);
     }

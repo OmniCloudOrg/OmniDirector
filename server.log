@@ -7770,3 +7770,24 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
     action: "create_worker",
     params: {},
 }
+[2025-03-21 18:48:48] Logging system initialized
+[2025-03-21 18:48:49] Server running at http://0.0.0.0:8081
+[2025-03-21 18:48:49] Loaded CPI providers: ["equinix-metal", "contabo", "proxmox", "kamatera", "detee_cpi", "azure", "alibaba-cloud", "exoscale", "std_kvm", "vultr", "virtualbox_windows", "scaleway", "buyvm", "aws-lightsail", "upcloud", "ovh_cloud", "ec2", "huawei-cloud", "vmware_esxi", "truenas", "hetzner_cloud", "gcp", "qemu", "linode", "atlantic", "dummy", "oracle_cloud", "ec2-api", "rackspace", "digital_ocean", "gcp-api", "ibm-cloud", "tencent"]
+[2025-03-21 18:49:39] Logging system initialized
+[2025-03-21 18:49:40] Server running at http://0.0.0.0:8081
+[2025-03-21 18:49:40] Loaded CPI providers: ["tencent", "exoscale", "hetzner_cloud", "alibaba-cloud", "detee_cpi", "qemu", "oracle_cloud", "gcp-api", "linode", "upcloud", "aws-lightsail", "rackspace", "scaleway", "azure-api", "atlantic", "vmware_esxi", "vultr", "ovh_cloud", "equinix-metal", "azure", "ec2-api", "std_kvm", "proxmox", "buyvm", "ibm-cloud", "contabo", "ec2", "gcp", "kamatera", "digital_ocean", "truenas", "huawei-cloud", "virtualbox_windows", "dummy"]
+[2025-03-21 18:49:54] Logging system initialized
+[2025-03-21 18:49:54] Server running at http://0.0.0.0:8081
+[2025-03-21 18:49:55] Loaded CPI providers: ["dummy", "digital_ocean", "virtualbox_windows", "exoscale", "detee_cpi", "vmware_esxi", "truenas", "kamatera", "qemu", "azure-api", "ec2", "ibm-cloud", "gcp-api", "upcloud", "aws-lightsail", "linode", "proxmox", "buyvm", "huawei-cloud", "alibaba-cloud", "std_kvm", "equinix-metal", "contabo", "atlantic", "tencent", "scaleway", "ovh_cloud", "oracle_cloud", "hetzner_cloud", "rackspace", "azure", "vultr", "gcp", "ec2-api"]
+[2025-03-21 18:50:46] Logging system initialized
+[2025-03-21 18:50:46] Server running at http://0.0.0.0:8081
+[2025-03-21 18:50:47] Loaded CPI providers: ["vmware_esxi", "std_kvm", "scaleway", "kamatera", "aws-lightsail", "proxmox", "ec2", "ovh_cloud", "gcp", "tencent", "virtualbox_windows", "oracle_cloud", "buyvm", "atlantic", "rackspace", "huawei-cloud", "gcp-api", "azure", "contabo", "ec2-api", "ibm-cloud", "hetzner_cloud", "exoscale", "detee_cpi", "dummy", "vultr", "qemu", "truenas", "linode", "digital_ocean", "upcloud", "equinix-metal", "alibaba-cloud", "azure-api"]
+[2025-03-21 18:51:22] Logging system initialized
+[2025-03-21 18:51:22] Server running at http://0.0.0.0:8081
+[2025-03-21 18:51:22] Loaded CPI providers: ["exoscale", "scaleway", "ec2-api", "ovh_cloud", "azure-api", "truenas", "alibaba-cloud", "vmware_esxi", "contabo", "linode", "atlantic", "azure", "qemu", "upcloud", "proxmox", "buyvm", "tencent", "ibm-cloud", "digital_ocean", "detee_cpi", "ec2", "huawei-cloud", "std_kvm", "aws-lightsail", "virtualbox_windows", "gcp", "gcp-api", "dummy", "hetzner_cloud", "kamatera", "oracle_cloud", "rackspace", "equinix-metal", "vultr"]
+[2025-03-21 18:52:54] Logging system initialized
+[2025-03-21 18:52:54] Server running at http://0.0.0.0:8081
+[2025-03-21 18:52:54] Loaded CPI providers: ["ovh_cloud", "hetzner_cloud", "dummy", "linode", "digital_ocean", "rackspace", "std_kvm", "proxmox", "equinix-metal", "huawei-cloud", "qemu", "contabo", "ibm-cloud", "azure", "ec2-api", "vmware_esxi", "virtualbox_windows", "exoscale", "ec2", "atlantic", "oracle_cloud", "detee_cpi", "kamatera", "azure-api", "vultr", "aws-lightsail", "scaleway", "buyvm", "gcp-api", "upcloud", "truenas", "gcp", "alibaba-cloud", "tencent"]
+[2025-03-21 18:53:58] Logging system initialized
+[2025-03-21 18:53:59] Server running at http://0.0.0.0:8081
+[2025-03-21 18:53:59] Loaded CPI providers: ["qemu", "atlantic", "oracle_cloud", "digital_ocean", "linode", "aws-lightsail", "virtualbox_windows", "azure", "ibm-cloud", "hetzner_cloud", "gcp-api", "truenas", "detee_cpi", "azure-api", "vmware_esxi", "buyvm", "contabo", "exoscale", "ovh_cloud", "scaleway", "upcloud", "alibaba-cloud", "proxmox", "vultr", "tencent", "ec2", "rackspace", "std_kvm", "ec2-api", "dummy", "kamatera", "equinix-metal", "gcp", "huawei-cloud"]

@@ -18,9 +18,7 @@ pub fn load_cpis() -> DashMap<String, String> {
 
     paths.par_iter().for_each(|path| {
         if let (Some(file_name), Ok(content)) = (
-            path.file_name()
-                .and_then(|s| s.to_str())
-                .map(String::from),
+            path.file_name().and_then(|s| s.to_str()).map(String::from),
             std::fs::read_to_string(path),
         ) {
             cpi_map.insert(file_name, content);

@@ -1,15 +1,14 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug,Serialize,Deserialize)]
-
+#[derive(Debug, Serialize, Deserialize)]
 
 struct CPi {
     name: String,
     #[serde(rename = "type")]
     cpi_type: String,
-    actions: CpiActions 
+    actions: CpiActions,
 }
-#[derive(Debug,Serialize,Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct CpiActions {
     pub test_install: Action,
     pub create_vm: Action,
@@ -31,7 +30,7 @@ struct CpiActions {
     pub snapshot_disk: Action,
     pub get_snapshots: Action,
 }
-#[derive(Debug,Serialize,Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 
 struct Action {
     command: String,
@@ -44,12 +43,10 @@ struct Action {
     pub success_exit_code: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parse_output: Option<String>,
-}   
-
-
+}
 
 // impl Default for CPi {
-//     fn default() -> Self { 
+//     fn default() -> Self {
 //         Self { name: Default::default(), cpi_type: Default::default(), actions: Default::default() }
 //     }
 // }

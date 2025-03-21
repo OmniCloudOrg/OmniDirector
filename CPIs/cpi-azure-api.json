@@ -1,0 +1,1518 @@
+{
+    "name": "azure-api",
+    "type": "endpoint",
+    "default_settings": {
+      "api_url": "https://management.azure.com",
+      "api_version": "2022-08-01",
+      "location": "eastus",
+      "resource_group": "default-rg",
+      "vm_size": "Standard_B1s",
+      "image": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "18.04-LTS",
+        "version": "latest"
+      },
+      "admin_username": "azureuser",
+      "disk_sku": "Standard_LRS"
+    },
+    "actions": {
+      "test_install": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/providers/Microsoft.Compute?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "ip_name",
+          "access_token",
+          "location",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "namespace": {
+              "regex": "\"namespace\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "resourceTypes": {
+              "regex": "\"resourceTypes\":\\s*(\\[.*\\])",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_resource_group": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourcegroups/{resource_group}?api-version=2021-04-01",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"location\":\"{location}\"}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "location",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "location": {
+              "regex": "\"location\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_resource_group": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourcegroups/{resource_group}?api-version=2021-04-01",
+            "method": "Delete",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_workers": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "size": {
+              "regex": "\"vmSize\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "status": {
+              "regex": "\"powerState\":\\s*\"([^\"]+)\"",
+              "group": 1,
+              "optional": true
+            }
+          }
+        }
+      },
+      "create_worker": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"location\":\"{location}\",\"properties\":{\"hardwareProfile\":{\"vmSize\":\"{vm_size}\"},\"storageProfile\":{\"imageReference\":{\"publisher\":\"{image_publisher}\",\"offer\":\"{image_offer}\",\"sku\":\"{image_sku}\",\"version\":\"{image_version}\"},\"osDisk\":{\"createOption\":\"FromImage\",\"managedDisk\":{\"storageAccountType\":\"{disk_sku}\"}}},\"osProfile\":{\"computerName\":\"{vm_name}\",\"adminUsername\":\"{admin_username}\",\"linuxConfiguration\":{\"disablePasswordAuthentication\":true,\"ssh\":{\"publicKeys\":[{\"path\":\"/home/{admin_username}/.ssh/authorized_keys\",\"keyData\":\"{ssh_public_key}\"}]}}},\"networkProfile\":{\"networkInterfaces\":[{\"id\":\"{network_interface_id}\"}]}}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token",
+          "location",
+          "vm_size",
+          "image_publisher",
+          "image_offer",
+          "image_sku",
+          "image_version",
+          "disk_sku",
+          "admin_username",
+          "ssh_public_key",
+          "network_interface_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_worker": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "method": "Delete",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "get_worker": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "properties",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "location": {
+              "regex": "\"location\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "size": {
+              "regex": "\"vmSize\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "os_type": {
+              "regex": "\"osType\":\\s*\"([^\"]+)\"",
+              "group": 1,
+              "optional": true
+            }
+          }
+        }
+      },
+      "start_worker": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/start?api-version={api_version}",
+            "method": "Post",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "stop_worker": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/powerOff?api-version={api_version}",
+            "method": "Post",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "restart_worker": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/restart?api-version={api_version}",
+            "method": "Post",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_volume": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/disks/{disk_name}?api-version={api_version}",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"location\":\"{location}\",\"properties\":{\"creationData\":{\"createOption\":\"Empty\"},\"diskSizeGB\":\"{size_gb}\",\"diskIOPSReadWrite\":500,\"diskMBpsReadWrite\":60},\"sku\":{\"name\":\"{disk_sku}\"}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "disk_name",
+          "api_version",
+          "access_token",
+          "location",
+          "size_gb",
+          "disk_sku"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "attach_volume": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token"
+        ],
+        "post_exec": [
+          {
+            "target": {
+              "Endpoint": {
+                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+                "method": "Put",
+                "headers": {
+                  "Authorization": "Bearer {access_token}",
+                  "Content-Type": "application/json"
+                },
+                "body": "{...vm_template, \"properties\": {...vm_template.properties, \"storageProfile\": {...vm_template.properties.storageProfile, \"dataDisks\": [...vm_template.properties.storageProfile.dataDisks || [], {\"lun\": {next_lun}, \"name\": \"{disk_name}\", \"createOption\": \"Attach\", \"managedDisk\": {\"id\": \"{disk_id}\"}}]}}}"
+              }
+            },
+            "params": [
+              "api_url",
+              "subscription_id",
+              "resource_group",
+              "vm_name",
+              "api_version",
+              "access_token",
+              "vm_template",
+              "next_lun",
+              "disk_name",
+              "disk_id"
+            ],
+            "parse_rules": {
+              "type": "object",
+              "patterns": {
+                "success": {
+                  "regex": ".*",
+                  "transform": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "vm_template": {
+              "regex": "(.*)",
+              "group": 1
+            },
+            "next_lun": {
+              "regex": "\"lun\":\\s*(\\d+)",
+              "group": 1,
+              "transform": "number"
+            }
+          }
+        }
+      },
+      "detach_volume": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token"
+        ],
+        "post_exec": [
+          {
+            "target": {
+              "Endpoint": {
+                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+                "method": "Put",
+                "headers": {
+                  "Authorization": "Bearer {access_token}",
+                  "Content-Type": "application/json"
+                },
+                "body": "{...vm_template, \"properties\": {...vm_template.properties, \"storageProfile\": {...vm_template.properties.storageProfile, \"dataDisks\": vm_template.properties.storageProfile.dataDisks.filter(disk => disk.managedDisk.id !== \"{disk_id}\")}}}"
+              }
+            },
+            "params": [
+              "api_url",
+              "subscription_id",
+              "resource_group",
+              "vm_name",
+              "api_version",
+              "access_token",
+              "vm_template",
+              "disk_id"
+            ],
+            "parse_rules": {
+              "type": "object",
+              "patterns": {
+                "success": {
+                  "regex": ".*",
+                  "transform": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "vm_template": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_volumes": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/disks?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "size_gb": {
+              "regex": "\"diskSizeGB\":\\s*(\\d+)",
+              "group": 1,
+              "transform": "number"
+            },
+            "sku": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "has_volume": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/disks/{disk_name}?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "disk_name",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "exists": {
+              "regex": "\"name\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_snapshot": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/snapshots/{snapshot_name}?api-version={api_version}",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"location\":\"{location}\",\"properties\":{\"creationData\":{\"createOption\":\"Copy\",\"sourceResourceId\":\"{disk_id}\"}},\"sku\":{\"name\":\"Standard_LRS\"}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "snapshot_name",
+          "api_version",
+          "access_token",
+          "location",
+          "disk_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "resize_worker": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vm_name",
+          "api_version",
+          "access_token"
+        ],
+        "post_exec": [
+          {
+            "target": {
+              "Endpoint": {
+                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+                "method": "Put",
+                "headers": {
+                  "Authorization": "Bearer {access_token}",
+                  "Content-Type": "application/json"
+                },
+                "body": "{...vm_template, \"properties\": {...vm_template.properties, \"hardwareProfile\": {\"vmSize\": \"{new_vm_size}\"}}}"
+              }
+            },
+            "params": [
+              "api_url",
+              "subscription_id",
+              "resource_group",
+              "vm_name",
+              "api_version",
+              "access_token",
+              "vm_template",
+              "new_vm_size"
+            ],
+            "parse_rules": {
+              "type": "object",
+              "patterns": {
+                "success": {
+                  "regex": ".*",
+                  "transform": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "vm_template": {
+              "regex": "(.*)",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_locations": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/locations?api-version=2020-01-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url", 
+          "subscription_id",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "locations": {
+              "regex": "\"value\":\\s*(\\[.*\\])",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_vm_sizes": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/providers/Microsoft.Compute/locations/{location}/vmSizes?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "location",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "vmSizes": {
+              "regex": "\"value\":\\s*(\\[.*\\])",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_images": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/providers/Microsoft.Compute/locations/{location}/publishers/{publisher}/artifacttypes/vmimage/offers/{offer}/skus/{sku}/versions?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "location",
+          "publisher",
+          "offer",
+          "sku",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "versions": {
+              "regex": "\"value\":\\s*(\\[.*\\])",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_publishers": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/providers/Microsoft.Compute/locations/{location}/publishers?api-version={api_version}",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "location",
+          "api_version",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "location": {
+              "regex": "\"location\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_network_interfaces": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/networkInterfaces?api-version=2022-05-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "interfaces": {
+              "regex": "\"value\":\\s*(\\[.*\\])",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_network_interface": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/networkInterfaces/{nic_name}?api-version=2022-05-01",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"location\":\"{location}\",\"properties\":{\"ipConfigurations\":[{\"name\":\"ipconfig1\",\"properties\":{\"subnet\":{\"id\":\"{subnet_id}\"},\"privateIPAllocationMethod\":\"Dynamic\",\"publicIPAddress\":{\"id\":\"{public_ip_id}\"}}}],\"enableAcceleratedNetworking\":false,\"enableIPForwarding\":false}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "nic_name",
+          "access_token",
+          "location",
+          "subnet_id",
+          "public_ip_id"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_public_ip": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/publicIPAddresses/{ip_name}?api-version=2022-05-01",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"location\":\"{location}\",\"properties\":{\"publicIPAllocationMethod\":\"Dynamic\",\"idleTimeoutInMinutes\":4},\"sku\":{\"name\":\"Basic\"}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "ip_name",
+          "access_token",
+          "location"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_public_ip": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/publicIPAddresses/{ip_name}?api-version=2022-05-01",
+            "method": "Delete",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "ip_name",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_virtual_network": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/virtualNetworks/{vnet_name}?api-version=2022-05-01",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"location\":\"{location}\",\"properties\":{\"addressSpace\":{\"addressPrefixes\":[\"{address_prefix}\"]},\"subnets\":[{\"name\":\"{subnet_name}\",\"properties\":{\"addressPrefix\":\"{subnet_prefix}\"}}]}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vnet_name",
+          "access_token",
+          "location",
+          "address_prefix",
+          "subnet_name",
+          "subnet_prefix"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "create_subnet": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}?api-version=2022-05-01",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"properties\":{\"addressPrefix\":\"{subnet_prefix}\"}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vnet_name",
+          "subnet_name",
+          "access_token",
+          "subnet_prefix"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_subnets": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets?api-version=2022-05-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vnet_name",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "prefix": {
+              "regex": "\"addressPrefix\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_subnet": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}?api-version=2022-05-01",
+            "method": "Delete",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vnet_name",
+          "subnet_name",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_virtual_networks": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/virtualNetworks?api-version=2022-05-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "address_space": {
+              "regex": "\"addressPrefixes\":\\s*(\\[.*?\\])",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_virtual_network": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/virtualNetworks/{vnet_name}?api-version=2022-05-01",
+            "method": "Delete",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "vnet_name",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "create_network_security_group": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/networkSecurityGroups/{nsg_name}?api-version=2022-05-01",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"location\":\"{location}\",\"properties\":{\"securityRules\":[{\"name\":\"default-allow-ssh\",\"properties\":{\"protocol\":\"Tcp\",\"sourcePortRange\":\"*\",\"destinationPortRange\":\"22\",\"sourceAddressPrefix\":\"*\",\"destinationAddressPrefix\":\"*\",\"access\":\"Allow\",\"priority\":1000,\"direction\":\"Inbound\"}}]}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "nsg_name",
+          "access_token",
+          "location"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "delete_network_security_group": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/networkSecurityGroups/{nsg_name}?api-version=2022-05-01",
+            "method": "Delete",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "nsg_name",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "add_security_rule": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/networkSecurityGroups/{nsg_name}/securityRules/{rule_name}?api-version=2022-05-01",
+            "method": "Put",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"properties\":{\"protocol\":\"{protocol}\",\"sourcePortRange\":\"{source_port_range}\",\"destinationPortRange\":\"{destination_port_range}\",\"sourceAddressPrefix\":\"{source_address_prefix}\",\"destinationAddressPrefix\":\"{destination_address_prefix}\",\"access\":\"{access}\",\"priority\":{priority},\"direction\":\"{direction}\"}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "nsg_name",
+          "rule_name",
+          "access_token",
+          "protocol",
+          "source_port_range",
+          "destination_port_range",
+          "source_address_prefix",
+          "destination_address_prefix",
+          "access",
+          "priority",
+          "direction"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "remove_security_rule": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/networkSecurityGroups/{nsg_name}/securityRules/{rule_name}?api-version=2022-05-01",
+            "method": "Delete",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "nsg_name",
+          "rule_name",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": ".*",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "list_security_rules": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/networkSecurityGroups/{nsg_name}/securityRules?api-version=2022-05-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "resource_group",
+          "nsg_name",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "protocol": {
+              "regex": "\"protocol\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "direction": {
+              "regex": "\"direction\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "priority": {
+              "regex": "\"priority\":\\s*(\\d+)",
+              "group": 1,
+              "transform": "number"
+            }
+          }
+        }
+      },
+      "get_subscription": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}?api-version=2020-01-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"displayName\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "state": {
+              "regex": "\"state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "add_tag_to_resource": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/{resource_id}?api-version={api_version}",
+            "method": "Patch",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            },
+            "body": "{\"tags\":{\"{tag_name}\":\"{tag_value}\"}}"
+          }
+        },
+        "params": [
+          "api_url",
+          "resource_id",
+          "api_version",
+          "access_token",
+          "tag_name",
+          "tag_value"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "success": {
+              "regex": "\"tags\"",
+              "transform": "boolean"
+            }
+          }
+        }
+      },
+      "remove_tag_from_resource": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/{resource_id}/providers/Microsoft.Resources/tags/default?api-version=2021-04-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "resource_id",
+          "access_token"
+        ],
+        "post_exec": [
+          {
+            "target": {
+              "Endpoint": {
+                "url": "{api_url}/{resource_id}/providers/Microsoft.Resources/tags/default?api-version=2021-04-01",
+                "method": "Put",
+                "headers": {
+                  "Authorization": "Bearer {access_token}",
+                  "Content-Type": "application/json"
+                },
+                "body": "{\"properties\":{\"tags\":{...Object.fromEntries(Object.entries(current_tags).filter(([key]) => key !== \"{tag_name}\"))}}}"
+              }
+            },
+            "params": [
+              "api_url",
+              "resource_id",
+              "access_token",
+              "current_tags",
+              "tag_name"
+            ],
+            "parse_rules": {
+              "type": "object",
+              "patterns": {
+                "success": {
+                  "regex": ".*",
+                  "transform": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "current_tags": {
+              "regex": "\"tags\":\\s*(\\{(?:[^{}]|(?:\\{[^{}]*\\}))*\\})",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_resource_groups": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions/{subscription_id}/resourcegroups?api-version=2021-04-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "subscription_id",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"name\"",
+          "patterns": {
+            "name": {
+              "regex": "\"name\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "id": {
+              "regex": "\"id\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "location": {
+              "regex": "\"location\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      },
+      "list_subscriptions": {
+        "target": {
+          "Endpoint": {
+            "url": "{api_url}/subscriptions?api-version=2020-01-01",
+            "method": "Get",
+            "headers": {
+              "Authorization": "Bearer {access_token}",
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        "params": [
+          "api_url",
+          "access_token"
+        ],
+        "parse_rules": {
+          "type": "array",
+          "separator": "\"subscriptionId\"",
+          "patterns": {
+            "id": {
+              "regex": "\"subscriptionId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "name": {
+              "regex": "\"displayName\":\\s*\"([^\"]+)\"",
+              "group": 1
+            },
+            "state": {
+              "regex": "\"state\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      }
+    }
+}

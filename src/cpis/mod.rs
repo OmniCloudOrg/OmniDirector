@@ -8,21 +8,15 @@ pub mod parser;
 pub mod provider;
 pub mod validator;
 
-use crate::cpis;
-
 use self::error::CpiError;
 use self::provider::Provider;
 use self::validator::validate_cpi_format;
 use dashmap::DashMap;
-use log::{debug, error, info, trace, warn};
+use log::{debug, error, info, warn};
 use rayon::prelude::*;
 use serde_json::Value;
 use std::collections::HashMap;
-use std::fs::{self, File};
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Arc;
-use std::sync::Mutex;
 
 #[cfg(debug_assertions)]
 fn time<T, A: ToString, F: FnOnce() -> T>(name: A, f: F) -> T {
@@ -42,7 +36,7 @@ pub fn initialize() -> Result<CpiSystem, error::CpiError> {
     let start = std::time::Instant::now();
 
     // Configure logging based on environment
-    logger::configure_from_env();
+    let _ = logger::configure_from_env();
 
     let mut system = CpiSystem::new();
     match system.load_all_providers() {
@@ -81,14 +75,19 @@ impl CpiSystem {
         let cpis = loader::load_cpis();
 
         let binding = cpis.iter().collect::<Vec<_>>();
-        let valid_cpis = binding.par_iter()
+        let valid_cpis = binding
+            .par_iter()
             .filter_map(|cpi| {
                 println!("Validating provider file: {:?}", cpi.key());
 
                 match serde_json::from_str::<Value>(cpi.value()) {
                     Ok(json_value) => {
-                        self.validate_provider_file(PathBuf::from(cpi.key()), json_value.to_string()).ok();
-                        return Some(cpi.key()) // Return the key if validation and registration are successful;
+                        self.validate_provider_file(
+                            PathBuf::from(cpi.key()),
+                            json_value.to_string(),
+                        )
+                        .ok();
+                        return Some(cpi.key()); // Return the key if validation and registration are successful;
                     }
                     Err(e) => {
                         error!("Failed to parse JSON for CPI '{}': {}", cpi.key(), e);
@@ -112,7 +111,7 @@ impl CpiSystem {
             }
         }
 
-        let loaded_count = self.providers.len() as usize;
+        let loaded_count = self.providers.len() + 1 as usize;
         if loaded_count == 0 {
             return Err(CpiError::NoProvidersLoaded);
         }
@@ -121,15 +120,18 @@ impl CpiSystem {
         let total_files: usize = cpis.len();
         info!(
             "✅ Successfully loaded {}/{} CPI providers",
-            loaded_count,
-            total_files
+            loaded_count, total_files
         );
         info!("============================================");
 
         // Return the list of failed provider names for better debugging
-        info!("Failed to load {} providers", total_files - loaded_count);
-        if total_files > loaded_count {
-            warn!("Some providers failed to load. Check logs for details.");
+        let failed_cpis = cpis.iter()
+            .filter(|cpi| !valid_cpis.contains(&cpi.key()))
+            .map(|cpi| cpi.key().to_string())
+            .collect::<Vec<_>>();
+        
+        if !failed_cpis.is_empty() {
+            warn!("Failed to load the following providers: {}", failed_cpis.join(", "));
         }
 
         Ok(loaded_count)
@@ -179,7 +181,10 @@ impl CpiSystem {
         //map string to provider struct using serde
         let provider: Provider = serde_json::from_str(&provider_content).map_err(|e| {
             dbg!(&e);
-            error!("Failed to parse JSON for provider {} Error: {}", provider_name, e);
+            error!(
+                "Failed to parse JSON for provider {} Error: {}",
+                provider_name, e
+            );
             CpiError::SerdeError(e)
         })?;
         info!("Registering provider: {:?}", provider.name);
@@ -202,14 +207,17 @@ impl CpiSystem {
             }
         }
 
-        self.providers
-            .insert(provider.name.clone(), provider);
+        self.providers.insert(provider.name.clone(), provider);
         Ok(())
     }
 
     // Get available providers
     pub fn get_providers(&self) -> Vec<String> {
-        let providers = self.providers.iter().map(|entry| entry.key().clone()).collect();
+        let providers = self
+            .providers
+            .iter()
+            .map(|entry| entry.key().clone())
+            .collect();
         debug!("Available providers: {:?}", providers);
         providers
     }
@@ -283,18 +291,18 @@ impl CpiSystem {
         match self.providers.get(provider_name) {
             Some(provider) => Ok(provider.clone()),
             None => {
-            let available = self
-                .providers
-                .iter()
-                .map(|entry| entry.key().clone())
-                .collect::<Vec<_>>()
-                .join(", ");
-            let err_msg = format!(
-                "Provider '{}' not found. Available providers: {}",
-                provider_name, available
-            );
-            error!("{}", err_msg);
-            Err(CpiError::ProviderNotFound(provider_name.to_string()))
+                let available = self
+                    .providers
+                    .iter()
+                    .map(|entry| entry.key().clone())
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                let err_msg = format!(
+                    "Provider '{}' not found. Available providers: {}",
+                    provider_name, available
+                );
+                error!("{}", err_msg);
+                Err(CpiError::ProviderNotFound(provider_name.to_string()))
             }
         }
     }

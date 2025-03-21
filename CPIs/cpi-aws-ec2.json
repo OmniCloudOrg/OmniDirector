@@ -1,5 +1,5 @@
 {
-    "name": "aws-ec2",
+    "name": "ec2",
     "type": "command",
     "default_settings": {
       "region": "us-east-1",

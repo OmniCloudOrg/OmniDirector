@@ -1,0 +1,343 @@
+{
+  "name": "ec2-api",
+  "type": "endpoint",
+  "default_settings": {
+    "api_url": "https://ec2.amazonaws.com",
+    "region": "us-east-1",
+    "version": "2016-11-15"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=DescribeRegions&Version={version}",
+          "method": "Get",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "regions": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_workers": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=DescribeInstances&Version={version}",
+          "method": "Get",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "instances": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=RunInstances&Version={version}",
+          "method": "Post",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"ImageId\":\"{image_id}\",\"InstanceType\":\"{instance_type}\",\"MinCount\":1,\"MaxCount\":1,\"KeyName\":\"{ssh_key_name}\",\"SecurityGroupIds\":[\"{security_group}\"]}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version",
+        "image_id",
+        "instance_type",
+        "ssh_key_name",
+        "security_group"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "instance_id": {
+            "regex": "\"instanceId\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=TerminateInstances&Version={version}",
+          "method": "Post",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"InstanceIds\":[\"{instance_id}\"]}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version",
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=DescribeInstances&InstanceId={instance_id}&Version={version}",
+          "method": "Get",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version",
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "state": {
+            "regex": "\"state\":\\s*\\{[^\\}]*\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "public_ip": {
+            "regex": "\"publicIpAddress\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          },
+          "private_ip": {
+            "regex": "\"privateIpAddress\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "instance_type": {
+            "regex": "\"instanceType\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "image_id": {
+            "regex": "\"imageId\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=StartInstances&Version={version}",
+          "method": "Post",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"InstanceIds\":[\"{instance_id}\"]}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version",
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=StopInstances&Version={version}",
+          "method": "Post",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"InstanceIds\":[\"{instance_id}\"]}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version",
+        "instance_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "create_volume": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=CreateVolume&Version={version}",
+          "method": "Post",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"AvailabilityZone\":\"{availability_zone}\",\"Size\":{size_gb},\"VolumeType\":\"{volume_type}\"}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version",
+        "availability_zone",
+        "size_gb",
+        "volume_type"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "volume_id": {
+            "regex": "\"volumeId\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "attach_volume": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=AttachVolume&Version={version}",
+          "method": "Post",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"VolumeId\":\"{volume_id}\",\"InstanceId\":\"{instance_id}\",\"Device\":\"{device}\"}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version",
+        "volume_id",
+        "instance_id",
+        "device"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_regions": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/?Action=DescribeRegions&Version={version}",
+          "method": "Get",
+          "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential={access_key}/{date}/{region}/ec2/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "access_key",
+        "date",
+        "region",
+        "signature",
+        "version"
+      ],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\"regionName\"",
+        "patterns": {
+          "name": {
+            "regex": "\"regionName\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "endpoint": {
+            "regex": "\"endpoint\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    }
+  }
+}
