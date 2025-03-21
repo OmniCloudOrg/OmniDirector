@@ -10,8 +10,10 @@ pub mod logger;
 use std::path::{Path, PathBuf};
 use std::collections::HashMap;
 use std::fs::{self, File};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use serde_json::Value;
+use std::sync::Mutex;
 use self::error::CpiError;
 use self::provider::Provider;
 use self::validator::validate_cpi_format;
@@ -26,8 +28,7 @@ fn time<T,A: ToString, F: FnOnce() -> T>(name: A ,f: F) -> T {
     let action = name.to_string();
     debug!("{} Took {:?}",action, time.elapsed());
     out
-}
-
+    }
 #[cfg(not(debug_assertions))]
 fn time<T,A: ToString, F: FnOnce() -> T>(_: A ,f: F) -> T {
     f()
@@ -162,36 +163,43 @@ impl CpiSystem {
         info!("Found {} potential CPI definition files", all_files.len());
         
         // Process each file
-        let mut loaded_count = 0;
-        let mut validation_errors = Vec::new();
-        let mut loading_errors = Vec::new();
+        let loaded_count = AtomicUsize::new(0);
+        let validation_errors = Mutex::new(Vec::new());
+        let loading_errors = Mutex::new(Vec::new());
+        
         
         let total_files = all_files.len();
-        for path in all_files {
+        let self_arc = Arc::new(Mutex::new(self));
+        all_files.par_iter().for_each(|path| {
             info!("Processing CPI file: {:?}", path);
             
             // Validate the JSON before loading
-            if let Err(e) = self.validate_provider_file(&path) {
+            if let Err(e) = self_arc.lock().unwrap().validate_provider_file(path) {
                 let err_msg = format!("Failed to validate CPI file {:?}: {}", path, e);
                 warn!("{}", err_msg);
-                validation_errors.push((path.clone(), err_msg));
-                continue;
+                validation_errors.lock().unwrap().push((path.clone(), err_msg));
             }
             
             // Load the provider
-            match self.register_provider(path.clone(), false) {
+            match self_arc.lock().unwrap().register_provider(path.clone(), false) {
                 Ok(_) => {
                     info!("Successfully loaded CPI from {:?}", path);
-                    loaded_count += 1;
+                    loaded_count.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
                 },
                 Err(e) => {
                     let err_msg = format!("Failed to load CPI file {:?}: {}", path, e);
                     warn!("{}", err_msg);
-                    loading_errors.push((path.clone(), err_msg));
+                    if let Ok(mut errors) = loading_errors.lock() {
+                        errors.push((path.clone(), err_msg));
+                    } else {
+                        error!("Failed to acquire lock on loading_errors");
+                    }
                 }
             }
-        }
-        
+        });
+        let loaded_count = loaded_count.load(Ordering::SeqCst);
+        let validation_errors = validation_errors.into_inner().unwrap();
+        let loading_errors = loading_errors.into_inner().unwrap();
         // Report detailed errors if no providers were loaded
         if loaded_count == 0 {
             error!("No CPI providers were successfully loaded.");
