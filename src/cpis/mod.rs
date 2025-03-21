@@ -75,7 +75,7 @@ impl CpiSystem {
             Path::new("../CPIs"),
             Path::new("./cpi_system/CPIs"),
             // Add current executable directory + CPIs
-            &std::env::current_exe().par_iter().ok().map(|mut p| {
+            &std::env::current_exe().ok().map(|mut p| {
                 p.pop();
                 p.push("CPIs");
                 p
