@@ -1,4 +1,4 @@
-// mod.rs - Complete improved initialization with better logging
+// mod.rs - Optimized initialization with better logging
 
 pub mod error;
 pub mod executor;
@@ -15,8 +15,9 @@ use dashmap::DashMap;
 use log::{debug, error, info, warn};
 use rayon::prelude::*;
 use serde_json::Value;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
+use std::sync::Arc;
 
 #[cfg(debug_assertions)]
 fn time<T, A: ToString, F: FnOnce() -> T>(name: A, f: F) -> T {
@@ -38,7 +39,7 @@ pub fn initialize() -> Result<CpiSystem, error::CpiError> {
     // Configure logging based on environment
     let _ = logger::configure_from_env();
 
-    let mut system = CpiSystem::new();
+    let system = CpiSystem::new();
     match system.load_all_providers() {
         Ok(count) => {
             let duration = start.elapsed();
@@ -68,126 +69,126 @@ impl CpiSystem {
     }
 
     // Load all providers from the ./CPIs directory with enhanced error reporting
-    pub fn load_all_providers(&mut self) -> Result<usize, CpiError> {
+    pub fn load_all_providers(&self) -> Result<usize, CpiError> {
         info!("Loading all CPI providers from ./CPIs directory");
 
         // Load CPIs using the loader module
-        let cpis = loader::load_cpis();
+        let cpis = Arc::new(loader::load_cpis());
+        let total_cpis = cpis.len();
+        
+        // Use a concurrent HashSet for tracking valid CPIs
+        let valid_cpis = DashMap::new();
+        
+        // Process all CPIs in parallel
+        cpis.iter().par_bridge().for_each(|entry| {
+            let cpi_key = entry.key();
+            let cpi_value = entry.value();
+            
+            debug!("Validating provider file: {:?}", cpi_key);
 
-        let binding = cpis.iter().collect::<Vec<_>>();
-        let valid_cpis = binding
-            .par_iter()
-            .filter_map(|cpi| {
-                println!("Validating provider file: {:?}", cpi.key());
-
-                match serde_json::from_str::<Value>(cpi.value()) {
-                    Ok(json_value) => {
-                        self.validate_provider_file(
-                            PathBuf::from(cpi.key()),
-                            json_value.to_string(),
-                        )
-                        .ok();
-                        return Some(cpi.key()); // Return the key if validation and registration are successful;
+            // Avoid multiple JSON parse operations by parsing once
+            match serde_json::from_str::<Value>(cpi_value) {
+                Ok(json_value) => {
+                    if let Ok(provider) = serde_json::from_str::<Provider>(cpi_value) {
+                        // Validate in parallel
+                        if self.validate_provider_file(
+                            PathBuf::from(cpi_key),
+                            &json_value,
+                        ).is_ok() {
+                            // Register directly if valid
+                            if let Ok(()) = self.register_provider_direct(cpi_key.to_string(), provider) {
+                                valid_cpis.insert(cpi_key.to_string(), true);
+                                debug!("Successfully registered provider '{}'", cpi_key);
+                            } else {
+                                error!("Failed to register provider '{}'", cpi_key);
+                            }
+                        }
+                    } else {
+                        error!("Failed to parse provider from JSON for '{}'", cpi_key);
                     }
-                    Err(e) => {
-                        error!("Failed to parse JSON for CPI '{}': {}", cpi.key(), e);
-                        None::<&str>
-                    }
-                };
-
-                Some(cpi.key())
-            })
-            .collect::<Vec<_>>();
-
-        println!("Found {} valid CPIs", valid_cpis.len());
-
-        // Register each valid provider
-        for cpi in valid_cpis.iter() {
-            let provider_content = cpis.get(*cpi).unwrap().value().clone();
-            if let Err(e) = self.register_provider(cpi.to_string(), provider_content, false) {
-                error!("Failed to register provider '{}': {}", cpi, e);
-            } else {
-                info!("Successfully registered provider '{}'", cpi);
+                }
+                Err(e) => {
+                    error!("Failed to parse JSON for CPI '{}': {}", cpi_key, e);
+                }
             }
-        }
+        });
 
-        let loaded_count = self.providers.len() + 1 as usize;
+        let loaded_count = self.providers.len();
         if loaded_count == 0 {
             return Err(CpiError::NoProvidersLoaded);
         }
+
+        // Collect failed CPIs
+        let failed_cpis: Vec<String> = cpis
+            .iter()
+            .filter_map(|entry| {
+                let key = entry.key().to_string();
+                if !valid_cpis.contains_key(&key) {
+                    Some(key)
+                } else {
+                    None
+                }
+            })
+            .collect();
+
         // Report successful loading with clear formatting for visibility
         info!("============================================");
-        let total_files: usize = cpis.len();
         info!(
             "✅ Successfully loaded {}/{} CPI providers",
-            loaded_count, total_files
+            loaded_count, total_cpis
         );
-        info!("============================================");
-
-        // Return the list of failed provider names for better debugging
-        let failed_cpis = cpis.iter()
-            .filter(|cpi| !valid_cpis.contains(&cpi.key()))
-            .map(|cpi| cpi.key().to_string())
-            .collect::<Vec<_>>();
         
+        // Only display failed CPIs if there are any
         if !failed_cpis.is_empty() {
-            warn!("Failed to load the following providers: {}", failed_cpis.join(", "));
+            warn!("===============================================");
+            warn!("❌ Failed to load {} providers:", failed_cpis.len());
+            for failed in &failed_cpis {
+                warn!("   - {}", failed);
+            }
+            warn!("===============================================");
         }
+        
+        info!("Successfully validated: {}/{} providers", valid_cpis.len(), total_cpis);
+        info!("============================================");
 
         Ok(loaded_count)
     }
 
-    // Enhanced validation with better error reporting
-    fn validate_provider_file(&self, path: PathBuf, cpi_content: String) -> Result<(), CpiError> {
-        info!("Validating CPI file: {}", path.display());
-
-        // Try to parse the JSON
-        let json: Value = match serde_json::from_str(&cpi_content) {
-            Ok(json) => {
-                info!("Successfully parsed JSON from file: {}", path.display());
-                json
-            }
-            Err(e) => {
-                let err_msg = format!("Failed to parse JSON in file: {}", e);
-
-                // Provide more details about parse errors
-                let line_col = find_json_error_location(&cpi_content, &e);
-                if let Some((line, col)) = line_col {
-                    error!("JSON error at line {}, column {}", line, col);
-                    if let Some(problematic_line) = cpi_content.lines().nth(line - 1) {
-                        error!("Problematic line: {}", problematic_line);
-                        error!("{}^", " ".repeat(col - 1));
-                    }
-                }
-
-                return Err(CpiError::SerdeError(e));
-            }
-        };
+    // Optimized validation with direct JSON value
+    fn validate_provider_file(&self, path: PathBuf, json: &Value) -> Result<(), CpiError> {
+        debug!("Validating CPI file: {}", path.display());
 
         // Validate the JSON structure
         match path.to_str() {
-            Some(path_str) => validate_cpi_format(path_str, &json),
+            Some(path_str) => validate_cpi_format(path_str, json),
             None => Err(CpiError::InvalidPath("Invalid path".to_string())),
         }
     }
 
+    // Direct provider registration - optimized version
+    fn register_provider_direct(
+        &self,
+        provider_name: String,
+        provider: Provider,
+    ) -> Result<(), CpiError> {
+        debug!("Registering provider: {:?}", provider.name);
+        self.providers.insert(provider.name.clone(), provider);
+        Ok(())
+    }
+
     // Enhanced provider registration with better error reporting
     pub fn register_provider(
-        &mut self,
+        &self,
         provider_name: String,
         provider_content: String,
         should_test: bool,
     ) -> Result<(), CpiError> {
-        //map string to provider struct using serde
+        // Map string to provider struct using serde
         let provider: Provider = serde_json::from_str(&provider_content).map_err(|e| {
-            dbg!(&e);
-            error!(
-                "Failed to parse JSON for provider {} Error: {}",
-                provider_name, e
-            );
+            error!("Failed to parse JSON for provider {} Error: {}", provider_name, e);
             CpiError::SerdeError(e)
         })?;
-        info!("Registering provider: {:?}", provider.name);
+        debug!("Registering provider: {:?}", provider.name);
 
         if should_test {
             info!("Running test command on provider '{}'", provider.name);
@@ -195,13 +196,10 @@ impl CpiSystem {
 
             match test_result {
                 Ok(_) => {
-                    info!("Test command succeeded for provider '{}'", provider.name);
+                    debug!("Test command succeeded for provider '{}'", provider.name);
                 }
                 Err(e) => {
-                    error!(
-                        "Test command failed for provider '{}': {}",
-                        provider.name, e
-                    );
+                    error!("Test command failed for provider '{}': {}", provider.name, e);
                     return Err(e);
                 }
             }
@@ -213,21 +211,16 @@ impl CpiSystem {
 
     // Get available providers
     pub fn get_providers(&self) -> Vec<String> {
-        let providers = self
-            .providers
+        self.providers
             .iter()
             .map(|entry| entry.key().clone())
-            .collect();
-        debug!("Available providers: {:?}", providers);
-        providers
+            .collect()
     }
 
     // Get available actions for a provider
     pub fn get_provider_actions(&self, provider_name: &str) -> Result<Vec<String>, CpiError> {
         let provider = self.get_provider(provider_name)?;
-        let actions = provider.actions.keys().cloned().collect();
-        debug!("Actions for provider '{}': {:?}", provider_name, actions);
-        Ok(actions)
+        Ok(provider.actions.keys().cloned().collect())
     }
 
     // Get the required parameters for an action
@@ -239,19 +232,10 @@ impl CpiSystem {
         let provider = self.get_provider(provider_name)?;
         let action = provider.get_action(action_name)?;
 
-        let params = if let Some(params) = &action.params {
-            params.clone()
-        } else {
-            Vec::new()
-        };
-
-        debug!(
-            "Parameters for action '{}' in provider '{}': {:?}",
-            action_name, provider_name, params
-        );
-
+        let params = action.params.clone().unwrap_or_default();
         Ok(params)
     }
+    
     // Execute a CPI action
     pub fn execute(
         &self,
@@ -271,7 +255,7 @@ impl CpiSystem {
         });
 
         let duration = start.elapsed();
-        if let Ok(_) = &result {
+        if result.is_ok() {
             info!(
                 "Action '{}' from provider '{}' completed successfully in {:?}",
                 action_name, provider_name, duration
@@ -286,20 +270,16 @@ impl CpiSystem {
         result
     }
 
-    // Helper method to get a provider
+    // Optimized helper method to get a provider
     fn get_provider(&self, provider_name: &str) -> Result<Provider, CpiError> {
         match self.providers.get(provider_name) {
             Some(provider) => Ok(provider.clone()),
             None => {
-                let available = self
-                    .providers
-                    .iter()
-                    .map(|entry| entry.key().clone())
-                    .collect::<Vec<_>>()
-                    .join(", ");
+                // Avoid collecting all keys unless needed
                 let err_msg = format!(
                     "Provider '{}' not found. Available providers: {}",
-                    provider_name, available
+                    provider_name, 
+                    self.providers.iter().map(|e| e.key().clone()).collect::<Vec<_>>().join(", ")
                 );
                 error!("{}", err_msg);
                 Err(CpiError::ProviderNotFound(provider_name.to_string()))
@@ -308,10 +288,10 @@ impl CpiSystem {
     }
 }
 
-// Helper function to find line and column of JSON parse errors
+// Helper function for JSON error location not needed in optimized path
 fn find_json_error_location(content: &str, error: &serde_json::Error) -> Option<(usize, usize)> {
-    let column = error.column();
     let line = error.line();
+    let column = error.column();
     if line > 0 && column > 0 {
         Some((line, column))
     } else {
