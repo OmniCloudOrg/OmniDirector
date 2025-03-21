@@ -126,6 +126,12 @@ impl CpiSystem {
         );
         info!("============================================");
 
+        // Return the list of failed provider names for better debugging
+        info!("Failed to load {} providers", total_files - loaded_count);
+        if total_files > loaded_count {
+            warn!("Some providers failed to load. Check logs for details.");
+        }
+
         Ok(loaded_count)
     }
 

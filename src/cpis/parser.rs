@@ -2,6 +2,7 @@
 use super::provider::{ParseRules, Pattern, ArrayPattern};
 use super::error::CpiError;
 use super::logger::{debug, trace, warn};
+use log::info;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use serde_json::{Value, Map, Number};
@@ -38,31 +39,34 @@ pub fn parse_output(output: &str, parse_rules: &ParseRules, params: &HashMap<Str
         
         ParseRules::Array { separator, patterns } => {
             debug!("Parsing array with separator '{}' and {} patterns", separator, patterns.len());
-            
-            // Pre-split the output once for better performance
-            let sections: Vec<&str> = output.split(separator)
-                .filter(|s| !s.trim().is_empty())
+        
+            // Use regex to split the output
+            let separator_re = Regex::new(separator).map_err(|e| CpiError::ParseError(format!("Invalid separator regex: {}", e)))?;
+            let sections: Vec<&str> = separator_re
+                .split(output)
+                .filter(|s| !s.trim().is_empty()) // Remove empty lines
                 .collect();
-                
-            debug!("Found {} sections to parse", sections.len());
-            
+        
+            info!("Splitting output: {}", output);
+            info!("Found {} sections to parse", sections.len());
+        
             let mut result = Vec::with_capacity(sections.len());
-            
+        
             for (i, section) in sections.iter().enumerate() {
                 trace!("Parsing section {} ({} bytes)", i, section.len());
                 let mut item = Map::new();
-                
+        
                 for (key, pattern) in patterns {
                     if let Some(value) = apply_pattern(section, pattern, params)? {
                         item.insert(key.clone(), value);
                     }
                 }
-                
+        
                 if !item.is_empty() {
                     result.push(Value::Object(item));
                 }
             }
-            
+        
             debug!("Finished array parsing, found {} items", result.len());
             Ok(Value::Array(result))
         },
