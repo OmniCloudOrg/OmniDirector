@@ -1,5 +1,3 @@
-// mod.rs - Optimized initialization with better logging and singleton support
-
 pub mod error;
 pub mod executor;
 pub mod loader;
@@ -186,9 +184,9 @@ impl CpiSystem {
         // Only display failed CPIs if there are any
         if !failed_cpis.is_empty() {
             warn!("===============================================");
-            warn!("❌ Failed to load {} providers:", failed_cpis.len());
+            warn!("\x1b[31m❌ Failed to load {} providers:\x1b[0m", failed_cpis.len());
             for failed in &failed_cpis {
-                warn!("   - {}", failed);
+            warn!("   \x1b[31m- {}\x1b[0m", failed);
             }
             warn!("===============================================");
         }
