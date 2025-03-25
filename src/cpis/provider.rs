@@ -150,7 +150,7 @@ pub fn load_provider(path: PathBuf) -> Result<Provider, CpiError> {
     let reader = BufReader::new(file);
 
     // Parse the JSON
-    let json: Value = serde_json5::from_reader(reader).map_err(|e| {
+    let json: Value = serde_json::from_reader(reader).map_err(|e| {
         error!("Failed to parse provider JSON from {:?}: {}", path, e);
         CpiError::SerdeError(Box::new(e))
     })?;

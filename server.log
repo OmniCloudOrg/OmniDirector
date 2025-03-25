@@ -7791,3 +7791,12 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-03-21 18:53:58] Logging system initialized
 [2025-03-21 18:53:59] Server running at http://0.0.0.0:8081
 [2025-03-21 18:53:59] Loaded CPI providers: ["qemu", "atlantic", "oracle_cloud", "digital_ocean", "linode", "aws-lightsail", "virtualbox_windows", "azure", "ibm-cloud", "hetzner_cloud", "gcp-api", "truenas", "detee_cpi", "azure-api", "vmware_esxi", "buyvm", "contabo", "exoscale", "ovh_cloud", "scaleway", "upcloud", "alibaba-cloud", "proxmox", "vultr", "tencent", "ec2", "rackspace", "std_kvm", "ec2-api", "dummy", "kamatera", "equinix-metal", "gcp", "huawei-cloud"]
+[2025-03-25 18:14:57] Logging system initialized
+[2025-03-25 18:14:57] Server running at http://0.0.0.0:8081
+[2025-03-25 18:14:57] Loaded CPI providers: ["gcp", "ec2-api", "vmware_esxi", "digital_ocean", "alibaba-cloud", "vultr", "detee_cpi", "ibm-cloud", "aws-lightsail", "truenas", "kamatera", "oracle_cloud", "azure", "scaleway", "tencent", "rackspace", "proxmox", "equinix-metal", "virtualbox_windows", "gcp-api", "linode", "exoscale", "huawei-cloud", "ec2", "dummy", "std_kvm", "azure-api", "qemu", "upcloud", "contabo", "hetzner_cloud", "ovh_cloud", "atlantic", "buyvm"]
+[2025-03-25 18:15:10] Logging system initialized
+[2025-03-25 18:15:10] Server running at http://0.0.0.0:8081
+[2025-03-25 18:15:10] Loaded CPI providers: ["buyvm", "ovh_cloud", "detee_cpi", "linode", "aws-lightsail", "dummy", "azure", "exoscale", "vmware_esxi", "equinix-metal", "ec2", "oracle_cloud", "gcp", "virtualbox_windows", "std_kvm", "upcloud", "gcp-api", "tencent", "scaleway", "kamatera", "qemu", "hetzner_cloud", "ec2-api", "atlantic", "ibm-cloud", "huawei-cloud", "alibaba-cloud", "truenas", "vultr", "proxmox", "contabo", "rackspace", "azure-api", "digital_ocean"]
+[2025-03-25 18:19:39] Logging system initialized
+[2025-03-25 18:19:39] Server running at http://0.0.0.0:8081
+[2025-03-25 18:19:39] Loaded CPI providers: ["vmware_esxi", "truenas", "gcp", "rackspace", "buyvm", "hetzner_cloud", "gcp-api", "aws-lightsail", "ibm-cloud", "vultr", "oracle_cloud", "ovh_cloud", "virtualbox_windows", "huawei-cloud", "contabo", "dummy", "azure-api", "azure", "detee_cpi", "atlantic", "std_kvm", "ec2", "upcloud", "scaleway", "alibaba-cloud", "equinix-metal", "qemu", "exoscale", "proxmox", "digital_ocean", "tencent", "kamatera", "linode", "ec2-api"]
