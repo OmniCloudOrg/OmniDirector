@@ -1,6 +1,6 @@
 use reqwest::{Client, Error as ReqwestError};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json5::Value;
 use thiserror::Error;
 use libomni::cpi::container::CpiCommandType;
 

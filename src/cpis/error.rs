@@ -14,7 +14,7 @@ pub enum CpiError {
     InvalidCpiFormat(String),
     NoProvidersLoaded,
     IoError(std::io::Error),
-    SerdeError(serde_json::Error),
+    SerdeError(Box<dyn std::error::Error + Send + Sync>),
     RegexError(regex::Error),
     Timeout(String),
 }
@@ -47,7 +47,7 @@ impl Error for CpiError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             CpiError::IoError(e) => Some(e),
-            CpiError::SerdeError(e) => Some(e),
+            CpiError::SerdeError(e) => Some(e.as_ref()),
             CpiError::RegexError(e) => Some(e),
             _ => None,
         }
@@ -62,7 +62,7 @@ impl From<std::io::Error> for CpiError {
 
 impl From<serde_json::Error> for CpiError {
     fn from(err: serde_json::Error) -> Self {
-        CpiError::SerdeError(err)
+        CpiError::SerdeError(Box::new(err))
     }
 }
 

@@ -121,7 +121,7 @@ impl Provider {
     pub fn from_json(json: serde_json::Value) -> Result<Self, CpiError> {
         // Then deserialize
         let provider: Provider =
-            serde_json::from_value(json).map_err(|e| CpiError::SerdeError(e))?;
+            serde_json::from_value(json).map_err(|e| CpiError::SerdeError(Box::new(e)))?;
 
         Ok(provider)
     }
@@ -150,15 +150,15 @@ pub fn load_provider(path: PathBuf) -> Result<Provider, CpiError> {
     let reader = BufReader::new(file);
 
     // Parse the JSON
-    let json: Value = serde_json::from_reader(reader).map_err(|e| {
+    let json: Value = serde_json5::from_reader(reader).map_err(|e| {
         error!("Failed to parse provider JSON from {:?}: {}", path, e);
-        CpiError::SerdeError(e)
+        CpiError::SerdeError(Box::new(e))
     })?;
 
     // Deserialize into Provider
     let provider: Provider = serde_json::from_value(json.clone()).map_err(|e| {
         error!("Failed to deserialize provider from {:?}: {}", path, e);
-        CpiError::SerdeError(e)
+        CpiError::SerdeError(Box::new(e))
     })?;
 
     // Log results

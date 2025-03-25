@@ -6,7 +6,6 @@ use log::{debug, error, info, trace, warn};
 use run_script::ScriptOptions;
 use serde_json::Value;
 use std::collections::HashMap;
-use std::process::Command;
 use std::time::Instant;
 
 // Main function to execute a CPI action

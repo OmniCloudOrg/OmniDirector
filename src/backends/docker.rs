@@ -14,7 +14,7 @@ struct DockerFile {
 struct DevContainerFeature {
     id: String,
     version: String,
-    options: Option<HashMap<String, serde_json::Value>>,
+    options: Option<HashMap<String, serde_json5::Value>>,
     install_script_path: PathBuf,
 }
 

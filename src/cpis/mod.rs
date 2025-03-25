@@ -130,9 +130,9 @@ impl CpiSystem {
             debug!("Validating provider file: {:?}", cpi_key);
 
             // Avoid multiple JSON parse operations by parsing once
-            match serde_json::from_str::<Value>(cpi_value) {
+            match serde_json5::from_str::<Value>(cpi_value) {
                 Ok(json_value) => {
-                    if let Ok(provider) = serde_json::from_str::<Provider>(cpi_value) {
+                    if let Ok(provider) = serde_json5::from_str::<Provider>(cpi_value) {
                         // Validate in parallel
                         if self.validate_provider_file(
                             PathBuf::from(cpi_key),
@@ -227,9 +227,9 @@ impl CpiSystem {
         should_test: bool,
     ) -> Result<(), CpiError> {
         // Map string to provider struct using serde
-        let provider: Provider = serde_json::from_str(&provider_content).map_err(|e| {
+        let provider: Provider = serde_json5::from_str(&provider_content).map_err(|e| {
             error!("Failed to parse JSON for provider {} Error: {}", provider_name, e);
-            CpiError::SerdeError(e)
+            CpiError::SerdeError(Box::new(e))
         })?;
         debug!("Registering provider: {:?}", provider.name);
 

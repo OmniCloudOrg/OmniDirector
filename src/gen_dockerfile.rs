@@ -17,7 +17,7 @@ struct Mount {
 struct FeatureOption {
     #[serde(rename = "type")]
     option_type: String,
-    default: Option<serde_json::Value>,
+    default: Option<serde_json5::Value>,
     description: Option<String>,
     proposals: Option<Vec<String>>,
 }
@@ -92,7 +92,7 @@ impl FeatureBuilder {
     fn read_feature_json(&self, feature_dir: &Path) -> Result<DevContainerFeature, Box<dyn Error>> {
         let json_path = feature_dir.join("devcontainer-feature.json");
         let contents = fs::read_to_string(&json_path)?;
-        let feature: DevContainerFeature = serde_json::from_str(&contents)?;
+        let feature: DevContainerFeature = serde_json5::from_str(&contents)?;
         Ok(feature)
     }
 
@@ -132,9 +132,9 @@ impl FeatureBuilder {
             for (name, option) in options {
                 if let Some(default) = &option.default {
                     let value = match default {
-                        serde_json::Value::String(s) => s.clone(),
-                        serde_json::Value::Bool(b) => b.to_string(),
-                        serde_json::Value::Number(n) => n.to_string(),
+                        serde_json5::Value::String(s) => s.clone(),
+                        serde_json5::Value::Bool(b) => b.to_string(),
+                        serde_json5::Value::Number(n) => n.to_string(),
                         _ => continue,
                     };
                     builder.add_env(&name.to_uppercase(), &value);
@@ -180,7 +180,7 @@ impl FeatureBuilder {
 
             if !volume_targets.is_empty() {
                 builder.add_line("");
-                builder.add_line(&format!("VOLUME {}", serde_json::to_string(&volume_targets).unwrap()));
+                builder.add_line(&format!("VOLUME {}", serde_json5::to_string(&volume_targets).unwrap()));
             }
         }
 
@@ -277,7 +277,7 @@ mod tests {
 
         fs::write(
             dir.join("devcontainer-feature.json"),
-            serde_json::to_string_pretty(&feature)?,
+            serde_json5::to_string_pretty(&feature)?,
         )?;
 
         // Create install.sh
