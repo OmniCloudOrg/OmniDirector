@@ -7800,3 +7800,9 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-03-25 18:19:39] Logging system initialized
 [2025-03-25 18:19:39] Server running at http://0.0.0.0:8081
 [2025-03-25 18:19:39] Loaded CPI providers: ["vmware_esxi", "truenas", "gcp", "rackspace", "buyvm", "hetzner_cloud", "gcp-api", "aws-lightsail", "ibm-cloud", "vultr", "oracle_cloud", "ovh_cloud", "virtualbox_windows", "huawei-cloud", "contabo", "dummy", "azure-api", "azure", "detee_cpi", "atlantic", "std_kvm", "ec2", "upcloud", "scaleway", "alibaba-cloud", "equinix-metal", "qemu", "exoscale", "proxmox", "digital_ocean", "tencent", "kamatera", "linode", "ec2-api"]
+[2025-03-25 18:28:21] Logging system initialized
+[2025-03-25 18:28:21] Server running at http://0.0.0.0:8081
+[2025-03-25 18:28:21] Loaded CPI providers: ["ec2", "digital_ocean", "vmware_esxi", "exoscale", "tencent", "qemu", "dummy", "ovh_cloud", "equinix-metal", "ec2-api", "huawei-cloud", "detee_cpi", "vultr", "virtualbox_windows", "kamatera", "rackspace", "upcloud", "gcp-api", "azure-api", "buyvm", "alibaba-cloud", "ibm-cloud", "hetzner_cloud", "scaleway", "proxmox", "gcp", "azure", "oracle_cloud", "atlantic", "contabo", "std_kvm", "aws-lightsail", "linode", "truenas"]
+[2025-03-25 18:30:15] Logging system initialized
+[2025-03-25 18:30:15] Server running at http://0.0.0.0:8081
+[2025-03-25 18:30:15] Loaded CPI providers: ["exoscale", "rackspace", "alibaba-cloud", "truenas", "azure-api", "digital_ocean", "aws-lightsail", "virtualbox_windows", "gcp-api", "contabo", "scaleway", "ovh_cloud", "linode", "ec2", "vmware_esxi", "detee_cpi", "upcloud", "dummy", "qemu", "proxmox", "vultr", "equinix-metal", "gcp", "huawei-cloud", "buyvm", "tencent", "ec2-api", "ibm-cloud", "azure", "std_kvm", "hetzner_cloud", "atlantic", "oracle_cloud", "kamatera"]

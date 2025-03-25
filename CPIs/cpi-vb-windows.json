@@ -1,4 +1,5 @@
 {
+    // VirtualBox Windows CPI
     "name": "virtualbox_windows",
     "type": "command",
     "default_settings": {

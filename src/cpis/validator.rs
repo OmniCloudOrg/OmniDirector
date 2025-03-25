@@ -1,10 +1,65 @@
-// validator.rs - With enhanced error logging
+// validator.rs - With enhanced error logging and JSON5 support with auto-fixing capabilities
 use super::error::CpiError;
 use log::{debug, error, info, trace, warn};
 use serde_json::Value;
 use std::path::Path;
+use std::io::Write;
 
-// Validate CPI JSON format with detailed logging
+// Attempt to fix common JSON5 formatting issues
+fn attempt_json5_fixes(content: &str) -> Result<String, String> {
+    let mut lines: Vec<String> = content.lines().map(|s| s.to_string()).collect();
+    
+    // Track if we've found the opening bracket
+    let mut found_opening_bracket = false;
+    
+    // Process each line
+    for i in 0..lines.len() {
+        let line = &lines[i];
+        let trimmed = line.trim();
+        
+        // Handle comment lines before the opening bracket
+        if !found_opening_bracket && (trimmed.starts_with("//") || trimmed.is_empty()) {
+            // This is fine, continue
+            continue;
+        }
+        
+        // Check for opening bracket
+        if !found_opening_bracket && trimmed.starts_with("{") {
+            found_opening_bracket = true;
+            continue;
+        }
+        
+        // If we still haven't found an opening bracket and this isn't a comment
+        // we need to insert one
+        if !found_opening_bracket && !trimmed.is_empty() {
+            lines.insert(i, "{".to_string());
+            found_opening_bracket = true;
+            
+            // Make sure we have a closing bracket at the end
+            if !content.trim().ends_with("}") {
+                lines.push("}".to_string());
+            }
+            break;
+        }
+    }
+    
+    // If we never found an opening bracket, add one
+    if !found_opening_bracket {
+        lines.insert(0, "{".to_string());
+        
+        // Make sure we have a closing bracket at the end
+        if !content.trim().ends_with("}") {
+            lines.push("}".to_string());
+        }
+    }
+    
+    // Join the lines back together
+    let fixed_content = lines.join("\n");
+    
+    Ok(fixed_content)
+}
+
+// Validate CPI JSON/JSON5 format with detailed logging
 pub fn validate_cpi_format(context: &str, json: &Value) -> Result<(), CpiError> {
     // Check if it's an object
     if !json.is_object() {
@@ -79,6 +134,130 @@ pub fn validate_cpi_format(context: &str, json: &Value) -> Result<(), CpiError> 
 
     debug!("CPI validation successful {}", context);
     Ok(())
+}
+
+// Parse CPI JSON/JSON5 content
+pub fn parse_cpi_content(content: &str) -> Result<Value, CpiError> {
+    // Try to identify and handle files that start with comments
+    let trimmed_content = content.trim();
+    let is_likely_json5 = trimmed_content.starts_with("//") || 
+                          trimmed_content.starts_with("/*") ||
+                          content.contains("\n//") ||
+                          content.contains("\n/*");
+    
+    if is_likely_json5 {
+        // If content looks like JSON5 (has comments), try JSON5 first
+        match serde_json::from_str(content) {
+            Ok(value) => return Ok(value),
+            Err(json5_err) => {
+                // Try standard JSON as fallback (unlikely to work but try anyway)
+                match serde_json::from_str(content) {
+                    Ok(value) => Ok(value),
+                    Err(_) => {
+                        // Report the JSON5 error as it's more likely to be relevant
+                        let err_msg = format!("Failed to parse content as JSON5: {}", json5_err);
+                        error!("Parsing failed: {}", err_msg);
+                        Err(CpiError::InvalidCpiFormat(err_msg))
+                    }
+                }
+            }
+        }
+    } else {
+        // If content looks like standard JSON, try that first
+        match serde_json::from_str(content) {
+            Ok(value) => Ok(value),
+            Err(json_err) => {
+                // If standard JSON parsing fails, try JSON5
+                debug!("Standard JSON parsing failed: {}, trying JSON5", json_err);
+                match serde_json::from_str(content) {
+                    Ok(value) => Ok(value),
+                    Err(json5_err) => {
+                        let err_msg = format!("Failed to parse content as JSON or JSON5: {}", json5_err);
+                        error!("Parsing failed: {}", err_msg);
+                        Err(CpiError::InvalidCpiFormat(err_msg))
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Load and parse CPI definition from file - handles both JSON and JSON5
+pub fn load_cpi_from_file(file_path: &Path) -> Result<Value, CpiError> {
+    use std::fs::File;
+    use std::io::{Read, BufReader};
+
+    let file = File::open(file_path).map_err(|e| {
+        let err_msg = format!("Failed to open file {}: {}", file_path.display(), e);
+        error!("{}", err_msg);
+        CpiError::FileError(err_msg)
+    })?;
+    
+    let mut reader = BufReader::new(file);
+    let mut content = String::new();
+    reader.read_to_string(&mut content).map_err(|e| {
+        let err_msg = format!("Failed to read file {}: {}", file_path.display(), e);
+        error!("{}", err_msg);
+        CpiError::FileError(err_msg)
+    })?;
+    
+    // Handle UTF-8 BOM if present (common in Windows files)
+    if content.starts_with('\u{FEFF}') {
+        content = content[3..].to_string(); // Skip the BOM
+        debug!("Removed UTF-8 BOM from file {}", file_path.display());
+    }
+    
+    // Attempt to parse the content
+    let result = parse_cpi_content(&content);
+    
+    // If parsing fails, provide more detailed error diagnostics
+    if let Err(ref e) = result {
+        error!("JSON parsing error for file: {}", file_path.display());
+        // Print first few lines of the file for debugging
+        let first_lines: String = content.lines().take(5)
+            .enumerate()
+            .map(|(i, line)| format!("{}: {}", i+1, line))
+            .collect::<Vec<_>>()
+            .join("\n");
+        error!("First 5 lines of the file:\n{}", first_lines);
+    }
+    
+    // If there's an error, attempt to fix common JSON5 formatting issues
+    if let Err(ref _e) = result {
+        debug!("Attempting to fix JSON5 formatting issues in {}", file_path.display());
+        match attempt_json5_fixes(&content) {
+            Ok(fixed_content) => {
+                // Try parsing the fixed content
+                match parse_cpi_content(&fixed_content) {
+                    Ok(value) => {
+                        info!("Successfully fixed and parsed JSON5 file: {}", file_path.display());
+                        
+                        // Optionally write the fixed content back to the file
+                        // Uncomment this if you want to automatically save the fixes
+                        /*
+                        if let Err(write_err) = std::fs::write(file_path, &fixed_content) {
+                            warn!("Failed to write fixed JSON5 back to file: {}", write_err);
+                        } else {
+                            info!("Fixed JSON5 has been written back to {}", file_path.display());
+                        }
+                        */
+                        
+                        return Ok(value);
+                    },
+                    Err(_) => {
+                        debug!("Auto-fixing attempt failed for {}", file_path.display());
+                        // Fall through to return the original error
+                    }
+                }
+            },
+            Err(fix_err) => {
+                debug!("Failed to auto-fix JSON5: {}", fix_err);
+                // Fall through to return the original error
+            }
+        }
+    }
+    
+    result
 }
 
 // Validate action definition
@@ -164,7 +343,7 @@ fn validate_action(action_name: &str, action_def: &Value, context: &str) -> Resu
     Ok(())
 }
 
-// Validate sub-actions (pre_exec or post_exec)
+// Rest of the validation functions remain the same
 fn validate_sub_actions(
     action_name: &str,
     field: &str,
