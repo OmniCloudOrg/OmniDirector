@@ -1,5 +1,5 @@
 @echo off
-set VM_NAME=OmniVM
+set worker_NAME=OmniVM
 set MEMORY_MB=2048
 set CPU_COUNT=2
 set OS_TYPE=Ubuntu_64
@@ -25,15 +25,15 @@ echo {
 echo   "provider": "virtualbox_windows",
 echo   "action": "create_worker",
 echo   "params": {
-echo     "vm_name": "%VM_NAME%",
+echo     "worker_name": "%worker_NAME%",
 echo     "os_type": "%OS_TYPE%",
 echo     "memory_mb": "%MEMORY_MB%",
 echo     "cpu_count": "%CPU_COUNT%"
 echo   }
 echo }
-) > "%TEMP%\vm_request.json"
+) > "%TEMP%\worker_request.json"
 
-curl -s -X POST -H "Content-Type: application/json" -d @"%TEMP%\vm_request.json" %API_ENDPOINT%
+curl -s -X POST -H "Content-Type: application/json" -d @"%TEMP%\worker_request.json" %API_ENDPOINT%
 
 echo Attaching disk...
 (
@@ -41,7 +41,7 @@ echo {
 echo   "provider": "virtualbox_windows",
 echo   "action": "attach_volume",
 echo   "params": {
-echo     "vm_name": "%VM_NAME%",
+echo     "worker_name": "%worker_NAME%",
 echo     "controller_name": "SATAController",
 echo     "port": "0",
 echo     "disk_path": "%DISK_PATH:\=\\%"
@@ -57,7 +57,7 @@ echo {
 echo   "provider": "virtualbox_windows",
 echo   "action": "start_worker",
 echo   "params": {
-echo     "vm_name": "%VM_NAME%"
+echo     "worker_name": "%worker_NAME%"
 echo   }
 echo }
 ) > "%TEMP%\start_worker.json"
@@ -73,7 +73,7 @@ echo {
 echo   "provider": "virtualbox_windows",
 echo   "action": "execute_command",
 echo   "params": {
-echo     "vm_name": "%VM_NAME%",
+echo     "worker_name": "%worker_NAME%",
 echo     "username": "vagrant",
 echo     "password": "vagrant",
 echo     "command_path": "/bin/uname",

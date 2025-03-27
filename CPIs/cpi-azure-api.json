@@ -6,7 +6,7 @@
       "api_version": "2022-08-01",
       "location": "eastus",
       "resource_group": "default-rg",
-      "vm_size": "Standard_B1s",
+      "worker_size": "Standard_B1s",
       "image": {
         "publisher": "Canonical",
         "offer": "UbuntuServer",
@@ -157,24 +157,24 @@
       "create_worker": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
             "method": "Put",
             "headers": {
               "Authorization": "Bearer {access_token}",
               "Content-Type": "application/json"
             },
-            "body": "{\"location\":\"{location}\",\"properties\":{\"hardwareProfile\":{\"vmSize\":\"{vm_size}\"},\"storageProfile\":{\"imageReference\":{\"publisher\":\"{image_publisher}\",\"offer\":\"{image_offer}\",\"sku\":\"{image_sku}\",\"version\":\"{image_version}\"},\"osDisk\":{\"createOption\":\"FromImage\",\"managedDisk\":{\"storageAccountType\":\"{disk_sku}\"}}},\"osProfile\":{\"computerName\":\"{vm_name}\",\"adminUsername\":\"{admin_username}\",\"linuxConfiguration\":{\"disablePasswordAuthentication\":true,\"ssh\":{\"publicKeys\":[{\"path\":\"/home/{admin_username}/.ssh/authorized_keys\",\"keyData\":\"{ssh_public_key}\"}]}}},\"networkProfile\":{\"networkInterfaces\":[{\"id\":\"{network_interface_id}\"}]}}}"
+            "body": "{\"location\":\"{location}\",\"properties\":{\"hardwareProfile\":{\"vmSize\":\"{worker_size}\"},\"storageProfile\":{\"imageReference\":{\"publisher\":\"{image_publisher}\",\"offer\":\"{image_offer}\",\"sku\":\"{image_sku}\",\"version\":\"{image_version}\"},\"osDisk\":{\"createOption\":\"FromImage\",\"managedDisk\":{\"storageAccountType\":\"{disk_sku}\"}}},\"osProfile\":{\"computerName\":\"{worker_name}\",\"adminUsername\":\"{admin_username}\",\"linuxConfiguration\":{\"disablePasswordAuthentication\":true,\"ssh\":{\"publicKeys\":[{\"path\":\"/home/{admin_username}/.ssh/authorized_keys\",\"keyData\":\"{ssh_public_key}\"}]}}},\"networkProfile\":{\"networkInterfaces\":[{\"id\":\"{network_interface_id}\"}]}}}"
           }
         },
         "params": [
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token",
           "location",
-          "vm_size",
+          "worker_size",
           "image_publisher",
           "image_offer",
           "image_sku",
@@ -201,7 +201,7 @@
       "delete_worker": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
             "method": "Delete",
             "headers": {
               "Authorization": "Bearer {access_token}",
@@ -213,7 +213,7 @@
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token"
         ],
@@ -230,7 +230,7 @@
       "get_worker": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
             "method": "Get",
             "headers": {
               "Authorization": "Bearer {access_token}",
@@ -242,7 +242,7 @@
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token"
         ],
@@ -276,7 +276,7 @@
       "start_worker": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/start?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}/start?api-version={api_version}",
             "method": "Post",
             "headers": {
               "Authorization": "Bearer {access_token}",
@@ -288,7 +288,7 @@
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token"
         ],
@@ -305,7 +305,7 @@
       "stop_worker": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/powerOff?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}/powerOff?api-version={api_version}",
             "method": "Post",
             "headers": {
               "Authorization": "Bearer {access_token}",
@@ -317,7 +317,7 @@
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token"
         ],
@@ -334,7 +334,7 @@
       "restart_worker": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/restart?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}/restart?api-version={api_version}",
             "method": "Post",
             "headers": {
               "Authorization": "Bearer {access_token}",
@@ -346,7 +346,7 @@
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token"
         ],
@@ -400,7 +400,7 @@
       "attach_volume": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
             "method": "Get",
             "headers": {
               "Authorization": "Bearer {access_token}",
@@ -412,7 +412,7 @@
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token"
         ],
@@ -420,23 +420,23 @@
           {
             "target": {
               "Endpoint": {
-                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
                 "method": "Put",
                 "headers": {
                   "Authorization": "Bearer {access_token}",
                   "Content-Type": "application/json"
                 },
-                "body": "{...vm_template, \"properties\": {...vm_template.properties, \"storageProfile\": {...vm_template.properties.storageProfile, \"dataDisks\": [...vm_template.properties.storageProfile.dataDisks || [], {\"lun\": {next_lun}, \"name\": \"{disk_name}\", \"createOption\": \"Attach\", \"managedDisk\": {\"id\": \"{disk_id}\"}}]}}}"
+                "body": "{...worker_template, \"properties\": {...worker_template.properties, \"storageProfile\": {...worker_template.properties.storageProfile, \"dataDisks\": [...worker_template.properties.storageProfile.dataDisks || [], {\"lun\": {next_lun}, \"name\": \"{disk_name}\", \"createOption\": \"Attach\", \"managedDisk\": {\"id\": \"{disk_id}\"}}]}}}"
               }
             },
             "params": [
               "api_url",
               "subscription_id",
               "resource_group",
-              "vm_name",
+              "worker_name",
               "api_version",
               "access_token",
-              "vm_template",
+              "worker_template",
               "next_lun",
               "disk_name",
               "disk_id"
@@ -455,7 +455,7 @@
         "parse_rules": {
           "type": "object",
           "patterns": {
-            "vm_template": {
+            "worker_template": {
               "regex": "(.*)",
               "group": 1
             },
@@ -470,7 +470,7 @@
       "detach_volume": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
             "method": "Get",
             "headers": {
               "Authorization": "Bearer {access_token}",
@@ -482,7 +482,7 @@
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token"
         ],
@@ -490,23 +490,23 @@
           {
             "target": {
               "Endpoint": {
-                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
                 "method": "Put",
                 "headers": {
                   "Authorization": "Bearer {access_token}",
                   "Content-Type": "application/json"
                 },
-                "body": "{...vm_template, \"properties\": {...vm_template.properties, \"storageProfile\": {...vm_template.properties.storageProfile, \"dataDisks\": vm_template.properties.storageProfile.dataDisks.filter(disk => disk.managedDisk.id !== \"{disk_id}\")}}}"
+                "body": "{...worker_template, \"properties\": {...worker_template.properties, \"storageProfile\": {...worker_template.properties.storageProfile, \"dataDisks\": worker_template.properties.storageProfile.dataDisks.filter(disk => disk.managedDisk.id !== \"{disk_id}\")}}}"
               }
             },
             "params": [
               "api_url",
               "subscription_id",
               "resource_group",
-              "vm_name",
+              "worker_name",
               "api_version",
               "access_token",
-              "vm_template",
+              "worker_template",
               "disk_id"
             ],
             "parse_rules": {
@@ -523,7 +523,7 @@
         "parse_rules": {
           "type": "object",
           "patterns": {
-            "vm_template": {
+            "worker_template": {
               "regex": "(.*)",
               "group": 1
             }
@@ -640,7 +640,7 @@
       "resize_worker": {
         "target": {
           "Endpoint": {
-            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+            "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
             "method": "Get",
             "headers": {
               "Authorization": "Bearer {access_token}",
@@ -652,7 +652,7 @@
           "api_url",
           "subscription_id",
           "resource_group",
-          "vm_name",
+          "worker_name",
           "api_version",
           "access_token"
         ],
@@ -660,24 +660,24 @@
           {
             "target": {
               "Endpoint": {
-                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}?api-version={api_version}",
+                "url": "{api_url}/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{worker_name}?api-version={api_version}",
                 "method": "Put",
                 "headers": {
                   "Authorization": "Bearer {access_token}",
                   "Content-Type": "application/json"
                 },
-                "body": "{...vm_template, \"properties\": {...vm_template.properties, \"hardwareProfile\": {\"vmSize\": \"{new_vm_size}\"}}}"
+                "body": "{...worker_template, \"properties\": {...worker_template.properties, \"hardwareProfile\": {\"vmSize\": \"{new_worker_size}\"}}}"
               }
             },
             "params": [
               "api_url",
               "subscription_id",
               "resource_group",
-              "vm_name",
+              "worker_name",
               "api_version",
               "access_token",
-              "vm_template",
-              "new_vm_size"
+              "worker_template",
+              "new_worker_size"
             ],
             "parse_rules": {
               "type": "object",
@@ -693,7 +693,7 @@
         "parse_rules": {
           "type": "object",
           "patterns": {
-            "vm_template": {
+            "worker_template": {
               "regex": "(.*)",
               "group": 1
             }
@@ -726,7 +726,7 @@
           }
         }
       },
-      "list_vm_sizes": {
+      "list_worker_sizes": {
         "target": {
           "Endpoint": {
             "url": "{api_url}/subscriptions/{subscription_id}/providers/Microsoft.Compute/locations/{location}/vmSizes?api-version={api_version}",

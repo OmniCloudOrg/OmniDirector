@@ -563,7 +563,7 @@
         "start_vm": {
             "target": {
                 "Endpoint": {
-                    "url": "{api_url}/vm/id/{vm_id}/start",
+                    "url": "{api_url}/vm/id/{worker_id}/start",
                     "method": "Post",
                     "headers": {
                         "Authorization": "Bearer {api_key}",
@@ -574,7 +574,7 @@
             "params": [
                 "api_url",
                 "api_key",
-                "vm_id"
+                "worker_id"
             ],
             "parse_rules": {
                 "type": "object",
@@ -589,7 +589,7 @@
         "stop_vm": {
             "target": {
                 "Endpoint": {
-                    "url": "{api_url}/vm/id/{vm_id}/stop",
+                    "url": "{api_url}/vm/id/{worker_id}/stop",
                     "method": "Post",
                     "headers": {
                         "Authorization": "Bearer {api_key}",
@@ -601,7 +601,7 @@
             "params": [
                 "api_url",
                 "api_key",
-                "vm_id"
+                "worker_id"
             ],
             "default_settings": {
                 "force": "false"
@@ -619,7 +619,7 @@
         "delete_vm": {
             "target": {
                 "Endpoint": {
-                    "url": "{api_url}/vm/id/{vm_id}",
+                    "url": "{api_url}/vm/id/{worker_id}",
                     "method": "Delete",
                     "headers": {
                         "Authorization": "Bearer {api_key}",
@@ -630,7 +630,7 @@
             "params": [
                 "api_url",
                 "api_key",
-                "vm_id"
+                "worker_id"
             ],
             "parse_rules": {
                 "type": "object",

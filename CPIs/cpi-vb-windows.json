@@ -43,14 +43,14 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "VBoxManage.exe createvm --name \"{vm_name}\" --ostype {os_type} --register"},
+        "target": {"Command": "VBoxManage.exe createvm --name \"{worker_name}\" --ostype {os_type} --register"},
         "params": [
-          "vm_name",
+          "worker_name",
           "os_type"
         ],
         "post_exec": [
           {
-            "target": {"Command": "VBoxManage.exe modifyvm \"{vm_name}\" --memory {memory_mb} --cpus {cpu_count}"},
+            "target": {"Command": "VBoxManage.exe modifyvm \"{worker_name}\" --memory {memory_mb} --cpus {cpu_count}"},
             "parse_rules": {
               "type": "object",
               "patterns": {
@@ -62,7 +62,7 @@
             }
           },
           {
-            "target": {"Command": "VBoxManage.exe modifyvm \"{vm_name}\" --nic1 nat"},
+            "target": {"Command": "VBoxManage.exe modifyvm \"{worker_name}\" --nic1 nat"},
             "parse_rules": {
               "type": "object",
               "patterns": {
@@ -85,9 +85,9 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "VBoxManage.exe unregistervm \"{vm_name}\" --delete"},
+        "target": {"Command": "VBoxManage.exe unregistervm \"{worker_name}\" --delete"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -100,9 +100,9 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "VBoxManage.exe showvminfo \"{vm_name}\" --machinereadable"},
+        "target": {"Command": "VBoxManage.exe showvminfo \"{worker_name}\" --machinereadable"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "properties",
@@ -145,14 +145,14 @@
         }
       },
       "get_adapters": {
-        "target": {"Command": "VBoxManage.exe showvminfo \"{vm_name}\" --machinereadable"},
+        "target": {"Command": "VBoxManage.exe showvminfo \"{worker_name}\" --machinereadable"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "properties",
           "patterns": {
-            "vm_name": {
+            "worker_name": {
               "regex": "^name=\"(.*)\"$",
               "group": 1
             }
@@ -187,9 +187,9 @@
         }
       },
       "has_worker": {
-        "target": {"Command": "VBoxManage.exe showvminfo {vm_id} --machinereadable"},
+        "target": {"Command": "VBoxManage.exe showvminfo {worker_name} --machinereadable"},
         "params": [
-          "vm_id"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -202,9 +202,9 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "VBoxManage.exe startvm \"{vm_name}\" --type headless"},
+        "target": {"Command": "VBoxManage.exe startvm \"{worker_name}\" --type headless"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -272,9 +272,9 @@
         }
       },
       "get_snapshots": {
-        "target": {"Command": "VBoxManage.exe snapshot \"{vm_name}\" list --machinereadable"},
+        "target": {"Command": "VBoxManage.exe snapshot \"{worker_name}\" list --machinereadable"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "properties",
@@ -295,9 +295,9 @@
         }
       },
       "create_snapshot": {
-        "target": {"Command": "VBoxManage.exe snapshot \"{vm_name}\" take {snapshot_name}"},
+        "target": {"Command": "VBoxManage.exe snapshot \"{worker_name}\" take {snapshot_name}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "snapshot_name"
         ],
         "parse_rules": {
@@ -311,9 +311,9 @@
         }
       },
       "has_snapshot": {
-        "target": {"Command": "VBoxManage.exe snapshot \"{vm_name}\" list --machinereadable"},
+        "target": {"Command": "VBoxManage.exe snapshot \"{worker_name}\" list --machinereadable"},
         "params": [
-          "vm_name",
+          "worker_name",
           "snapshot_name"
         ],
         "parse_rules": {
@@ -327,16 +327,16 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "VBoxManage.exe storageattach \"{vm_name}\" --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}"},
+        "target": {"Command": "VBoxManage.exe storageattach \"{worker_name}\" --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "controller_name",
           "port",
           "disk_path"
         ],
         "pre_exec": [
           {
-            "target": {"Command": "VBoxManage.exe storagectl \"{vm_name}\" --name {controller_name} --add sata --controller IntelAhci --portcount 30"},
+            "target": {"Command": "VBoxManage.exe storagectl \"{worker_name}\" --name {controller_name} --add sata --controller IntelAhci --portcount 30"},
             "parse_rules": {
               "type": "object",
               "patterns": {
@@ -359,9 +359,9 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "VBoxManage.exe storageattach \"{vm_name}\" --storagectl {controller_name} --port {port} --device 0 --type hdd --medium none"},
+        "target": {"Command": "VBoxManage.exe storageattach \"{worker_name}\" --storagectl {controller_name} --port {port} --device 0 --type hdd --medium none"},
         "params": [
-          "vm_name",
+          "worker_name",
           "controller_name",
           "port"
         ],
@@ -411,9 +411,9 @@
         }
       },
       "reboot_worker": {
-        "target": {"Command": "VBoxManage.exe controlvm \"{vm_name}\" reset"},
+        "target": {"Command": "VBoxManage.exe controlvm \"{worker_name}\" reset"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -442,9 +442,9 @@
         }
       },
       "configure_networks": {
-        "target": {"Command": "VBoxManage.exe modifyvm \"{vm_name}\" --nic{network_index} {network_type}"},
+        "target": {"Command": "VBoxManage.exe modifyvm \"{worker_name}\" --nic{network_index} {network_type}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "network_index",
           "network_type"
         ],
@@ -459,9 +459,9 @@
         }
       },
       "set_worker_metadata": {
-        "target": {"Command": "VBoxManage.exe setextradata \"{vm_name}\" {key} {value}"},
+        "target": {"Command": "VBoxManage.exe setextradata \"{worker_name}\" {key} {value}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "key",
           "value"
         ],
@@ -476,9 +476,9 @@
         }
       },
       "delete_snapshot": {
-        "target": {"Command": "VBoxManage.exe snapshot \"{vm_name}\" delete {snapshot_name}"},
+        "target": {"Command": "VBoxManage.exe snapshot \"{worker_name}\" delete {snapshot_name}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "snapshot_name"
         ],
         "parse_rules": {
@@ -492,9 +492,9 @@
         }
       },
       "execute_target": {
-        "target": {"Command": "VBoxManage.exe guestcontrol \"{vm_name}\" run --username {username} --password {password} --exe {target_path} -- {target_args}"},
+        "target": {"Command": "VBoxManage.exe guestcontrol \"{worker_name}\" run --username {username} --password {password} --exe {target_path} -- {target_args}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "username",
           "password",
           "target_path",

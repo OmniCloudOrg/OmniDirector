@@ -168,8 +168,8 @@
             }
         },
         "get_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm list | grep {vm_id}"},
-            "params": ["vm_id"],
+            "target": {"Command": "docker exec -i detee-cli detee-cli vm list | grep {worker_id}"},
+            "params": ["worker_id"],
             "parse_rules": {
                 "type": "properties",
                 "patterns": {
@@ -209,8 +209,8 @@
             }
         },
         "has_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm list | grep {vm_id}"},
-            "params": ["vm_id"],
+            "target": {"Command": "docker exec -i detee-cli detee-cli vm list | grep {worker_id}"},
+            "params": ["worker_id"],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -222,8 +222,8 @@
             }
         },
         "update_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm update {vcpus_param} {memory_param} {hours_param} {vm_id}"},
-            "params": ["vm_id", "vcpus_param", "memory_param", "hours_param"],
+            "target": {"Command": "docker exec -i detee-cli detee-cli vm update {vcpus_param} {memory_param} {hours_param} {worker_id}"},
+            "params": ["worker_id", "vcpus_param", "memory_param", "hours_param"],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -246,8 +246,8 @@
             }
         },
         "delete_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm delete {vm_id}"},
-            "params": ["vm_id"],
+            "target": {"Command": "docker exec -i detee-cli detee-cli vm delete {worker_id}"},
+            "params": ["worker_id"],
             "parse_rules": {
                 "type": "object",
                 "patterns": {

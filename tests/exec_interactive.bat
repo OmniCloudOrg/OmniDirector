@@ -37,7 +37,7 @@ for /f "tokens=1,* delims= " %%a in ("%command%") do (
 set "command_path=/bin/!cmd_name!"
 
 :: Use a single curl call with inline JSON (no temp file for request)
-curl -s -X POST -H "Content-Type: application/json" -d "{\"provider\":\"virtualbox_cpi_linux\",\"action\":\"execute_command\",\"params\":{\"vm_name\":\"OmniVM\",\"username\":\"vagrant\",\"password\":\"vagrant\",\"command_path\":\"!command_path!\",\"command_args\":\"!cmd_args!\"}}" "%API_ENDPOINT%" > response.json
+curl -s -X POST -H "Content-Type: application/json" -d "{\"provider\":\"virtualbox_cpi_linux\",\"action\":\"execute_command\",\"params\":{\"worker_name\":\"OmniVM\",\"username\":\"vagrant\",\"password\":\"vagrant\",\"command_path\":\"!command_path!\",\"command_args\":\"!cmd_args!\"}}" "%API_ENDPOINT%" > response.json
 
 :: Process and display output directly
 python parse_output.py

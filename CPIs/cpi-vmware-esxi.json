@@ -92,7 +92,7 @@
               "group": 1,
               "transform": "number"
             },
-            "vm_path_name": {
+            "worker_path_name": {
               "regex": "vmPathName = \"([^\"]+)\"",
               "group": 1
             }
@@ -160,14 +160,14 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "vim-cmd vmsvc/createdummyvm {vm_name} [{datastore}]"},
+        "target": {"Command": "vim-cmd vmsvc/createdummyvm {worker_name} [{datastore}]"},
         "params": [
-          "vm_name",
+          "worker_name",
           "datastore"
         ],
         "post_exec": [
           {
-            "target": {"Command": "vim-cmd vmsvc/getallvms | grep {vm_name} | awk '{print $1}'"},
+            "target": {"Command": "vim-cmd vmsvc/getallvms | grep {worker_name} | awk '{print $1}'"},
             "parse_rules": {
               "type": "object",
               "patterns": {

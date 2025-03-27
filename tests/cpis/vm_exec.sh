@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration variables
-VM_NAME="OmniVM"
+worker_NAME="OmniVM"
 MEMORY_MB=2048
 CPU_COUNT=2
 OS_TYPE="Ubuntu_64"
@@ -29,12 +29,12 @@ if [ -z "$DISK_PATH" ]; then
 fi
 
 echo "Creating VM..."
-cat > /tmp/vm_request.json << EOF
+cat > /tmp/worker_request.json << EOF
 {
   "provider": "virtualbox_cpi_linux",
   "action": "create_vm",
   "params": {
-    "vm_name": "$VM_NAME",
+    "worker_name": "$worker_NAME",
     "os_type": "$OS_TYPE",
     "memory_mb": $MEMORY_MB,
     "cpu_count": $CPU_COUNT
@@ -42,7 +42,7 @@ cat > /tmp/vm_request.json << EOF
 }
 EOF
 
-curl -s -X POST -H "Content-Type: application/json" -d @"/tmp/vm_request.json" "$API_ENDPOINT"
+curl -s -X POST -H "Content-Type: application/json" -d @"/tmp/worker_request.json" "$API_ENDPOINT"
 
 echo "Attaching disk..."
 cat > /tmp/attach_disk.json << EOF
@@ -50,7 +50,7 @@ cat > /tmp/attach_disk.json << EOF
   "provider": "virtualbox_cpi_linux",
   "action": "attach_disk",
   "params": {
-    "vm_name": "$VM_NAME",
+    "worker_name": "$worker_NAME",
     "controller_name": "SATAController",
     "port": "0",
     "disk_path": "$DISK_PATH"
@@ -66,7 +66,7 @@ cat > /tmp/start_vm.json << EOF
   "provider": "virtualbox_cpi_linux",
   "action": "start_vm",
   "params": {
-    "vm_name": "$VM_NAME"
+    "worker_name": "$worker_NAME"
   }
 }
 EOF
@@ -82,7 +82,7 @@ cat > /tmp/execute_command.json << EOF
   "provider": "virtualbox_cpi_linux",
   "action": "execute_command",
   "params": {
-    "vm_name": "$VM_NAME",
+    "worker_name": "$worker_NAME",
     "username": "vagrant",
     "password": "vagrant",
     "command_path": "/bin/uname",

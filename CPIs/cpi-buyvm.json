@@ -47,8 +47,8 @@
         "parse_rules": {
           "type": "object",
           "patterns": {
-            "vm_id": {
-              "regex": "\"vm_id\":\\s*\"([^\"]+)\"",
+            "worker_id": {
+              "regex": "\"worker_id\":\\s*\"([^\"]+)\"",
               "group": 1
             },
             "hostname": {

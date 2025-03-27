@@ -57,11 +57,11 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "pvesh create /nodes/{node}/qemu -vmid {vmid} -name {vm_name} -memory {memory_mb} -cores {cpus} -net0 {netif},bridge={network_bridge} -virtio0 {storage}:{disk_size_gb}"},
+        "target": {"Command": "pvesh create /nodes/{node}/qemu -vmid {vmid} -name {worker_name} -memory {memory_mb} -cores {cpus} -net0 {netif},bridge={network_bridge} -virtio0 {storage}:{disk_size_gb}"},
         "params": [
           "node",
           "vmid",
-          "vm_name",
+          "worker_name",
           "memory_mb",
           "cpus",
           "netif",

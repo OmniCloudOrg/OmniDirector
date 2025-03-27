@@ -48,9 +48,9 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "virt-install --name {vm_name} --memory {memory_mb} --vcpus {vcpus} --disk path={image_path}/{vm_name}.qcow2,size={disk_size_gb} --os-variant {os_variant} --graphics {graphics} --network {network} --import --disk {os_image},device=cdrom --noautoconsole"},
+        "target": {"Command": "virt-install --name {worker_name} --memory {memory_mb} --vcpus {vcpus} --disk path={image_path}/{worker_name}.qcow2,size={disk_size_gb} --os-variant {os_variant} --graphics {graphics} --network {network} --import --disk {os_image},device=cdrom --noautoconsole"},
         "params": [
-          "vm_name",
+          "worker_name",
           "memory_mb",
           "vcpus",
           "image_path",
@@ -71,9 +71,9 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "virsh undefine {vm_name} --remove-all-storage"},
+        "target": {"Command": "virsh undefine {worker_name} --remove-all-storage"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -86,9 +86,9 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "virsh start {vm_name}"},
+        "target": {"Command": "virsh start {worker_name}"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -101,9 +101,9 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "virsh shutdown {vm_name}"},
+        "target": {"Command": "virsh shutdown {worker_name}"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -116,9 +116,9 @@
         }
       },
       "force_stop_worker": {
-        "target": {"Command": "virsh destroy {vm_name}"},
+        "target": {"Command": "virsh destroy {worker_name}"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -131,9 +131,9 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "virsh dominfo {vm_name}"},
+        "target": {"Command": "virsh dominfo {worker_name}"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "properties",
@@ -174,9 +174,9 @@
         }
       },
       "has_worker": {
-        "target": {"Command": "virsh dominfo {vm_name}"},
+        "target": {"Command": "virsh dominfo {worker_name}"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -189,9 +189,9 @@
         }
       },
       "create_snapshot": {
-        "target": {"Command": "virsh snapshot-create-as {vm_name} {snapshot_name} {snapshot_description}"},
+        "target": {"Command": "virsh snapshot-create-as {worker_name} {snapshot_name} {snapshot_description}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "snapshot_name",
           "snapshot_description"
         ],
@@ -206,9 +206,9 @@
         }
       },
       "list_snapshots": {
-        "target": {"Command": "virsh snapshot-list {vm_name}"},
+        "target": {"Command": "virsh snapshot-list {worker_name}"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "array",
@@ -230,9 +230,9 @@
         }
       },
       "revert_to_snapshot": {
-        "target": {"Command": "virsh snapshot-revert {vm_name} {snapshot_name}"},
+        "target": {"Command": "virsh snapshot-revert {worker_name} {snapshot_name}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "snapshot_name"
         ],
         "parse_rules": {
@@ -246,9 +246,9 @@
         }
       },
       "delete_snapshot": {
-        "target": {"Command": "virsh snapshot-delete {vm_name} {snapshot_name}"},
+        "target": {"Command": "virsh snapshot-delete {worker_name} {snapshot_name}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "snapshot_name"
         ],
         "parse_rules": {
@@ -262,9 +262,9 @@
         }
       },
       "has_snapshot": {
-        "target": {"Command": "virsh snapshot-list {vm_name} | grep {snapshot_name}"},
+        "target": {"Command": "virsh snapshot-list {worker_name} | grep {snapshot_name}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "snapshot_name"
         ],
         "parse_rules": {
@@ -278,9 +278,9 @@
         }
       },
       "list_volumes": {
-        "target": {"Command": "virsh domblklist {vm_name}"},
+        "target": {"Command": "virsh domblklist {worker_name}"},
         "params": [
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "array",
@@ -316,9 +316,9 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "virsh attach-disk {vm_name} {image_path}/{disk_name}.{disk_format} {target_dev} --persistent"},
+        "target": {"Command": "virsh attach-disk {worker_name} {image_path}/{disk_name}.{disk_format} {target_dev} --persistent"},
         "params": [
-          "vm_name",
+          "worker_name",
           "image_path",
           "disk_name",
           "disk_format",
@@ -335,9 +335,9 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "virsh detach-disk {vm_name} {target_dev} --persistent"},
+        "target": {"Command": "virsh detach-disk {worker_name} {target_dev} --persistent"},
         "params": [
-          "vm_name",
+          "worker_name",
           "target_dev"
         ],
         "parse_rules": {
@@ -373,9 +373,9 @@
         }
       },
       "execute_target": {
-        "target": {"Command": "virt-ssh-sh {vm_name} {target_string}"},
+        "target": {"Command": "virt-ssh-sh {worker_name} {target_string}"},
         "params": [
-          "vm_name",
+          "worker_name",
           "target_string"
         ],
         "parse_rules": {

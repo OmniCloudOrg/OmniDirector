@@ -4,7 +4,7 @@
     "default_settings": {
       "location": "eastus",
       "resource_group": "default-rg",
-      "vm_size": "Standard_B1s",
+      "worker_size": "Standard_B1s",
       "image": "Canonical:UbuntuServer:18.04-LTS:latest",
       "admin_username": "azureuser",
       "disk_sku": "Standard_LRS"
@@ -59,13 +59,13 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "az vm create --resource-group {resource_group} --name {vm_name} --image {image} --admin-username {admin_username} --size {vm_size} --generate-ssh-keys"},
+        "target": {"Command": "az vm create --resource-group {resource_group} --name {worker_name} --image {image} --admin-username {admin_username} --size {worker_size} --generate-ssh-keys"},
         "params": [
           "resource_group",
-          "vm_name",
+          "worker_name",
           "image",
           "admin_username",
-          "vm_size"
+          "worker_size"
         ],
         "parse_rules": {
           "type": "object",
@@ -87,10 +87,10 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "az vm delete --resource-group {resource_group} --name {vm_name} --yes"},
+        "target": {"Command": "az vm delete --resource-group {resource_group} --name {worker_name} --yes"},
         "params": [
           "resource_group",
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -103,10 +103,10 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "az vm start --resource-group {resource_group} --name {vm_name}"},
+        "target": {"Command": "az vm start --resource-group {resource_group} --name {worker_name}"},
         "params": [
           "resource_group",
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -119,10 +119,10 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "az vm stop --resource-group {resource_group} --name {vm_name}"},
+        "target": {"Command": "az vm stop --resource-group {resource_group} --name {worker_name}"},
         "params": [
           "resource_group",
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "object",
@@ -164,10 +164,10 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "az vm show --resource-group {resource_group} --name {vm_name}"},
+        "target": {"Command": "az vm show --resource-group {resource_group} --name {worker_name}"},
         "params": [
           "resource_group",
-          "vm_name"
+          "worker_name"
         ],
         "parse_rules": {
           "type": "properties",
@@ -219,10 +219,10 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "az vm disk attach --resource-group {resource_group} --vm-name {vm_name} --name {disk_name}"},
+        "target": {"Command": "az vm disk attach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}"},
         "params": [
           "resource_group",
-          "vm_name",
+          "worker_name",
           "disk_name"
         ],
         "parse_rules": {
@@ -236,10 +236,10 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "az vm disk detach --resource-group {resource_group} --vm-name {vm_name} --name {disk_name}"},
+        "target": {"Command": "az vm disk detach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}"},
         "params": [
           "resource_group",
-          "vm_name",
+          "worker_name",
           "disk_name"
         ],
         "parse_rules": {
