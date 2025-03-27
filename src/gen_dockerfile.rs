@@ -17,7 +17,7 @@ struct Mount {
 struct FeatureOption {
     #[serde(rename = "type")]
     option_type: String,
-    default: Option<serde_json5::Value>,
+    default: Option<serde_json::Value>,
     description: Option<String>,
     proposals: Option<Vec<String>>,
 }
@@ -132,9 +132,9 @@ impl FeatureBuilder {
             for (name, option) in options {
                 if let Some(default) = &option.default {
                     let value = match default {
-                        serde_json5::Value::String(s) => s.clone(),
-                        serde_json5::Value::Bool(b) => b.to_string(),
-                        serde_json5::Value::Number(n) => n.to_string(),
+                        serde_json::Value::String(s) => s.clone(),
+                        serde_json::Value::Bool(b) => b.to_string(),
+                        serde_json::Value::Number(n) => n.to_string(),
                         _ => continue,
                     };
                     builder.add_env(&name.to_uppercase(), &value);
@@ -277,7 +277,7 @@ mod tests {
 
         fs::write(
             dir.join("devcontainer-feature.json"),
-            serde_json5::to_string_pretty(&feature)?,
+            serde_json::to_string_pretty(&feature)?,
         )?;
 
         // Create install.sh
