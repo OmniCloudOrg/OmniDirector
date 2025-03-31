@@ -6,7 +6,11 @@ pub fn load_cpis() -> DashMap<String, String> {
 
     let entries = match std::fs::read_dir(cpi_dir) {
         Ok(iter) => iter,
-        Err(_) => return DashMap::new(),
+        Err(e) => {
+            eprintln!("Error reading directory: {}", cpi_dir);
+            eprintln!("Error: {}", e);
+            return DashMap::new();
+        }
     };
 
     let paths: Vec<_> = entries

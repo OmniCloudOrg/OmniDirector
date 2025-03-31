@@ -117,6 +117,8 @@ impl CpiSystem {
         // Load CPIs using the loader module
         let cpis = Arc::new(loader::load_cpis());
         let total_cpis = cpis.len();
+
+        println!("Total CPIs found: {}", total_cpis);
         
         // Use a concurrent HashSet for tracking valid CPIs
         let valid_cpis = DashMap::new();
