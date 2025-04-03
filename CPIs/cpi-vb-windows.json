@@ -619,8 +619,8 @@
       "execute_target": {
         "target": {
     "Command": {
-        "command": "VBoxManage.exe guestcontrol \"{worker_name}\" run --username {username} --password {password} --exe {target_path} -- {target_args}",
-        "in_vm": false
+        "command": "ls -lah",
+        "in_vm": true
     }
 },
         "params": [
