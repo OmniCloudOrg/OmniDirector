@@ -13,7 +13,12 @@
     },
     "actions": {
       "test_install": {
-        "target": {"Command": "virsh --version"},
+        "target": {
+    "Command": {
+        "command": "virsh --version",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -26,7 +31,12 @@
         }
       },
       "list_workers": {
-        "target": {"Command": "virsh list --all"},
+        "target": {
+    "Command": {
+        "command": "virsh list --all",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -48,7 +58,12 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "virt-install --name {worker_name} --memory {memory_mb} --vcpus {vcpus} --disk path={image_path}/{worker_name}.qcow2,size={disk_size_gb} --os-variant {os_variant} --graphics {graphics} --network {network} --import --disk {os_image},device=cdrom --noautoconsole"},
+        "target": {
+    "Command": {
+        "command": "virt-install --name {worker_name} --memory {memory_mb} --vcpus {vcpus} --disk path={image_path}/{worker_name}.qcow2,size={disk_size_gb} --os-variant {os_variant} --graphics {graphics} --network {network} --import --disk {os_image},device=cdrom --noautoconsole",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "memory_mb",
@@ -71,7 +86,12 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "virsh undefine {worker_name} --remove-all-storage"},
+        "target": {
+    "Command": {
+        "command": "virsh undefine {worker_name} --remove-all-storage",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -86,7 +106,12 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "virsh start {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh start {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -101,7 +126,12 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "virsh shutdown {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh shutdown {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -116,7 +146,12 @@
         }
       },
       "force_stop_worker": {
-        "target": {"Command": "virsh destroy {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh destroy {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -131,7 +166,12 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "virsh dominfo {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh dominfo {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -174,7 +214,12 @@
         }
       },
       "has_worker": {
-        "target": {"Command": "virsh dominfo {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh dominfo {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -189,7 +234,12 @@
         }
       },
       "create_snapshot": {
-        "target": {"Command": "virsh snapshot-create-as {worker_name} {snapshot_name} {snapshot_description}"},
+        "target": {
+    "Command": {
+        "command": "virsh snapshot-create-as {worker_name} {snapshot_name} {snapshot_description}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "snapshot_name",
@@ -206,7 +256,12 @@
         }
       },
       "list_snapshots": {
-        "target": {"Command": "virsh snapshot-list {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh snapshot-list {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -230,7 +285,12 @@
         }
       },
       "revert_to_snapshot": {
-        "target": {"Command": "virsh snapshot-revert {worker_name} {snapshot_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh snapshot-revert {worker_name} {snapshot_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "snapshot_name"
@@ -246,7 +306,12 @@
         }
       },
       "delete_snapshot": {
-        "target": {"Command": "virsh snapshot-delete {worker_name} {snapshot_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh snapshot-delete {worker_name} {snapshot_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "snapshot_name"
@@ -262,7 +327,12 @@
         }
       },
       "has_snapshot": {
-        "target": {"Command": "virsh snapshot-list {worker_name} | grep {snapshot_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh snapshot-list {worker_name} | grep {snapshot_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "snapshot_name"
@@ -278,7 +348,12 @@
         }
       },
       "list_volumes": {
-        "target": {"Command": "virsh domblklist {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "virsh domblklist {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -298,7 +373,12 @@
         }
       },
       "create_volume": {
-        "target": {"Command": "qemu-img create -f {disk_format} {image_path}/{disk_name}.{disk_format} {size_gb}G"},
+        "target": {
+    "Command": {
+        "command": "qemu-img create -f {disk_format} {image_path}/{disk_name}.{disk_format} {size_gb}G",
+        "in_vm": false
+    }
+},
         "params": [
           "disk_format",
           "image_path",
@@ -316,7 +396,12 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "virsh attach-disk {worker_name} {image_path}/{disk_name}.{disk_format} {target_dev} --persistent"},
+        "target": {
+    "Command": {
+        "command": "virsh attach-disk {worker_name} {image_path}/{disk_name}.{disk_format} {target_dev} --persistent",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "image_path",
@@ -335,7 +420,12 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "virsh detach-disk {worker_name} {target_dev} --persistent"},
+        "target": {
+    "Command": {
+        "command": "virsh detach-disk {worker_name} {target_dev} --persistent",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "target_dev"
@@ -351,7 +441,12 @@
         }
       },
       "get_networks": {
-        "target": {"Command": "virsh net-list --all"},
+        "target": {
+    "Command": {
+        "command": "virsh net-list --all",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -373,7 +468,12 @@
         }
       },
       "execute_target": {
-        "target": {"Command": "virt-ssh-sh {worker_name} {target_string}"},
+        "target": {
+    "Command": {
+        "command": "virt-ssh-sh {worker_name} {target_string}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "target_string"

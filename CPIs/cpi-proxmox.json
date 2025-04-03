@@ -14,7 +14,12 @@
     },
     "actions": {
       "test_install": {
-        "target": {"Command": "pvesh version"},
+        "target": {
+    "Command": {
+        "command": "pvesh version",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -27,7 +32,12 @@
         }
       },
       "list_workers": {
-        "target": {"Command": "pvesh get /cluster/resources --type vm"},
+        "target": {
+    "Command": {
+        "command": "pvesh get /cluster/resources --type vm",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -57,7 +67,12 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "pvesh create /nodes/{node}/qemu -vmid {vmid} -name {worker_name} -memory {memory_mb} -cores {cpus} -net0 {netif},bridge={network_bridge} -virtio0 {storage}:{disk_size_gb}"},
+        "target": {
+    "Command": {
+        "command": "pvesh create /nodes/{node}/qemu -vmid {vmid} -name {worker_name} -memory {memory_mb} -cores {cpus} -net0 {netif},bridge={network_bridge} -virtio0 {storage}:{disk_size_gb}",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid",
@@ -80,7 +95,12 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "pvesh delete /nodes/{node}/qemu/{vmid}"},
+        "target": {
+    "Command": {
+        "command": "pvesh delete /nodes/{node}/qemu/{vmid}",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid"
@@ -96,7 +116,12 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "pvesh create /nodes/{node}/qemu/{vmid}/status/start"},
+        "target": {
+    "Command": {
+        "command": "pvesh create /nodes/{node}/qemu/{vmid}/status/start",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid"
@@ -112,7 +137,12 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "pvesh create /nodes/{node}/qemu/{vmid}/status/stop"},
+        "target": {
+    "Command": {
+        "command": "pvesh create /nodes/{node}/qemu/{vmid}/status/stop",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid"
@@ -128,7 +158,12 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "pvesh get /nodes/{node}/qemu/{vmid}/config"},
+        "target": {
+    "Command": {
+        "command": "pvesh get /nodes/{node}/qemu/{vmid}/config",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid"
@@ -169,7 +204,12 @@
         }
       },
       "create_snapshot": {
-        "target": {"Command": "pvesh create /nodes/{node}/qemu/{vmid}/snapshot -snapname {snapshot_name} -description {snapshot_description}"},
+        "target": {
+    "Command": {
+        "command": "pvesh create /nodes/{node}/qemu/{vmid}/snapshot -snapname {snapshot_name} -description {snapshot_description}",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid",
@@ -187,7 +227,12 @@
         }
       },
       "list_snapshots": {
-        "target": {"Command": "pvesh get /nodes/{node}/qemu/{vmid}/snapshot"},
+        "target": {
+    "Command": {
+        "command": "pvesh get /nodes/{node}/qemu/{vmid}/snapshot",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid"
@@ -219,7 +264,12 @@
         }
       },
       "restore_snapshot": {
-        "target": {"Command": "pvesh create /nodes/{node}/qemu/{vmid}/snapshot/{snapshot_name}/rollback"},
+        "target": {
+    "Command": {
+        "command": "pvesh create /nodes/{node}/qemu/{vmid}/snapshot/{snapshot_name}/rollback",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid",
@@ -236,7 +286,12 @@
         }
       },
       "delete_snapshot": {
-        "target": {"Command": "pvesh delete /nodes/{node}/qemu/{vmid}/snapshot/{snapshot_name}"},
+        "target": {
+    "Command": {
+        "command": "pvesh delete /nodes/{node}/qemu/{vmid}/snapshot/{snapshot_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid",
@@ -253,7 +308,12 @@
         }
       },
       "resize_volume": {
-        "target": {"Command": "pvesh set /nodes/{node}/qemu/{vmid}/resize -disk {disk} -size {size_gb}G"},
+        "target": {
+    "Command": {
+        "command": "pvesh set /nodes/{node}/qemu/{vmid}/resize -disk {disk} -size {size_gb}G",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid",
@@ -271,7 +331,12 @@
         }
       },
       "clone_worker": {
-        "target": {"Command": "pvesh create /nodes/{node}/qemu/{vmid}/clone -newid {new_workerid} -name {new_worker_name} -full {full_clone}"},
+        "target": {
+    "Command": {
+        "command": "pvesh create /nodes/{node}/qemu/{vmid}/clone -newid {new_workerid} -name {new_worker_name} -full {full_clone}",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid",
@@ -290,7 +355,12 @@
         }
       },
       "get_worker_status": {
-        "target": {"Command": "pvesh get /nodes/{node}/qemu/{vmid}/status/current"},
+        "target": {
+    "Command": {
+        "command": "pvesh get /nodes/{node}/qemu/{vmid}/status/current",
+        "in_vm": false
+    }
+},
         "params": [
           "node",
           "vmid"
@@ -321,7 +391,12 @@
         }
       },
       "list_volume": {
-        "target": {"Command": "pvesh get /nodes/{node}/storage"},
+        "target": {
+    "Command": {
+        "command": "pvesh get /nodes/{node}/storage",
+        "in_vm": false
+    }
+},
         "params": [
           "node"
         ],

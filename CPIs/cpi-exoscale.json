@@ -11,7 +11,12 @@
     },
     "actions": {
         "test_install": {
-            "target": {"Command": "exo version"},
+            "target": {
+    "Command": {
+        "command": "exo version",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -23,7 +28,12 @@
             }
         },
         "list_workers": {
-            "target": {"Command": "exo compute instance list --zone {zone} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance list --zone {zone} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "zone"
             ],
@@ -38,7 +48,12 @@
             }
         },
         "create_worker": {
-            "target": {"Command": "exo compute instance create {name} --instance-type {worker_type} --template {image} --security-group {security_group} --ssh-key {ssh_key_name} --disk-size {disk_size} --zone {zone} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance create {name} --instance-type {worker_type} --template {image} --security-group {security_group} --ssh-key {ssh_key_name} --disk-size {disk_size} --zone {zone} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "worker_type",
@@ -66,7 +81,12 @@
             }
         },
         "delete_worker": {
-            "target": {"Command": "exo compute instance delete {worker_id} --force {force} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance delete {worker_id} --force {force} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -84,7 +104,12 @@
             }
         },
         "get_worker": {
-            "target": {"Command": "exo compute instance show {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance show {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -99,7 +124,12 @@
             }
         },
         "start_worker": {
-            "target": {"Command": "exo compute instance start {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance start {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -114,7 +144,12 @@
             }
         },
         "stop_worker": {
-            "target": {"Command": "exo compute instance stop {worker_id} --force {force} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance stop {worker_id} --force {force} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -132,7 +167,12 @@
             }
         },
         "reboot_worker": {
-            "target": {"Command": "exo compute instance reboot {worker_id} --force {force} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance reboot {worker_id} --force {force} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -150,7 +190,12 @@
             }
         },
         "list_regions": {
-            "target": {"Command": "exo zone list --output json"},
+            "target": {
+    "Command": {
+        "command": "exo zone list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -162,7 +207,12 @@
             }
         },
         "list_worker_types": {
-            "target": {"Command": "exo compute instance-type list --zone {zone} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance-type list --zone {zone} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "zone"
             ],
@@ -177,7 +227,12 @@
             }
         },
         "list_images": {
-            "target": {"Command": "exo compute template list --zone {zone} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute template list --zone {zone} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "zone"
             ],
@@ -192,7 +247,12 @@
             }
         },
         "create_security_group": {
-            "target": {"Command": "exo compute security-group create {name} --description {description} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute security-group create {name} --description {description} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "description"
@@ -215,7 +275,12 @@
             }
         },
         "list_security_groups": {
-            "target": {"Command": "exo compute security-group list --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute security-group list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -227,7 +292,12 @@
             }
         },
         "create_firewall_rule": {
-            "target": {"Command": "exo compute security-group rule add {security_group_id} --description {description} --protocol {protocol} --port {port} --network {source} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute security-group rule add {security_group_id} --description {description} --protocol {protocol} --port {port} --network {source} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "security_group_id",
                 "protocol",
@@ -248,7 +318,12 @@
             }
         },
         "list_firewall_rules": {
-            "target": {"Command": "exo compute security-group show {security_group_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute security-group show {security_group_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "security_group_id"
             ],
@@ -263,7 +338,12 @@
             }
         },
         "create_ssh_key": {
-            "target": {"Command": "exo compute ssh-key add {name} {ssh_public_key} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute ssh-key add {name} {ssh_public_key} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "ssh_public_key"
@@ -283,7 +363,12 @@
             }
         },
         "list_ssh_keys": {
-            "target": {"Command": "exo compute ssh-key list --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute ssh-key list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -295,7 +380,12 @@
             }
         },
         "create_snapshot": {
-            "target": {"Command": "exo compute snapshot create {worker_id} --name {snapshot_name} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute snapshot create {worker_id} --name {snapshot_name} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id",
                 "snapshot_name"
@@ -315,7 +405,12 @@
             }
         },
         "list_snapshots": {
-            "target": {"Command": "exo compute snapshot list --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute snapshot list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -327,7 +422,12 @@
             }
         },
         "delete_snapshot": {
-            "target": {"Command": "exo compute snapshot delete {snapshot_id} --force {force} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute snapshot delete {snapshot_id} --force {force} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "snapshot_id"
             ],
@@ -345,7 +445,12 @@
             }
         },
         "resize_worker": {
-            "target": {"Command": "exo compute instance-type update {worker_id} {worker_type} --output json"},
+            "target": {
+    "Command": {
+        "command": "exo compute instance-type update {worker_id} {worker_type} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id",
                 "worker_type"

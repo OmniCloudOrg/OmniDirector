@@ -13,7 +13,12 @@
     },
     "actions": {
       "test_install": {
-        "target": {"Command": "oci --version"},
+        "target": {
+    "Command": {
+        "command": "oci --version",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -26,7 +31,12 @@
         }
       },
       "list_workers": {
-        "target": {"Command": "oci compute instance list --compartment-id {compartment_id} --region {region} --all"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance list --compartment-id {compartment_id} --region {region} --all",
+        "in_vm": false
+    }
+},
         "params": [
           "compartment_id",
           "region"
@@ -42,7 +52,12 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "oci compute instance get --instance-id {instance_id} --region {region}"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance get --instance-id {instance_id} --region {region}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_id",
           "region"
@@ -82,7 +97,12 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "oci compute instance launch --availability-domain {availability_domain} --compartment-id {compartment_id} --shape {shape} --image-id {image_id} --subnet-id {subnet_id} --boot-volume-size-in-gbs {boot_volume_size_gb} --ssh-authorized-keys-file {ssh_authorized_keys} --display-name {display_name} --region {region}"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance launch --availability-domain {availability_domain} --compartment-id {compartment_id} --shape {shape} --image-id {image_id} --subnet-id {subnet_id} --boot-volume-size-in-gbs {boot_volume_size_gb} --ssh-authorized-keys-file {ssh_authorized_keys} --display-name {display_name} --region {region}",
+        "in_vm": false
+    }
+},
         "params": [
           "availability_domain",
           "compartment_id",
@@ -113,7 +133,12 @@
         }
       },
       "terminate_worker": {
-        "target": {"Command": "oci compute instance terminate --instance-id {instance_id} --region {region} --force"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance terminate --instance-id {instance_id} --region {region} --force",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_id",
           "region"
@@ -129,7 +154,12 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "oci compute instance action --instance-id {instance_id} --action START --region {region}"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance action --instance-id {instance_id} --action START --region {region}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_id",
           "region"
@@ -149,7 +179,12 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "oci compute instance action --instance-id {instance_id} --action STOP --region {region}"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance action --instance-id {instance_id} --action STOP --region {region}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_id",
           "region"
@@ -169,7 +204,12 @@
         }
       },
       "reboot_worker": {
-        "target": {"Command": "oci compute instance action --instance-id {instance_id} --action RESET --region {region}"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance action --instance-id {instance_id} --action RESET --region {region}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_id",
           "region"
@@ -189,7 +229,12 @@
         }
       },
       "list_shapes": {
-        "target": {"Command": "oci compute shape list --compartment-id {compartment_id} --region {region} --all"},
+        "target": {
+    "Command": {
+        "command": "oci compute shape list --compartment-id {compartment_id} --region {region} --all",
+        "in_vm": false
+    }
+},
         "params": [
           "compartment_id",
           "region"
@@ -205,7 +250,12 @@
         }
       },
       "list_images": {
-        "target": {"Command": "oci compute image list --compartment-id {compartment_id} --region {region} --all"},
+        "target": {
+    "Command": {
+        "command": "oci compute image list --compartment-id {compartment_id} --region {region} --all",
+        "in_vm": false
+    }
+},
         "params": [
           "compartment_id",
           "region"
@@ -221,7 +271,12 @@
         }
       },
       "list_boot_volumes": {
-        "target": {"Command": "oci bv boot-volume list --availability-domain {availability_domain} --compartment-id {compartment_id} --region {region} --all"},
+        "target": {
+    "Command": {
+        "command": "oci bv boot-volume list --availability-domain {availability_domain} --compartment-id {compartment_id} --region {region} --all",
+        "in_vm": false
+    }
+},
         "params": [
           "availability_domain",
           "compartment_id",
@@ -238,7 +293,12 @@
         }
       },
       "create_boot_volume_backup": {
-        "target": {"Command": "oci bv boot-volume-backup create --boot-volume-id {boot_volume_id} --display-name {backup_name} --region {region}"},
+        "target": {
+    "Command": {
+        "command": "oci bv boot-volume-backup create --boot-volume-id {boot_volume_id} --display-name {backup_name} --region {region}",
+        "in_vm": false
+    }
+},
         "params": [
           "boot_volume_id",
           "backup_name",
@@ -267,7 +327,12 @@
         }
       },
       "list_boot_volume_backups": {
-        "target": {"Command": "oci bv boot-volume-backup list --compartment-id {compartment_id} --region {region} --all"},
+        "target": {
+    "Command": {
+        "command": "oci bv boot-volume-backup list --compartment-id {compartment_id} --region {region} --all",
+        "in_vm": false
+    }
+},
         "params": [
           "compartment_id",
           "region"
@@ -283,7 +348,12 @@
         }
       },
       "get_worker_console_connection": {
-        "target": {"Command": "oci compute instance-console-connection get-plink-connection-string --instance-console-connection-id {connection_id} --region {region}"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance-console-connection get-plink-connection-string --instance-console-connection-id {connection_id} --region {region}",
+        "in_vm": false
+    }
+},
         "params": [
           "connection_id",
           "region"
@@ -299,7 +369,12 @@
         }
       },
       "create_worker_console_connection": {
-        "target": {"Command": "oci compute instance-console-connection create --instance-id {instance_id} --public-key-file {ssh_public_key_file} --region {region}"},
+        "target": {
+    "Command": {
+        "command": "oci compute instance-console-connection create --instance-id {instance_id} --public-key-file {ssh_public_key_file} --region {region}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_id",
           "ssh_public_key_file",

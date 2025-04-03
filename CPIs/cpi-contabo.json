@@ -11,7 +11,12 @@
     },
     "actions": {
         "test_install": {
-            "target": {"Command": "contabo --version"},
+            "target": {
+    "Command": {
+        "command": "contabo --version",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -23,7 +28,12 @@
             }
         },
         "list_workers": {
-            "target": {"Command": "contabo compute instance list --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -35,7 +45,12 @@
             }
         },
         "create_worker": {
-            "target": {"Command": "contabo compute instance create --name {name} --product-id {worker_type} --region {region} --image {image} --ssh-keys {ssh_key_id} --period {period} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance create --name {name} --product-id {worker_type} --region {region} --image {image} --ssh-keys {ssh_key_id} --period {period} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "worker_type",
@@ -60,7 +75,12 @@
             }
         },
         "delete_worker": {
-            "target": {"Command": "contabo compute instance delete {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance delete {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -75,7 +95,12 @@
             }
         },
         "get_worker": {
-            "target": {"Command": "contabo compute instance show {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance show {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -90,7 +115,12 @@
             }
         },
         "start_worker": {
-            "target": {"Command": "contabo compute instance start {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance start {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -105,7 +135,12 @@
             }
         },
         "stop_worker": {
-            "target": {"Command": "contabo compute instance stop {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance stop {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -120,7 +155,12 @@
             }
         },
         "reboot_worker": {
-            "target": {"Command": "contabo compute instance restart {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance restart {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -135,7 +175,12 @@
             }
         },
         "list_regions": {
-            "target": {"Command": "contabo compute region list --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute region list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -147,7 +192,12 @@
             }
         },
         "list_worker_types": {
-            "target": {"Command": "contabo compute product list --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute product list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -159,7 +209,12 @@
             }
         },
         "list_images": {
-            "target": {"Command": "contabo compute image list --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute image list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -171,7 +226,12 @@
             }
         },
         "create_snapshot": {
-            "target": {"Command": "contabo compute snapshot create --instance-id {worker_id} --name {snapshot_name} --description {description} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute snapshot create --instance-id {worker_id} --name {snapshot_name} --description {description} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id",
                 "snapshot_name",
@@ -192,7 +252,12 @@
             }
         },
         "list_snapshots": {
-            "target": {"Command": "contabo compute snapshot list --instance-id {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute snapshot list --instance-id {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -207,7 +272,12 @@
             }
         },
         "restore_snapshot": {
-            "target": {"Command": "contabo compute snapshot restore --snapshot-id {snapshot_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute snapshot restore --snapshot-id {snapshot_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "snapshot_id"
             ],
@@ -222,7 +292,12 @@
             }
         },
         "delete_snapshot": {
-            "target": {"Command": "contabo compute snapshot delete {snapshot_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute snapshot delete {snapshot_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "snapshot_id"
             ],
@@ -237,7 +312,12 @@
             }
         },
         "create_ssh_key": {
-            "target": {"Command": "contabo compute ssh-key create --name {name} --public-key \"}{ssh_public_key}\" --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute ssh-key create --name {name} --public-key \"}{ssh_public_key}\" --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "ssh_public_key"
@@ -254,7 +334,12 @@
             }
         },
         "list_ssh_keys": {
-            "target": {"Command": "contabo compute ssh-key list --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute ssh-key list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -266,7 +351,12 @@
             }
         },
         "delete_ssh_key": {
-            "target": {"Command": "contabo compute ssh-key delete {ssh_key_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute ssh-key delete {ssh_key_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "ssh_key_id"
             ],
@@ -281,7 +371,12 @@
             }
         },
         "reinstall_worker": {
-            "target": {"Command": "contabo compute instance reinstall {worker_id} --image {image} --ssh-keys {ssh_key_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance reinstall {worker_id} --image {image} --ssh-keys {ssh_key_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id",
                 "image",
@@ -298,7 +393,12 @@
             }
         },
         "resize_worker": {
-            "target": {"Command": "contabo compute instance upgrade {worker_id} --product-id {worker_type} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance upgrade {worker_id} --product-id {worker_type} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id",
                 "worker_type"
@@ -314,7 +414,12 @@
             }
         },
         "list_firewalls": {
-            "target": {"Command": "contabo compute firewall list --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute firewall list --output json",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -326,7 +431,12 @@
             }
         },
         "create_firewall": {
-            "target": {"Command": "contabo compute firewall create --name {name} --description {description} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute firewall create --name {name} --description {description} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "description"
@@ -346,7 +456,12 @@
             }
         },
         "add_firewall_rule": {
-            "target": {"Command": "contabo compute firewall rule create --firewall-id {security_group_id} --protocol {protocol} --port {port} --source {source} --direction {direction} --action allow --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute firewall rule create --firewall-id {security_group_id} --protocol {protocol} --port {port} --source {source} --direction {direction} --action allow --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "security_group_id",
                 "protocol",
@@ -366,7 +481,12 @@
             }
         },
         "assign_firewall": {
-            "target": {"Command": "contabo compute firewall assign --firewall-id {security_group_id} --instance-id {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute firewall assign --firewall-id {security_group_id} --instance-id {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "security_group_id",
                 "worker_id"
@@ -382,7 +502,12 @@
             }
         },
         "get_console": {
-            "target": {"Command": "contabo compute instance console {worker_id} --output json"},
+            "target": {
+    "Command": {
+        "command": "contabo compute instance console {worker_id} --output json",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],

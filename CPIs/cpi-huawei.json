@@ -15,7 +15,12 @@
     },
     "actions": {
         "test_install": {
-            "target": {"Command": "hcloud --version"},
+            "target": {
+    "Command": {
+        "command": "hcloud --version",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -27,7 +32,12 @@
             }
         },
         "list_workers": {
-            "target": {"Command": "hcloud ECS NovaListServers --cli-region={region}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS NovaListServers --cli-region={region}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -42,7 +52,12 @@
             }
         },
         "create_worker": {
-            "target": {"Command": "hcloud ECS CreatePostPaidServers --cli-region={region} --server '{\"}name\": \"{name}\", \"imageRef\": \"{image_id}\", \"flavorRef\": \"{worker_type}\", \"vpcid\": \"{vpc_id}\", \"nics\": [{\"subnet_id\": \"{subnet_id}\"}], \"availability_zone\": \"{zone}\", \"security_groups\": [{\"id\": \"{security_group}\"}], {key_param}, \"root_volume\": {\"volumetype\": \"{volume_type}\", \"size\": 40}, \"count\": 1}'"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS CreatePostPaidServers --cli-region={region} --server '{\"}name\": \"{name}\", \"imageRef\": \"{image_id}\", \"flavorRef\": \"{worker_type}\", \"vpcid\": \"{vpc_id}\", \"nics\": [{\"subnet_id\": \"{subnet_id}\"}], \"availability_zone\": \"{zone}\", \"security_groups\": [{\"id\": \"{security_group}\"}], {key_param}, \"root_volume\": {\"volumetype\": \"{volume_type}\", \"size\": 40}, \"count\": 1}'",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "name",
@@ -67,7 +82,12 @@
             }
         },
         "delete_worker": {
-            "target": {"Command": "hcloud ECS DeleteServers --cli-region={region} --delete-publicip=true --delete-volume=true --server-id {worker_id} --delete-type=forcibly"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS DeleteServers --cli-region={region} --delete-publicip=true --delete-volume=true --server-id {worker_id} --delete-type=forcibly",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "worker_id"
@@ -83,7 +103,12 @@
             }
         },
         "get_worker": {
-            "target": {"Command": "hcloud ECS ShowServer --cli-region={region} --server-id {worker_id}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS ShowServer --cli-region={region} --server-id {worker_id}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "worker_id"
@@ -99,7 +124,12 @@
             }
         },
         "start_worker": {
-            "target": {"Command": "hcloud ECS StartServer --cli-region={region} --server-id {worker_id}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS StartServer --cli-region={region} --server-id {worker_id}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "worker_id"
@@ -115,7 +145,12 @@
             }
         },
         "stop_worker": {
-            "target": {"Command": "hcloud ECS StopServer --cli-region={region} --server-id {worker_id} --type {stop_type}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS StopServer --cli-region={region} --server-id {worker_id} --type {stop_type}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "worker_id"
@@ -134,7 +169,12 @@
             }
         },
         "reboot_worker": {
-            "target": {"Command": "hcloud ECS RebootServer --cli-region={region} --server-id {worker_id} --type {reboot_type}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS RebootServer --cli-region={region} --server-id {worker_id} --type {reboot_type}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "worker_id"
@@ -153,7 +193,12 @@
             }
         },
         "resize_worker": {
-            "target": {"Command": "hcloud ECS ResizePostPaidServer --cli-region={region} --server-id {worker_id} --flavorRef {worker_type}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS ResizePostPaidServer --cli-region={region} --server-id {worker_id} --flavorRef {worker_type}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "worker_id",
@@ -170,7 +215,12 @@
             }
         },
         "list_images": {
-            "target": {"Command": "hcloud IMS ListImages --cli-region={region} --__imagetype=gold --__os_version=Ubuntu 20.04 server 64bit"},
+            "target": {
+    "Command": {
+        "command": "hcloud IMS ListImages --cli-region={region} --__imagetype=gold --__os_version=Ubuntu 20.04 server 64bit",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -185,7 +235,12 @@
             }
         },
         "list_worker_types": {
-            "target": {"Command": "hcloud ECS ListFlavors --cli-region={region}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS ListFlavors --cli-region={region}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -200,7 +255,12 @@
             }
         },
         "list_regions": {
-            "target": {"Command": "hcloud ECS ListRegions"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS ListRegions",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -212,7 +272,12 @@
             }
         },
         "list_regions": {
-            "target": {"Command": "hcloud ECS ListAvailabilityZones --cli-region={region}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS ListAvailabilityZones --cli-region={region}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -227,7 +292,12 @@
             }
         },
         "create_volume": {
-            "target": {"Command": "hcloud EVS CreateVolume --cli-region={region} --volume '{\"}name\": \"{disk_name}\", \"availability_zone\": \"{zone}\", \"volume_type\": \"{disk_type}\", \"size\": {size_gb}}'"},
+            "target": {
+    "Command": {
+        "command": "hcloud EVS CreateVolume --cli-region={region} --volume '{\"}name\": \"{disk_name}\", \"availability_zone\": \"{zone}\", \"volume_type\": \"{disk_type}\", \"size\": {size_gb}}'",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "disk_name",
@@ -246,7 +316,12 @@
             }
         },
         "list_volumes": {
-            "target": {"Command": "hcloud EVS ListVolumes --cli-region={region}"},
+            "target": {
+    "Command": {
+        "command": "hcloud EVS ListVolumes --cli-region={region}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -261,7 +336,12 @@
             }
         },
         "delete_volume": {
-            "target": {"Command": "hcloud EVS DeleteVolume --cli-region={region} --volume-id {disk_id}"},
+            "target": {
+    "Command": {
+        "command": "hcloud EVS DeleteVolume --cli-region={region} --volume-id {disk_id}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "disk_id"
@@ -277,7 +357,12 @@
             }
         },
         "attach_volume": {
-            "target": {"Command": "hcloud ECS AttachServerVolume --cli-region={region} --server-id {worker_id} --body '{\"}volumeAttachment\": {\"volumeId\": \"{disk_id}\", \"device\": \"/dev/sdb\"}}'"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS AttachServerVolume --cli-region={region} --server-id {worker_id} --body '{\"}volumeAttachment\": {\"volumeId\": \"{disk_id}\", \"device\": \"/dev/sdb\"}}'",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "worker_id",
@@ -294,7 +379,12 @@
             }
         },
         "detach_volume": {
-            "target": {"Command": "hcloud ECS DetachServerVolume --cli-region={region} --server-id {worker_id} --volume-id {disk_id}"},
+            "target": {
+    "Command": {
+        "command": "hcloud ECS DetachServerVolume --cli-region={region} --server-id {worker_id} --volume-id {disk_id}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "worker_id",
@@ -311,7 +401,12 @@
             }
         },
         "list_security_groups": {
-            "target": {"Command": "hcloud VPC ListSecurityGroups --cli-region={region}"},
+            "target": {
+    "Command": {
+        "command": "hcloud VPC ListSecurityGroups --cli-region={region}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -326,7 +421,12 @@
             }
         },
         "create_security_group": {
-            "target": {"Command": "hcloud VPC CreateSecurityGroup --cli-region={region} --body '{\"}security_group\": {\"name\": \"{name}\", \"vpc_id\": \"{vpc_id}\", \"description\": \"{description}\"}}'"},
+            "target": {
+    "Command": {
+        "command": "hcloud VPC CreateSecurityGroup --cli-region={region} --body '{\"}security_group\": {\"name\": \"{name}\", \"vpc_id\": \"{vpc_id}\", \"description\": \"{description}\"}}'",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "name",
@@ -347,7 +447,12 @@
             }
         },
         "create_firewall_rule": {
-            "target": {"Command": "hcloud VPC CreateSecurityGroupRule --cli-region={region} --security-group-id {security_group_id} --body '{\"}security_group_rule\": {\"direction\": \"{direction}\", \"protocol\": \"{protocol}\", \"port_range_min\": {port_min}, \"port_range_max\": {port_max}, \"remote_ip_prefix\": \"{source}\"}}'"},
+            "target": {
+    "Command": {
+        "command": "hcloud VPC CreateSecurityGroupRule --cli-region={region} --security-group-id {security_group_id} --body '{\"}security_group_rule\": {\"direction\": \"{direction}\", \"protocol\": \"{protocol}\", \"port_range_min\": {port_min}, \"port_range_max\": {port_max}, \"remote_ip_prefix\": \"{source}\"}}'",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "security_group_id",
@@ -368,7 +473,12 @@
             }
         },
         "create_snapshot": {
-            "target": {"Command": "hcloud EVS CreateSnapshot --cli-region={region} --volume-id {disk_id} --snapshot '{\"}name\": \"{snapshot_name}\", \"description\": \"{description}\"}'"},
+            "target": {
+    "Command": {
+        "command": "hcloud EVS CreateSnapshot --cli-region={region} --volume-id {disk_id} --snapshot '{\"}name\": \"{snapshot_name}\", \"description\": \"{description}\"}'",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "disk_id",
@@ -389,7 +499,12 @@
             }
         },
         "list_snapshots": {
-            "target": {"Command": "hcloud EVS ListSnapshots --cli-region={region}"},
+            "target": {
+    "Command": {
+        "command": "hcloud EVS ListSnapshots --cli-region={region}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -404,7 +519,12 @@
             }
         },
         "delete_snapshot": {
-            "target": {"Command": "hcloud EVS DeleteSnapshot --cli-region={region} --snapshot-id {snapshot_id}"},
+            "target": {
+    "Command": {
+        "command": "hcloud EVS DeleteSnapshot --cli-region={region} --snapshot-id {snapshot_id}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region",
                 "snapshot_id"
@@ -420,7 +540,12 @@
             }
         },
         "list_vpcs": {
-            "target": {"Command": "hcloud VPC ListVpcs --cli-region={region}"},
+            "target": {
+    "Command": {
+        "command": "hcloud VPC ListVpcs --cli-region={region}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -435,7 +560,12 @@
             }
         },
         "list_subnets": {
-            "target": {"Command": "hcloud VPC ListSubnets --cli-region={region}"},
+            "target": {
+    "Command": {
+        "command": "hcloud VPC ListSubnets --cli-region={region}",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],

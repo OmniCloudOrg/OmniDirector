@@ -41,7 +41,14 @@ pub enum ActionTarget {
         headers: Option<HashMap<String, String>>,
         body: Option<String>,
     },
-    Command(String),
+    Command(Command),
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Display)]
+#[display("Command(command={command}, in_vm={in_vm:?})")]
+pub struct Command {
+    pub command: String,
+    pub in_vm: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Display)]

@@ -8,7 +8,10 @@
     "actions": {
         "test_install": {
             "target": {
-                "Command": "powershell -Command \"Get-Command Get-VM -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Get-Command Get-VM -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "parse_rules": {
                 "type": "object",
@@ -22,7 +25,10 @@
         },
         "list_workers": {
             "target": {
-                "Command": "powershell -Command \"Get-VM | Select-Object Name, State, CPUUsage, MemoryAssigned, Uptime, Status, Version, Path, Id | ConvertTo-Json -Depth 2\""
+                "Command": {
+                    "command": "powershell -Command \"Get-VM | Select-Object Name, State, CPUUsage, MemoryAssigned, Uptime, Status, Version, Path, Id | ConvertTo-Json -Depth 2\"",
+                    "in_vm": false
+                }
             },
             "parse_rules": {
                 "type": "object",
@@ -36,7 +42,10 @@
         },
         "get_worker": {
             "target": {
-                "Command": "powershell -Command \"Get-VM -Name '{name}' | Select-Object Name, State, CPUUsage, MemoryAssigned, Uptime, Status, Version, Path, Id | ConvertTo-Json -Depth 2\""
+                "Command": {
+                    "command": "powershell -Command \"Get-VM -Name '{name}' | Select-Object Name, State, CPUUsage, MemoryAssigned, Uptime, Status, Version, Path, Id | ConvertTo-Json -Depth 2\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name"
@@ -53,7 +62,10 @@
         },
         "create_worker": {
             "target": {
-                "Command": "powershell -Command \"New-VM -Name '{name}' -MemoryStartupBytes {memory_mb}MB -Generation {generation} -Path '{path}' -NewVHDPath '{path}\\{name}\\{name}.vhdx' -NewVHDSizeBytes {disk_size_gb}GB -SwitchName '{network}' | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"New-VM -Name '{name}' -MemoryStartupBytes {memory_mb}MB -Generation {generation} -Path '{path}' -NewVHDPath '{path}\\{name}\\{name}.vhdx' -NewVHDSizeBytes {disk_size_gb}GB -SwitchName '{network}' | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name",
@@ -81,7 +93,10 @@
         },
         "start_worker": {
             "target": {
-                "Command": "powershell -Command \"Start-VM -Name '{name}' -PassThru | Select-Object Name, State | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Start-VM -Name '{name}' -PassThru | Select-Object Name, State | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name"
@@ -98,7 +113,10 @@
         },
         "stop_worker": {
             "target": {
-                "Command": "powershell -Command \"Stop-VM -Name '{name}' {force_param} -PassThru | Select-Object Name, State | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Stop-VM -Name '{name}' {force_param} -PassThru | Select-Object Name, State | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name"
@@ -118,7 +136,10 @@
         },
         "delete_worker": {
             "target": {
-                "Command": "powershell -Command \"Remove-VM -Name '{name}' {force_param} -Confirm:$false -PassThru | Select-Object Name, Id | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Remove-VM -Name '{name}' {force_param} -Confirm:$false -PassThru | Select-Object Name, Id | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name"
@@ -138,7 +159,10 @@
         },
         "set_worker_memory": {
             "target": {
-                "Command": "powershell -Command \"Set-VMMemory -VMName '{name}' -StartupBytes {memory_mb}MB -Priority {memory_priority} -Buffer {memory_buffer}; Get-VM -Name '{name}' | Select-Object Name, MemoryAssigned | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Set-VMMemory -VMName '{name}' -StartupBytes {memory_mb}MB -Priority {memory_priority} -Buffer {memory_buffer}; Get-VM -Name '{name}' | Select-Object Name, MemoryAssigned | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name",
@@ -160,7 +184,10 @@
         },
         "set_worker_cpu": {
             "target": {
-                "Command": "powershell -Command \"Set-VMProcessor -VMName '{name}' -Count {vcpus} -Reserve {cpu_reserve} -Maximum {cpu_maximum} -RelativeWeight {cpu_weight}; Get-VM -Name '{name}' | Select-Object Name, ProcessorCount | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Set-VMProcessor -VMName '{name}' -Count {vcpus} -Reserve {cpu_reserve} -Maximum {cpu_maximum} -RelativeWeight {cpu_weight}; Get-VM -Name '{name}' | Select-Object Name, ProcessorCount | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name",
@@ -183,7 +210,10 @@
         },
         "list_snapshots": {
             "target": {
-                "Command": "powershell -Command \"Get-VMSnapshot -VMName '{name}' | Select-Object Name, CreationTime, ParentSnapshotName, SnapshotType, Id | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Get-VMSnapshot -VMName '{name}' | Select-Object Name, CreationTime, ParentSnapshotName, SnapshotType, Id | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name"
@@ -200,7 +230,10 @@
         },
         "create_snapshot": {
             "target": {
-                "Command": "powershell -Command \"Checkpoint-VM -Name '{name}' -SnapshotName '{snapshot_name}' -PassThru | Select-Object VMName, Name, Id | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Checkpoint-VM -Name '{name}' -SnapshotName '{snapshot_name}' -PassThru | Select-Object VMName, Name, Id | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name",
@@ -218,7 +251,10 @@
         },
         "restore_snapshot": {
             "target": {
-                "Command": "powershell -Command \"Restore-VMSnapshot -VMName '{name}' -Name '{snapshot_name}' -Confirm:$false -PassThru | Select-Object VMName, Name, Id | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Restore-VMSnapshot -VMName '{name}' -Name '{snapshot_name}' -Confirm:$false -PassThru | Select-Object VMName, Name, Id | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name",
@@ -236,7 +272,10 @@
         },
         "remove_snapshot": {
             "target": {
-                "Command": "powershell -Command \"Remove-VMSnapshot -VMName '{name}' -Name '{snapshot_name}' -Confirm:$false; Get-VM -Name '{name}' | Select-Object Name, Id | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Remove-VMSnapshot -VMName '{name}' -Name '{snapshot_name}' -Confirm:$false; Get-VM -Name '{name}' | Select-Object Name, Id | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name",
@@ -254,7 +293,10 @@
         },
         "list_networks": {
             "target": {
-                "Command": "powershell -Command \"Get-VMSwitch | Select-Object Name, SwitchType, NetAdapterInterfaceDescription, AllowManagementOS, Id | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Get-VMSwitch | Select-Object Name, SwitchType, NetAdapterInterfaceDescription, AllowManagementOS, Id | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "parse_rules": {
                 "type": "object",
@@ -268,7 +310,10 @@
         },
         "create_network": {
             "target": {
-                "Command": "powershell -Command \"New-VMSwitch -Name '{name}' -SwitchType {switch_type} {physical_adapter_param} -AllowManagementOS {allow_management_os} -Notes '{notes}' | Select-Object Name, SwitchType, Id | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"New-VMSwitch -Name '{name}' -SwitchType {switch_type} {physical_adapter_param} -AllowManagementOS {allow_management_os} -Notes '{notes}' | Select-Object Name, SwitchType, Id | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name",
@@ -291,7 +336,10 @@
         },
         "list_disks": {
             "target": {
-                "Command": "powershell -Command \"Get-VHD -Path '{path}\\*.vhdx' | Select-Object Path, VhdFormat, VhdType, Size, FileSize, FragmentationPercentage, ParentPath | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Get-VHD -Path '{path}\\*.vhdx' | Select-Object Path, VhdFormat, VhdType, Size, FileSize, FragmentationPercentage, ParentPath | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "path"
@@ -311,7 +359,10 @@
         },
         "create_disk": {
             "target": {
-                "Command": "powershell -Command \"New-VHD -Path '{path}\\{disk_name}.vhdx' -SizeBytes {size_gb}GB -Dynamic:{dynamic} | Select-Object Path, VhdFormat, VhdType, Size, FileSize | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"New-VHD -Path '{path}\\{disk_name}.vhdx' -SizeBytes {size_gb}GB -Dynamic:{dynamic} | Select-Object Path, VhdFormat, VhdType, Size, FileSize | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "path",
@@ -334,7 +385,10 @@
         },
         "attach_disk": {
             "target": {
-                "Command": "powershell -Command \"Add-VMHardDiskDrive -VMName '{name}' -Path '{path}\\{disk_name}.vhdx' -ControllerType {controller_type} -ControllerNumber {controller_number} -ControllerLocation {controller_location}; Get-VMHardDiskDrive -VMName '{name}' | Select-Object VMName, Path, ControllerType, ControllerNumber, ControllerLocation | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Add-VMHardDiskDrive -VMName '{name}' -Path '{path}\\{disk_name}.vhdx' -ControllerType {controller_type} -ControllerNumber {controller_number} -ControllerLocation {controller_location}; Get-VMHardDiskDrive -VMName '{name}' | Select-Object VMName, Path, ControllerType, ControllerNumber, ControllerLocation | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name",
@@ -359,7 +413,10 @@
         },
         "get_worker_metrics": {
             "target": {
-                "Command": "powershell -Command \"Get-VM -Name '{name}' | Select-Object Name, CPUUsage, MemoryAssigned, MemoryDemand, MemoryStatus, Status, Uptime | ConvertTo-Json\""
+                "Command": {
+                    "command": "powershell -Command \"Get-VM -Name '{name}' | Select-Object Name, CPUUsage, MemoryAssigned, MemoryDemand, MemoryStatus, Status, Uptime | ConvertTo-Json\"",
+                    "in_vm": false
+                }
             },
             "params": [
                 "name"

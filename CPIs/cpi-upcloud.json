@@ -13,7 +13,12 @@
     },
     "actions": {
       "test_install": {
-        "target": {"Command": "upctl version"},
+        "target": {
+    "Command": {
+        "command": "upctl version",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -26,7 +31,12 @@
         }
       },
       "list_workers": {
-        "target": {"Command": "upctl server list --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl server list --format json",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -39,7 +49,12 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "upctl server show {server_uuid} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl server show {server_uuid} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid"
         ],
@@ -83,7 +98,12 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "upctl server create --hostname {hostname} --title {title} --zone {zone} --plan {plan} --storage-size {storage_size} --os {os} --login-user {login_user} {ssh_key_param} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl server create --hostname {hostname} --title {title} --zone {zone} --plan {plan} --storage-size {storage_size} --os {os} --login-user {login_user} {ssh_key_param} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "hostname",
           "title",
@@ -134,7 +154,12 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "upctl server delete {server_uuid}"},
+        "target": {
+    "Command": {
+        "command": "upctl server delete {server_uuid}",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid"
         ],
@@ -149,7 +174,12 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "upctl server start {server_uuid}"},
+        "target": {
+    "Command": {
+        "command": "upctl server start {server_uuid}",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid"
         ],
@@ -164,7 +194,12 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "upctl server stop {server_uuid} {stop_type_param}"},
+        "target": {
+    "Command": {
+        "command": "upctl server stop {server_uuid} {stop_type_param}",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid",
           "stop_type_param"
@@ -180,7 +215,12 @@
         }
       },
       "restart_worker": {
-        "target": {"Command": "upctl server restart {server_uuid} {stop_type_param}"},
+        "target": {
+    "Command": {
+        "command": "upctl server restart {server_uuid} {stop_type_param}",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid",
           "stop_type_param"
@@ -196,7 +236,12 @@
         }
       },
       "modify_worker": {
-        "target": {"Command": "upctl server modify {server_uuid} {plan_param} {hostname_param} {title_param} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl server modify {server_uuid} {plan_param} {hostname_param} {title_param} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid",
           "plan_param",
@@ -226,7 +271,12 @@
         }
       },
       "list_volumes": {
-        "target": {"Command": "upctl storage list --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl storage list --format json",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -239,7 +289,12 @@
         }
       },
       "get_volume": {
-        "target": {"Command": "upctl storage show {storage_uuid} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl storage show {storage_uuid} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "storage_uuid"
         ],
@@ -275,7 +330,12 @@
         }
       },
       "create_volume": {
-        "target": {"Command": "upctl storage create --title {title} --zone {zone} --size {size} --tier {tier} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl storage create --title {title} --zone {zone} --size {size} --tier {tier} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "title",
           "zone",
@@ -314,7 +374,12 @@
         }
       },
       "delete_volume": {
-        "target": {"Command": "upctl storage delete {storage_uuid}"},
+        "target": {
+    "Command": {
+        "command": "upctl storage delete {storage_uuid}",
+        "in_vm": false
+    }
+},
         "params": [
           "storage_uuid"
         ],
@@ -329,7 +394,12 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "upctl server storage-attach {server_uuid} --storage {storage_uuid} --type {attachment_type} --address {attachment_address} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl server storage-attach {server_uuid} --storage {storage_uuid} --type {attachment_type} --address {attachment_address} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid",
           "storage_uuid",
@@ -347,7 +417,12 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "upctl server storage-detach {server_uuid} --address {attachment_address}"},
+        "target": {
+    "Command": {
+        "command": "upctl server storage-detach {server_uuid} --address {attachment_address}",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid",
           "attachment_address"
@@ -363,7 +438,12 @@
         }
       },
       "create_backup": {
-        "target": {"Command": "upctl storage backup-create {storage_uuid} --title {title} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl storage backup-create {storage_uuid} --title {title} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "storage_uuid",
           "title"
@@ -396,7 +476,12 @@
         }
       },
       "list_backups": {
-        "target": {"Command": "upctl storage backup-list --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl storage backup-list --format json",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -409,7 +494,12 @@
         }
       },
       "delete_backup": {
-        "target": {"Command": "upctl storage backup-delete {backup_uuid}"},
+        "target": {
+    "Command": {
+        "command": "upctl storage backup-delete {backup_uuid}",
+        "in_vm": false
+    }
+},
         "params": [
           "backup_uuid"
         ],
@@ -424,7 +514,12 @@
         }
       },
       "list_plans": {
-        "target": {"Command": "upctl plan list --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl plan list --format json",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -437,7 +532,12 @@
         }
       },
       "list_regions": {
-        "target": {"Command": "upctl zone list --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl zone list --format json",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -450,7 +550,12 @@
         }
       },
       "list_templates": {
-        "target": {"Command": "upctl template list --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl template list --format json",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -463,7 +568,12 @@
         }
       },
       "create_firewall_rule": {
-        "target": {"Command": "upctl firewall rule create {server_uuid} --action {action} --direction {direction} --family {family} --position {position} --protocol {protocol} {destination_param} {source_param} {port_param} {comment_param} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl firewall rule create {server_uuid} --action {action} --direction {direction} --family {family} --position {position} --protocol {protocol} {destination_param} {source_param} {port_param} {comment_param} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid",
           "action",
@@ -500,7 +610,12 @@
         }
       },
       "list_firewall_rules": {
-        "target": {"Command": "upctl firewall rule list {server_uuid} --format json"},
+        "target": {
+    "Command": {
+        "command": "upctl firewall rule list {server_uuid} --format json",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid"
         ],
@@ -515,7 +630,12 @@
         }
       },
       "delete_firewall_rule": {
-        "target": {"Command": "upctl firewall rule delete {server_uuid} {position}"},
+        "target": {
+    "Command": {
+        "command": "upctl firewall rule delete {server_uuid} {position}",
+        "in_vm": false
+    }
+},
         "params": [
           "server_uuid",
           "position"
