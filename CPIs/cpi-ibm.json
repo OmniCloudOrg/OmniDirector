@@ -12,7 +12,12 @@
     },
     "actions": {
         "test_install": {
-            "target": {"Command": "ibmcloud --version"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud --version",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -24,7 +29,12 @@
             }
         },
         "list_workers": {
-            "target": {"Command": "ibmcloud is instances --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instances --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -39,7 +49,12 @@
             }
         },
         "create_worker": {
-            "target": {"Command": "ibmcloud is instance-create {name} {vpc_id} {zone} {worker_type} {subnet_id} --image {image_id} --keys {ssh_key_name} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-create {name} {vpc_id} {zone} {worker_type} {subnet_id} --image {image_id} --keys {ssh_key_name} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "vpc_id",
@@ -68,7 +83,12 @@
             }
         },
         "delete_worker": {
-            "target": {"Command": "ibmcloud is instance-delete {worker_id} --force {force} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-delete {worker_id} --force {force} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -86,7 +106,12 @@
             }
         },
         "get_worker": {
-            "target": {"Command": "ibmcloud is instance {worker_id} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance {worker_id} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -101,7 +126,12 @@
             }
         },
         "start_worker": {
-            "target": {"Command": "ibmcloud is instance-start {worker_id} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-start {worker_id} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -116,7 +146,12 @@
             }
         },
         "stop_worker": {
-            "target": {"Command": "ibmcloud is instance-stop {worker_id} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-stop {worker_id} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -131,7 +166,12 @@
             }
         },
         "reboot_worker": {
-            "target": {"Command": "ibmcloud is instance-reboot {worker_id} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-reboot {worker_id} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id"
             ],
@@ -146,7 +186,12 @@
             }
         },
         "list_images": {
-            "target": {"Command": "ibmcloud is images --visibility public --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is images --visibility public --output JSON",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -158,7 +203,12 @@
             }
         },
         "list_worker_types": {
-            "target": {"Command": "ibmcloud is instance-profiles --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-profiles --output JSON",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -170,7 +220,12 @@
             }
         },
         "list_regions": {
-            "target": {"Command": "ibmcloud regions --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud regions --output JSON",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -182,7 +237,12 @@
             }
         },
         "list_regions": {
-            "target": {"Command": "ibmcloud is zones --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is zones --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "region"
             ],
@@ -197,7 +257,12 @@
             }
         },
         "create_volume": {
-            "target": {"Command": "ibmcloud is volume-create {disk_name} {zone} --capacity {size_gb} --iops {iops} --profile {disk_type} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is volume-create {disk_name} {zone} --capacity {size_gb} --iops {iops} --profile {disk_type} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "disk_name",
                 "zone",
@@ -224,7 +289,12 @@
             }
         },
         "list_volumes": {
-            "target": {"Command": "ibmcloud is volumes --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is volumes --output JSON",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -236,7 +306,12 @@
             }
         },
         "delete_volume": {
-            "target": {"Command": "ibmcloud is volume-delete {disk_id} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is volume-delete {disk_id} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "disk_id"
             ],
@@ -251,7 +326,12 @@
             }
         },
         "attach_volume": {
-            "target": {"Command": "ibmcloud is instance-volume-attachment-add {worker_id} {disk_id} --auto-delete {auto_delete} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-volume-attachment-add {worker_id} {disk_id} --auto-delete {auto_delete} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id",
                 "disk_id"
@@ -274,7 +354,12 @@
             }
         },
         "detach_volume": {
-            "target": {"Command": "ibmcloud is instance-volume-attachment-remove {worker_id} {attachment_id} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-volume-attachment-remove {worker_id} {attachment_id} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id",
                 "attachment_id"
@@ -290,7 +375,12 @@
             }
         },
         "resize_worker": {
-            "target": {"Command": "ibmcloud is instance-update {worker_id} --profile {worker_type} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is instance-update {worker_id} --profile {worker_type} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "worker_id",
                 "worker_type"
@@ -306,7 +396,12 @@
             }
         },
         "list_vpcs": {
-            "target": {"Command": "ibmcloud is vpcs --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is vpcs --output JSON",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -318,7 +413,12 @@
             }
         },
         "list_subnets": {
-            "target": {"Command": "ibmcloud is subnets --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is subnets --output JSON",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -330,7 +430,12 @@
             }
         },
         "list_security_groups": {
-            "target": {"Command": "ibmcloud is security-groups --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is security-groups --output JSON",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -342,7 +447,12 @@
             }
         },
         "create_security_group": {
-            "target": {"Command": "ibmcloud is security-group-create {name} {vpc_id} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is security-group-create {name} {vpc_id} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "vpc_id"
@@ -362,7 +472,12 @@
             }
         },
         "create_firewall_rule": {
-            "target": {"Command": "ibmcloud is security-group-rule-add {security_group_id} {direction} {protocol} --{port_param} {port} --remote {source} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is security-group-rule-add {security_group_id} {direction} {protocol} --{port_param} {port} --remote {source} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "security_group_id",
                 "direction",
@@ -384,7 +499,12 @@
             }
         },
         "list_ssh_keys": {
-            "target": {"Command": "ibmcloud is keys --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is keys --output JSON",
+        "in_vm": false
+    }
+},
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -396,7 +516,12 @@
             }
         },
         "create_ssh_key": {
-            "target": {"Command": "ibmcloud is key-create {name} {ssh_public_key} --output JSON"},
+            "target": {
+    "Command": {
+        "command": "ibmcloud is key-create {name} {ssh_public_key} --output JSON",
+        "in_vm": false
+    }
+},
             "params": [
                 "name",
                 "ssh_public_key"

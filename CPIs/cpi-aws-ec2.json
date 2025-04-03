@@ -11,7 +11,12 @@
     },
     "actions": {
       "test_install": {
-        "target": {"Command": "aws --version"},
+        "target": {
+    "Command": {
+        "command": "aws --version",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -24,7 +29,12 @@
         }
       },
       "list_workers": {
-        "target": {"Command": "aws ec2 describe-instances --region {region} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 describe-instances --region {region} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region"
         ],
@@ -39,7 +49,12 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "aws ec2 run-instances --region {region} --image-id {image_id} --instance-type {instance_type} --key-name {ssh_key_name} --security-group-ids {security_group} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 run-instances --region {region} --image-id {image_id} --instance-type {instance_type} --key-name {ssh_key_name} --security-group-ids {security_group} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "image_id",
@@ -58,7 +73,12 @@
         }
       },
       "terminate_worker": {
-        "target": {"Command": "aws ec2 terminate-instances --region {region} --instance-ids {instance_id} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 terminate-instances --region {region} --instance-ids {instance_id} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "instance_id"
@@ -74,7 +94,12 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "aws ec2 start-instances --region {region} --instance-ids {instance_id} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 start-instances --region {region} --instance-ids {instance_id} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "instance_id"
@@ -90,7 +115,12 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "aws ec2 stop-instances --region {region} --instance-ids {instance_id} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 stop-instances --region {region} --instance-ids {instance_id} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "instance_id"
@@ -106,7 +136,12 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "aws ec2 describe-instances --region {region} --instance-ids {instance_id} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 describe-instances --region {region} --instance-ids {instance_id} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "instance_id"
@@ -139,7 +174,12 @@
         }
       },
       "create_volume": {
-        "target": {"Command": "aws ec2 create-volume --region {region} --availability-zone {availability_zone} --size {size_gb} --volume-type {volume_type} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 create-volume --region {region} --availability-zone {availability_zone} --size {size_gb} --volume-type {volume_type} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "availability_zone",
@@ -157,7 +197,12 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "aws ec2 attach-volume --region {region} --volume-id {volume_id} --instance-id {instance_id} --device {device} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 attach-volume --region {region} --volume-id {volume_id} --instance-id {instance_id} --device {device} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "volume_id",
@@ -175,7 +220,12 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "aws ec2 detach-volume --region {region} --volume-id {volume_id} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 detach-volume --region {region} --volume-id {volume_id} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "volume_id"
@@ -191,7 +241,12 @@
         }
       },
       "list_volumes": {
-        "target": {"Command": "aws ec2 describe-volumes --region {region} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 describe-volumes --region {region} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region"
         ],
@@ -220,7 +275,12 @@
         }
       },
       "has_volume": {
-        "target": {"Command": "aws ec2 describe-volumes --region {region} --volume-ids {volume_id} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 describe-volumes --region {region} --volume-ids {volume_id} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "volume_id"
@@ -236,7 +296,12 @@
         }
       },
       "create_snapshot": {
-        "target": {"Command": "aws ec2 create-snapshot --region {region} --volume-id {volume_id} --description {description} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 create-snapshot --region {region} --volume-id {volume_id} --description {description} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "volume_id",
@@ -253,7 +318,12 @@
         }
       },
       "delete_snapshot": {
-        "target": {"Command": "aws ec2 delete-snapshot --region {region} --snapshot-id {snapshot_id} --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 delete-snapshot --region {region} --snapshot-id {snapshot_id} --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region",
           "snapshot_id"
@@ -269,7 +339,12 @@
         }
       },
       "list_snapshots": {
-        "target": {"Command": "aws ec2 describe-snapshots --region {region} --owner-ids self --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 describe-snapshots --region {region} --owner-ids self --output json",
+        "in_vm": false
+    }
+},
         "params": [
           "region"
         ],
@@ -297,7 +372,12 @@
         }
       },
       "list_regions": {
-        "target": {"Command": "aws ec2 describe-regions --output json"},
+        "target": {
+    "Command": {
+        "command": "aws ec2 describe-regions --output json",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "array",

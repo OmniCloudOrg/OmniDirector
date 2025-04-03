@@ -12,7 +12,12 @@
     },
     "actions": {
       "test_install": {
-        "target": {"Command": "gcloud --version"},
+        "target": {
+    "Command": {
+        "command": "gcloud --version",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -25,7 +30,12 @@
         }
       },
       "list_workers": {
-        "target": {"Command": "gcloud compute instances list --project {project} --format=json"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute instances list --project {project} --format=json",
+        "in_vm": false
+    }
+},
         "params": [
           "project"
         ],
@@ -40,7 +50,12 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "gcloud compute instances create {instance_name} --project {project} --zone {zone} --machine-type {machine_type} --image-family {image_family} --image-project {image_project} --format=json"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute instances create {instance_name} --project {project} --zone {zone} --machine-type {machine_type} --image-family {image_family} --image-project {image_project} --format=json",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_name",
           "project",
@@ -69,7 +84,12 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "gcloud compute instances delete {instance_name} --project {project} --zone {zone} --quiet"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute instances delete {instance_name} --project {project} --zone {zone} --quiet",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_name",
           "project",
@@ -86,7 +106,12 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "gcloud compute instances start {instance_name} --project {project} --zone {zone}"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute instances start {instance_name} --project {project} --zone {zone}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_name",
           "project",
@@ -103,7 +128,12 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "gcloud compute instances stop {instance_name} --project {project} --zone {zone}"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute instances stop {instance_name} --project {project} --zone {zone}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_name",
           "project",
@@ -120,7 +150,12 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "gcloud compute instances describe {instance_name} --project {project} --zone {zone} --format=json"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute instances describe {instance_name} --project {project} --zone {zone} --format=json",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_name",
           "project",
@@ -157,7 +192,12 @@
         }
       },
       "create_volume": {
-        "target": {"Command": "gcloud compute disks create {disk_name} --project {project} --zone {zone} --size {size_gb} --type {disk_type} --format=json"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute disks create {disk_name} --project {project} --zone {zone} --size {size_gb} --type {disk_type} --format=json",
+        "in_vm": false
+    }
+},
         "params": [
           "disk_name",
           "project",
@@ -180,7 +220,12 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "gcloud compute instances attach-disk {instance_name} --project {project} --zone {zone} --disk {disk_name}"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute instances attach-disk {instance_name} --project {project} --zone {zone} --disk {disk_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_name",
           "project",
@@ -198,7 +243,12 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "gcloud compute instances detach-disk {instance_name} --project {project} --zone {zone} --disk {disk_name}"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute instances detach-disk {instance_name} --project {project} --zone {zone} --disk {disk_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "instance_name",
           "project",
@@ -216,7 +266,12 @@
         }
       },
       "list_volumes": {
-        "target": {"Command": "gcloud compute disks list --project {project} --format=json"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute disks list --project {project} --format=json",
+        "in_vm": false
+    }
+},
         "params": [
           "project"
         ],
@@ -245,7 +300,12 @@
         }
       },
       "has_volume": {
-        "target": {"Command": "gcloud compute disks describe {disk_name} --project {project} --zone {zone} --format=json"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute disks describe {disk_name} --project {project} --zone {zone} --format=json",
+        "in_vm": false
+    }
+},
         "params": [
           "disk_name",
           "project",
@@ -262,7 +322,12 @@
         }
       },
       "create_snapshot": {
-        "target": {"Command": "gcloud compute disks snapshot {disk_name} --project {project} --zone {zone} --snapshot-names {snapshot_name} --format=json"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute disks snapshot {disk_name} --project {project} --zone {zone} --snapshot-names {snapshot_name} --format=json",
+        "in_vm": false
+    }
+},
         "params": [
           "disk_name",
           "project",
@@ -284,7 +349,12 @@
         }
       },
       "delete_snapshot": {
-        "target": {"Command": "gcloud compute snapshots delete {snapshot_name} --project {project} --quiet"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute snapshots delete {snapshot_name} --project {project} --quiet",
+        "in_vm": false
+    }
+},
         "params": [
           "snapshot_name",
           "project"
@@ -300,7 +370,12 @@
         }
       },
       "list_snapshots": {
-        "target": {"Command": "gcloud compute snapshots list --project {project} --format=json"},
+        "target": {
+    "Command": {
+        "command": "gcloud compute snapshots list --project {project} --format=json",
+        "in_vm": false
+    }
+},
         "params": [
           "project"
         ],

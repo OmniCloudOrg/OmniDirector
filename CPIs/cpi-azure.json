@@ -11,7 +11,12 @@
     },
     "actions": {
       "test_install": {
-        "target": {"Command": "az --version"},
+        "target": {
+    "Command": {
+        "command": "az --version",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -24,7 +29,12 @@
         }
       },
       "create_resource_group": {
-        "target": {"Command": "az group create --name {resource_group} --location {location}"},
+        "target": {
+    "Command": {
+        "command": "az group create --name {resource_group} --location {location}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "location"
@@ -44,7 +54,12 @@
         }
       },
       "delete_resource_group": {
-        "target": {"Command": "az group delete --name {resource_group} --yes --no-wait"},
+        "target": {
+    "Command": {
+        "command": "az group delete --name {resource_group} --yes --no-wait",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group"
         ],
@@ -59,7 +74,12 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "az vm create --resource-group {resource_group} --name {worker_name} --image {image} --admin-username {admin_username} --size {worker_size} --generate-ssh-keys"},
+        "target": {
+    "Command": {
+        "command": "az vm create --resource-group {resource_group} --name {worker_name} --image {image} --admin-username {admin_username} --size {worker_size} --generate-ssh-keys",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "worker_name",
@@ -87,7 +107,12 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "az vm delete --resource-group {resource_group} --name {worker_name} --yes"},
+        "target": {
+    "Command": {
+        "command": "az vm delete --resource-group {resource_group} --name {worker_name} --yes",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "worker_name"
@@ -103,7 +128,12 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "az vm start --resource-group {resource_group} --name {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "az vm start --resource-group {resource_group} --name {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "worker_name"
@@ -119,7 +149,12 @@
         }
       },
       "stop_worker": {
-        "target": {"Command": "az vm stop --resource-group {resource_group} --name {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "az vm stop --resource-group {resource_group} --name {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "worker_name"
@@ -135,7 +170,12 @@
         }
       },
       "list_workers": {
-        "target": {"Command": "az vm list --resource-group {resource_group}"},
+        "target": {
+    "Command": {
+        "command": "az vm list --resource-group {resource_group}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group"
         ],
@@ -164,7 +204,12 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "az vm show --resource-group {resource_group} --name {worker_name}"},
+        "target": {
+    "Command": {
+        "command": "az vm show --resource-group {resource_group} --name {worker_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "worker_name"
@@ -197,7 +242,12 @@
         }
       },
       "create_volume": {
-        "target": {"Command": "az disk create --resource-group {resource_group} --name {disk_name} --size-gb {size_gb} --sku {disk_sku}"},
+        "target": {
+    "Command": {
+        "command": "az disk create --resource-group {resource_group} --name {disk_name} --size-gb {size_gb} --sku {disk_sku}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "disk_name",
@@ -219,7 +269,12 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "az vm disk attach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}"},
+        "target": {
+    "Command": {
+        "command": "az vm disk attach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "worker_name",
@@ -236,7 +291,12 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "az vm disk detach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}"},
+        "target": {
+    "Command": {
+        "command": "az vm disk detach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "worker_name",
@@ -253,7 +313,12 @@
         }
       },
       "list_volumes": {
-        "target": {"Command": "az disk list --resource-group {resource_group}"},
+        "target": {
+    "Command": {
+        "command": "az disk list --resource-group {resource_group}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group"
         ],
@@ -282,7 +347,12 @@
         }
       },
       "has_volume": {
-        "target": {"Command": "az disk show --resource-group {resource_group} --name {disk_name}"},
+        "target": {
+    "Command": {
+        "command": "az disk show --resource-group {resource_group} --name {disk_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "disk_name"
@@ -298,7 +368,12 @@
         }
       },
       "create_snapshot": {
-        "target": {"Command": "az snapshot create --resource-group {resource_group} --name {snapshot_name} --source {disk_id}"},
+        "target": {
+    "Command": {
+        "command": "az snapshot create --resource-group {resource_group} --name {snapshot_name} --source {disk_id}",
+        "in_vm": false
+    }
+},
         "params": [
           "resource_group",
           "snapshot_name",

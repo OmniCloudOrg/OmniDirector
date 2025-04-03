@@ -12,7 +12,12 @@
     },
     "actions": {
       "test_install": {
-        "target": {"Command": "VBoxManage --version"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage --version",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "object",
@@ -25,7 +30,12 @@
         }
       },
       "list_workers": {
-        "target": {"Command": "VBoxManage list vms"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage list vms",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -43,14 +53,24 @@
         }
       },
       "create_worker": {
-        "target": {"Command": "VBoxManage createvm --name {worker_name} --ostype {os_type} --register"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage createvm --name {worker_name} --ostype {os_type} --register",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "os_type"
         ],
         "post_exec": [
           {
-            "target": {"Command": "VBoxManage modifyvm {worker_name} --memory {memory_mb} --cpus {cpu_count}"},
+            "target": {
+    "Command": {
+        "command": "VBoxManage modifyvm {worker_name} --memory {memory_mb} --cpus {cpu_count}",
+        "in_vm": false
+    }
+},
             "parse_rules": {
               "type": "object",
               "patterns": {
@@ -62,7 +82,12 @@
             }
           },
           {
-            "target": {"Command": "VBoxManage modifyvm {worker_name} --nic1 nat"},
+            "target": {
+    "Command": {
+        "command": "VBoxManage modifyvm {worker_name} --nic1 nat",
+        "in_vm": false
+    }
+},
             "parse_rules": {
               "type": "object",
               "patterns": {
@@ -85,7 +110,12 @@
         }
       },
       "delete_worker": {
-        "target": {"Command": "VBoxManage unregistervm {worker_name} --delete"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage unregistervm {worker_name} --delete",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -100,7 +130,12 @@
         }
       },
       "get_worker": {
-        "target": {"Command": "VBoxManage showvminfo {worker_name} --machinereadable"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage showvminfo {worker_name} --machinereadable",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -145,7 +180,12 @@
         }
       },
       "get_adapters": {
-        "target": {"Command": "VBoxManage showvminfo {worker_name} --machinereadable"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage showvminfo {worker_name} --machinereadable",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -187,7 +227,12 @@
         }
       },
       "has_worker": {
-        "target": {"Command": "VBoxManage showvminfo {worker_id} --machinereadable"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage showvminfo {worker_id} --machinereadable",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_id"
         ],
@@ -202,7 +247,12 @@
         }
       },
       "start_worker": {
-        "target": {"Command": "VBoxManage startvm {worker_name} --type headless"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage startvm {worker_name} --type headless",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -217,7 +267,12 @@
         }
       },
       "get_volumes": {
-        "target": {"Command": "VBoxManage list hdds"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage list hdds",
+        "in_vm": false
+    }
+},
         "params": [],
         "parse_rules": {
           "type": "array",
@@ -257,7 +312,12 @@
         }
       },
       "has_volume": {
-        "target": {"Command": "VBoxManage showmediuminfo disk {disk_path}"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage showmediuminfo disk {disk_path}",
+        "in_vm": false
+    }
+},
         "params": [
           "disk_path"
         ],
@@ -272,7 +332,12 @@
         }
       },
       "get_snapshots": {
-        "target": {"Command": "VBoxManage snapshot {worker_name} list --machinereadable"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage snapshot {worker_name} list --machinereadable",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -295,7 +360,12 @@
         }
       },
       "create_snapshot": {
-        "target": {"Command": "VBoxManage snapshot {worker_name} take {snapshot_name}"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage snapshot {worker_name} take {snapshot_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "snapshot_name"
@@ -311,7 +381,12 @@
         }
       },
       "has_snapshot": {
-        "target": {"Command": "VBoxManage snapshot {worker_name} list --machinereadable"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage snapshot {worker_name} list --machinereadable",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "snapshot_name"
@@ -327,7 +402,12 @@
         }
       },
       "attach_volume": {
-        "target": {"Command": "VBoxManage storageattach {worker_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage storageattach {worker_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "controller_name",
@@ -336,7 +416,12 @@
         ],
         "pre_exec": [
           {
-            "target": {"Command": "VBoxManage storagectl {worker_name} --name {controller_name} --add sata --controller IntelAhci --portcount 30"},
+            "target": {
+    "Command": {
+        "command": "VBoxManage storagectl {worker_name} --name {controller_name} --add sata --controller IntelAhci --portcount 30",
+        "in_vm": false
+    }
+},
             "parse_rules": {
               "type": "object",
               "patterns": {
@@ -359,7 +444,12 @@
         }
       },
       "detach_volume": {
-        "target": {"Command": "VBoxManage storageattach {worker_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium none"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage storageattach {worker_name} --storagectl {controller_name} --port {port} --device 0 --type hdd --medium none",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "controller_name",
@@ -376,7 +466,12 @@
         }
       },
       "create_volume": {
-        "target": {"Command": "VBoxManage createmedium disk --filename {disk_path} --size {size_mb} --format VDI"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage createmedium disk --filename {disk_path} --size {size_mb} --format VDI",
+        "in_vm": false
+    }
+},
         "params": [
           "disk_path",
           "size_mb"
@@ -396,7 +491,12 @@
         }
       },
       "delete_volume": {
-        "target": {"Command": "VBoxManage closemedium disk {disk_path} --delete"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage closemedium disk {disk_path} --delete",
+        "in_vm": false
+    }
+},
         "params": [
           "disk_path"
         ],
@@ -411,7 +511,12 @@
         }
       },
       "reboot_worker": {
-        "target": {"Command": "VBoxManage controlvm {worker_name} reset"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage controlvm {worker_name} reset",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name"
         ],
@@ -426,7 +531,12 @@
         }
       },
       "snapshot_volume": {
-        "target": {"Command": "VBoxManage clonemedium disk {source_volume_path} {target_volume_path}"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage clonemedium disk {source_volume_path} {target_volume_path}",
+        "in_vm": false
+    }
+},
         "params": [
           "source_volume_path",
           "target_volume_path"
@@ -442,7 +552,12 @@
         }
       },
       "configure_networks": {
-        "target": {"Command": "VBoxManage modifyvm {worker_name} --nic{network_index} {network_type}"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage modifyvm {worker_name} --nic{network_index} {network_type}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "network_index",
@@ -459,7 +574,12 @@
         }
       },
       "set_worker_metadata": {
-        "target": {"Command": "VBoxManage setextradata {worker_name} {key} {value}"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage setextradata {worker_name} {key} {value}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "key",
@@ -476,7 +596,12 @@
         }
       },
       "delete_snapshot": {
-        "target": {"Command": "VBoxManage snapshot {worker_name} delete {snapshot_name}"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage snapshot {worker_name} delete {snapshot_name}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "snapshot_name"
@@ -492,7 +617,12 @@
         }
       },
       "execute_target": {
-        "target": {"Command": "VBoxManage guestcontrol {worker_name} run --username {username} --password {password} --exe {target_path} -- {target_args}"},
+        "target": {
+    "Command": {
+        "command": "VBoxManage guestcontrol {worker_name} run --username {username} --password {password} --exe {target_path} -- {target_args}",
+        "in_vm": false
+    }
+},
         "params": [
           "worker_name",
           "username",

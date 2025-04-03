@@ -11,7 +11,12 @@
   },
   "actions": {
     "test_install": {
-      "target": {"Command": "rack --version"},
+      "target": {
+    "Command": {
+        "command": "rack --version",
+        "in_vm": false
+    }
+},
       "params": [],
       "parse_rules": {
         "type": "object",
@@ -24,7 +29,12 @@
       }
     },
     "list_workers": {
-      "target": {"Command": "rack servers instance list --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers instance list --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["region"],
       "parse_rules": {
         "type": "object",
@@ -37,7 +47,12 @@
       }
     },
     "create_worker": {
-      "target": {"Command": "rack servers instance create --name {name} --flavor-id {worker_type} --image-name {image} --region {region} --keypair {ssh_key_name} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers instance create --name {name} --flavor-id {worker_type} --image-name {image} --region {region} --keypair {ssh_key_name} --output json",
+        "in_vm": false
+    }
+},
       "params": [
         "name",
         "worker_type",
@@ -64,7 +79,12 @@
       }
     },
     "delete_worker": {
-      "target": {"Command": "rack servers instance delete --id {worker_id} --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers instance delete --id {worker_id} --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["worker_id", "region"],
       "parse_rules": {
         "type": "object",
@@ -77,7 +97,12 @@
       }
     },
     "get_worker": {
-      "target": {"Command": "rack servers instance get --id {worker_id} --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers instance get --id {worker_id} --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["worker_id", "region"],
       "parse_rules": {
         "type": "object",
@@ -90,7 +115,12 @@
       }
     },
     "start_worker": {
-      "target": {"Command": "rack servers instance start --id {worker_id} --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers instance start --id {worker_id} --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["worker_id", "region"],
       "parse_rules": {
         "type": "object",
@@ -103,7 +133,12 @@
       }
     },
     "stop_worker": {
-      "target": {"Command": "rack servers instance stop --id {worker_id} --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers instance stop --id {worker_id} --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["worker_id", "region"],
       "parse_rules": {
         "type": "object",
@@ -116,7 +151,12 @@
       }
     },
     "reboot_worker": {
-      "target": {"Command": "rack servers instance reboot --id {worker_id} --region {region} --type {reboot_type} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers instance reboot --id {worker_id} --region {region} --type {reboot_type} --output json",
+        "in_vm": false
+    }
+},
       "params": ["worker_id", "region", "reboot_type"],
       "parse_rules": {
         "type": "object",
@@ -129,7 +169,12 @@
       }
     },
     "list_images": {
-      "target": {"Command": "rack servers image list --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers image list --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["region"],
       "parse_rules": {
         "type": "object",
@@ -142,7 +187,12 @@
       }
     },
     "create_snapshot": {
-      "target": {"Command": "rack servers image create --instance-id {worker_id} --name {snapshot_name} --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers image create --instance-id {worker_id} --name {snapshot_name} --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["worker_id", "snapshot_name", "region"],
       "parse_rules": {
         "type": "object",
@@ -155,7 +205,12 @@
       }
     },
     "list_disks": {
-      "target": {"Command": "rack block-storage volume list --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack block-storage volume list --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["region"],
       "parse_rules": {
         "type": "object",
@@ -168,7 +223,12 @@
       }
     },
     "create_disk": {
-      "target": {"Command": "rack block-storage volume create --name {disk_name} --size {size_gb} --type {volume_type} --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack block-storage volume create --name {disk_name} --size {size_gb} --type {volume_type} --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["disk_name", "size_gb", "volume_type", "region"],
       "parse_rules": {
         "type": "object",
@@ -181,7 +241,12 @@
       }
     },
     "attach_disk": {
-      "target": {"Command": "rack servers volume attach --server-id {worker_id} --volume-id {disk_id} --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers volume attach --server-id {worker_id} --volume-id {disk_id} --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["worker_id", "disk_id", "region"],
       "parse_rules": {
         "type": "object",
@@ -194,7 +259,12 @@
       }
     },
     "detach_disk": {
-      "target": {"Command": "rack servers volume detach --server-id {worker_id} --volume-id {disk_id} --region {region} --output json"},
+      "target": {
+    "Command": {
+        "command": "rack servers volume detach --server-id {worker_id} --volume-id {disk_id} --region {region} --output json",
+        "in_vm": false
+    }
+},
       "params": ["worker_id", "disk_id", "region"],
       "parse_rules": {
         "type": "object",
@@ -207,7 +277,12 @@
       }
     },
     "list_regions": {
-      "target": {"Command": "rack regions list --output json"},
+      "target": {
+    "Command": {
+        "command": "rack regions list --output json",
+        "in_vm": false
+    }
+},
       "params": [],
       "parse_rules": {
         "type": "object",
@@ -220,7 +295,12 @@
       }
     },
     "configure_auth": {
-      "target": {"Command": "rack configure --username {username} --api-key {api_key} --use-profile {profile}"},
+      "target": {
+    "Command": {
+        "command": "rack configure --username {username} --api-key {api_key} --use-profile {profile}",
+        "in_vm": false
+    }
+},
       "params": ["username", "api_key", "profile"],
       "parse_rules": {
         "type": "object",
