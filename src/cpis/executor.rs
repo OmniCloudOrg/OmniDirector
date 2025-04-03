@@ -341,6 +341,8 @@ fn execute_command(cmd: &str) -> Result<String, CpiError> {
 /// * The command output as a string if successful
 /// * A CpiError if any part of the operation fails
 pub fn execute_command_vm(command: &str) -> Result<String, CpiError> {
+    println!("Executing command on VM: {}", command);
+
     // Get SSH credentials from environment variables
     let host = env::var("OMNI_SSH_HOST").map_err(|_| {
         let err_msg = "Missing OMNI_SSH_HOST environment variable";
