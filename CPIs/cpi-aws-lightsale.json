@@ -12,11 +12,11 @@
     "actions": {
         "test_install": {
             "target": {
-    "Command": {
-        "command": "aws --version",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws --version",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -29,11 +29,11 @@
         },
         "list_workers": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-instances --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-instances --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -49,11 +49,11 @@
         },
         "create_worker": {
             "target": {
-    "Command": {
-        "command": "aws lightsail create-instances --instance-names {name} --availability-zone {availability_zone} --blueprint-id {blueprint_id} --bundle-id {bundle_id} --key-pair-name {key_pair_name} {tags_param} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail create-instances --instance-names {name} --availability-zone {availability_zone} --blueprint-id {blueprint_id} --bundle-id {bundle_id} --key-pair-name {key_pair_name} {tags_param} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "availability_zone",
@@ -77,11 +77,11 @@
         },
         "delete_worker": {
             "target": {
-    "Command": {
-        "command": "aws lightsail delete-instance --instance-name {worker_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail delete-instance --instance-name {worker_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "region"
@@ -98,11 +98,11 @@
         },
         "get_worker": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-instance --instance-name {worker_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-instance --instance-name {worker_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "region"
@@ -119,11 +119,11 @@
         },
         "reboot_worker": {
             "target": {
-    "Command": {
-        "command": "aws lightsail reboot-instance --instance-name {worker_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail reboot-instance --instance-name {worker_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "region"
@@ -140,11 +140,11 @@
         },
         "stop_worker": {
             "target": {
-    "Command": {
-        "command": "aws lightsail stop-instance --instance-name {worker_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail stop-instance --instance-name {worker_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "region"
@@ -161,11 +161,11 @@
         },
         "start_worker": {
             "target": {
-    "Command": {
-        "command": "aws lightsail start-instance --instance-name {worker_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail start-instance --instance-name {worker_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "region"
@@ -182,11 +182,11 @@
         },
         "list_regions": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-regions --include-availability-zones --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-regions --include-availability-zones --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -199,11 +199,11 @@
         },
         "list_worker_types": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-bundles --include-inactive false --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-bundles --include-inactive false --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -219,11 +219,11 @@
         },
         "list_images": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-blueprints --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-blueprints --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -239,11 +239,11 @@
         },
         "list_volumes": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-disks --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-disks --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -259,11 +259,11 @@
         },
         "create_volume": {
             "target": {
-    "Command": {
-        "command": "aws lightsail create-disk --disk-name {disk_name} --size-in-gb {size_gb} --availability-zone {availability_zone} {tags_param} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail create-disk --disk-name {disk_name} --size-in-gb {size_gb} --availability-zone {availability_zone} {tags_param} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_name",
                 "size_gb",
@@ -285,11 +285,11 @@
         },
         "delete_volume": {
             "target": {
-    "Command": {
-        "command": "aws lightsail delete-disk --disk-name {disk_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail delete-disk --disk-name {disk_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id",
                 "region"
@@ -306,11 +306,11 @@
         },
         "attach_volume": {
             "target": {
-    "Command": {
-        "command": "aws lightsail attach-disk --disk-name {disk_id} --instance-name {worker_id} --disk-path /dev/xvdf --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail attach-disk --disk-name {disk_id} --instance-name {worker_id} --disk-path /dev/xvdf --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id",
                 "worker_id",
@@ -328,11 +328,11 @@
         },
         "detach_volume": {
             "target": {
-    "Command": {
-        "command": "aws lightsail detach-disk --disk-name {disk_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail detach-disk --disk-name {disk_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id",
                 "region"
@@ -349,11 +349,11 @@
         },
         "list_security_groups": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-instance-port-states --instance-name {worker_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-instance-port-states --instance-name {worker_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "region"
@@ -370,11 +370,11 @@
         },
         "create_firewall_rule": {
             "target": {
-    "Command": {
-        "command": "aws lightsail open-instance-public-ports --port-info fromPort={port},toPort={port},protocol={protocol} --instance-name {worker_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail open-instance-public-ports --port-info fromPort={port},toPort={port},protocol={protocol} --instance-name {worker_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "port",
                 "protocol",
@@ -393,11 +393,11 @@
         },
         "delete_firewall_rule": {
             "target": {
-    "Command": {
-        "command": "aws lightsail close-instance-public-ports --port-info fromPort={port},toPort={port},protocol={protocol} --instance-name {worker_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail close-instance-public-ports --port-info fromPort={port},toPort={port},protocol={protocol} --instance-name {worker_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "port",
                 "protocol",
@@ -416,11 +416,11 @@
         },
         "create_snapshot": {
             "target": {
-    "Command": {
-        "command": "aws lightsail create-instance-snapshot --instance-name {worker_id} --instance-snapshot-name {snapshot_name} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail create-instance-snapshot --instance-name {worker_id} --instance-snapshot-name {snapshot_name} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "snapshot_name",
@@ -438,11 +438,11 @@
         },
         "list_snapshots": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-instance-snapshots --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-instance-snapshots --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -458,11 +458,11 @@
         },
         "delete_snapshot": {
             "target": {
-    "Command": {
-        "command": "aws lightsail delete-instance-snapshot --instance-snapshot-name {snapshot_id} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail delete-instance-snapshot --instance-snapshot-name {snapshot_id} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "snapshot_id",
                 "region"
@@ -479,11 +479,11 @@
         },
         "create_ssh_key": {
             "target": {
-    "Command": {
-        "command": "aws lightsail import-key-pair --key-pair-name {name} --public-key-base64 $(echo {ssh_public_key} | base64) --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail import-key-pair --key-pair-name {name} --public-key-base64 $(echo {ssh_public_key} | base64) --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "ssh_public_key",
@@ -501,11 +501,11 @@
         },
         "list_ssh_keys": {
             "target": {
-    "Command": {
-        "command": "aws lightsail get-key-pairs --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail get-key-pairs --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -521,11 +521,11 @@
         },
         "delete_ssh_key": {
             "target": {
-    "Command": {
-        "command": "aws lightsail delete-key-pair --key-pair-name {ssh_key_name} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aws lightsail delete-key-pair --key-pair-name {ssh_key_name} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "ssh_key_name",
                 "region"

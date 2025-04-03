@@ -343,6 +343,11 @@ fn execute_command(cmd: &str) -> Result<String, CpiError> {
 pub fn execute_command_vm(command: &str) -> Result<String, CpiError> {
     println!("Executing command on VM: {}", command);
 
+
+    // TODO: Here we load osme VM details from the environment, we would
+    // actually requisition these details from the orchestrator API
+
+
     // Get SSH credentials from environment variables
     let host = env::var("OMNI_SSH_HOST").map_err(|_| {
         let err_msg = "Missing OMNI_SSH_HOST environment variable";
@@ -362,6 +367,9 @@ pub fn execute_command_vm(command: &str) -> Result<String, CpiError> {
         CpiError::ExecutionFailed(err_msg.to_string())
     })?;
     
+
+
+
     debug!("Executing VM command on host '{}' as user '{}'", host, username);
     let start = Instant::now();
 

@@ -13,11 +13,11 @@
     "actions": {
         "test_install": {
             "target": {
-    "Command": {
-        "command": "atlantic version",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic version",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -30,11 +30,11 @@
         },
         "list_workers": {
             "target": {
-    "Command": {
-        "command": "atlantic server list --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic server list --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -47,11 +47,11 @@
         },
         "create_worker": {
             "target": {
-    "Command": {
-        "command": "atlantic server create --name {name} --hostname {name} --image {image} --size {worker_type} --region {region} --ssh-key {ssh_key_id} --enable-backups {enable_backups} --enable-monitoring {enable_monitoring} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic server create --name {name} --hostname {name} --image {image} --size {worker_type} --region {region} --ssh-key {ssh_key_id} --enable-backups {enable_backups} --enable-monitoring {enable_monitoring} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "image",
@@ -79,11 +79,11 @@
         },
         "delete_worker": {
             "target": {
-    "Command": {
-        "command": "atlantic server delete {worker_id} --force --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic server delete {worker_id} --force --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -99,11 +99,11 @@
         },
         "get_worker": {
             "target": {
-    "Command": {
-        "command": "atlantic server info {worker_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic server info {worker_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -119,11 +119,11 @@
         },
         "start_worker": {
             "target": {
-    "Command": {
-        "command": "atlantic server start {worker_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic server start {worker_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -139,11 +139,11 @@
         },
         "stop_worker": {
             "target": {
-    "Command": {
-        "command": "atlantic server stop {worker_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic server stop {worker_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -159,11 +159,11 @@
         },
         "reboot_worker": {
             "target": {
-    "Command": {
-        "command": "atlantic server reboot {worker_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic server reboot {worker_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -179,11 +179,11 @@
         },
         "list_regions": {
             "target": {
-    "Command": {
-        "command": "atlantic region list --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic region list --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -196,11 +196,11 @@
         },
         "list_worker_types": {
             "target": {
-    "Command": {
-        "command": "atlantic size list --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic size list --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -213,11 +213,11 @@
         },
         "list_images": {
             "target": {
-    "Command": {
-        "command": "atlantic image list --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic image list --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -230,11 +230,11 @@
         },
         "create_snapshot": {
             "target": {
-    "Command": {
-        "command": "atlantic snapshot create --server-id {worker_id} --name {snapshot_name} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic snapshot create --server-id {worker_id} --name {snapshot_name} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "snapshot_name"
@@ -255,11 +255,11 @@
         },
         "list_snapshots": {
             "target": {
-    "Command": {
-        "command": "atlantic snapshot list --server-id {worker_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic snapshot list --server-id {worker_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -275,11 +275,11 @@
         },
         "delete_snapshot": {
             "target": {
-    "Command": {
-        "command": "atlantic snapshot delete {snapshot_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic snapshot delete {snapshot_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "snapshot_id"
             ],
@@ -295,11 +295,11 @@
         },
         "resize_worker": {
             "target": {
-    "Command": {
-        "command": "atlantic server resize {worker_id} --size {worker_type} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic server resize {worker_id} --size {worker_type} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "worker_type"
@@ -316,11 +316,11 @@
         },
         "create_ssh_key": {
             "target": {
-    "Command": {
-        "command": "atlantic ssh-key create --name {name} --public-key \"}{ssh_public_key}\" --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic ssh-key create --name {name} --public-key \"}{ssh_public_key}\" --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "ssh_public_key"
@@ -341,11 +341,11 @@
         },
         "list_ssh_keys": {
             "target": {
-    "Command": {
-        "command": "atlantic ssh-key list --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic ssh-key list --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -358,11 +358,11 @@
         },
         "delete_ssh_key": {
             "target": {
-    "Command": {
-        "command": "atlantic ssh-key delete {ssh_key_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic ssh-key delete {ssh_key_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "ssh_key_id"
             ],
@@ -378,11 +378,11 @@
         },
         "create_volume": {
             "target": {
-    "Command": {
-        "command": "atlantic volume create --name {disk_name} --size {size_gb} --region {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic volume create --name {disk_name} --size {size_gb} --region {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_name",
                 "size_gb",
@@ -404,11 +404,11 @@
         },
         "list_volumes": {
             "target": {
-    "Command": {
-        "command": "atlantic volume list --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic volume list --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -421,11 +421,11 @@
         },
         "attach_volume": {
             "target": {
-    "Command": {
-        "command": "atlantic volume attach {disk_id} --server-id {worker_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic volume attach {disk_id} --server-id {worker_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id",
                 "worker_id"
@@ -442,11 +442,11 @@
         },
         "detach_volume": {
             "target": {
-    "Command": {
-        "command": "atlantic volume detach {disk_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic volume detach {disk_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id"
             ],
@@ -462,11 +462,11 @@
         },
         "delete_volume": {
             "target": {
-    "Command": {
-        "command": "atlantic volume delete {disk_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic volume delete {disk_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id"
             ],
@@ -482,11 +482,11 @@
         },
         "create_firewall": {
             "target": {
-    "Command": {
-        "command": "atlantic firewall create --name {name} --server-id {worker_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic firewall create --name {name} --server-id {worker_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "worker_id"
@@ -507,11 +507,11 @@
         },
         "list_firewalls": {
             "target": {
-    "Command": {
-        "command": "atlantic firewall list --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic firewall list --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -524,11 +524,11 @@
         },
         "add_firewall_rule": {
             "target": {
-    "Command": {
-        "command": "atlantic firewall rule add {security_group_id} --protocol {protocol} --port {port} --source {source} --description \"}{description}\" --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "atlantic firewall rule add {security_group_id} --protocol {protocol} --port {port} --source {source} --description \"}{description}\" --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "security_group_id",
                 "protocol",

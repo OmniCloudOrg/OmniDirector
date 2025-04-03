@@ -1,492 +1,492 @@
 {
-    "name": "std_kvm",
-    "type": "command",
-    "default_settings": {
-      "memory_mb": "2048",
-      "vcpus": "2",
-      "disk_size_gb": "20",
-      "disk_format": "qcow2",
-      "image_path": "/var/lib/libvirt/images",
-      "os_variant": "ubuntu20.04",
-      "graphics": "vnc",
-      "network": "default"
+  "name": "std_kvm",
+  "type": "command",
+  "default_settings": {
+    "memory_mb": "2048",
+    "vcpus": "2",
+    "disk_size_gb": "20",
+    "disk_format": "qcow2",
+    "image_path": "/var/lib/libvirt/images",
+    "os_variant": "ubuntu20.04",
+    "graphics": "vnc",
+    "network": "default"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": {
+          "command": "virsh --version",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "target": {
-    "Command": {
-        "command": "virsh --version",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "version": {
-              "regex": "([\\d\\.]+)",
-              "group": 1
-            }
-          }
+    "list_workers": {
+      "target": {
+        "Command": {
+          "command": "virsh list --all",
+          "in_vm": false
         }
       },
-      "list_workers": {
-        "target": {
-    "Command": {
-        "command": "virsh list --all",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "id": {
-              "regex": "^\\s*(\\d+|-)\\s+",
-              "group": 1
-            },
-            "name": {
-              "regex": "^\\s*(?:\\d+|-)\\s+([^\\s]+)",
-              "group": 1
-            },
-            "state": {
-              "regex": "^\\s*(?:\\d+|-)\\s+[^\\s]+\\s+([^\\s]+)",
-              "group": 1
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "id": {
+            "regex": "^\\s*(\\d+|-)\\s+",
+            "group": 1
+          },
+          "name": {
+            "regex": "^\\s*(?:\\d+|-)\\s+([^\\s]+)",
+            "group": 1
+          },
+          "state": {
+            "regex": "^\\s*(?:\\d+|-)\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
           }
         }
-      },
-      "create_worker": {
-        "target": {
-    "Command": {
-        "command": "virt-install --name {worker_name} --memory {memory_mb} --vcpus {vcpus} --disk path={image_path}/{worker_name}.qcow2,size={disk_size_gb} --os-variant {os_variant} --graphics {graphics} --network {network} --import --disk {os_image},device=cdrom --noautoconsole",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name",
-          "memory_mb",
-          "vcpus",
-          "image_path",
-          "disk_size_gb",
-          "os_variant",
-          "graphics",
-          "network",
-          "os_image"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "domain": {
-              "regex": "Domain creation completed\\.",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": {
+          "command": "virt-install --name {worker_name} --memory {memory_mb} --vcpus {vcpus} --disk path={image_path}/{worker_name}.qcow2,size={disk_size_gb} --os-variant {os_variant} --graphics {graphics} --network {network} --import --disk {os_image},device=cdrom --noautoconsole",
+          "in_vm": false
         }
       },
-      "delete_worker": {
-        "target": {
-    "Command": {
-        "command": "virsh undefine {worker_name} --remove-all-storage",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Domain [^\\s]+ has been undefined",
-              "transform": "boolean"
-            }
+      "params": [
+        "worker_name",
+        "memory_mb",
+        "vcpus",
+        "image_path",
+        "disk_size_gb",
+        "os_variant",
+        "graphics",
+        "network",
+        "os_image"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "domain": {
+            "regex": "Domain creation completed\\.",
+            "transform": "boolean"
           }
         }
-      },
-      "start_worker": {
-        "target": {
-    "Command": {
-        "command": "virsh start {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Domain [^\\s]+ started",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Command": {
+          "command": "virsh undefine {worker_name} --remove-all-storage",
+          "in_vm": false
         }
       },
-      "stop_worker": {
-        "target": {
-    "Command": {
-        "command": "virsh shutdown {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Domain [^\\s]+ is being shutdown",
-              "transform": "boolean"
-            }
+      "params": [
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Domain [^\\s]+ has been undefined",
+            "transform": "boolean"
           }
         }
-      },
-      "force_stop_worker": {
-        "target": {
-    "Command": {
-        "command": "virsh destroy {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Domain [^\\s]+ destroyed",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Command": {
+          "command": "virsh start {worker_name}",
+          "in_vm": false
         }
       },
-      "get_worker": {
-        "target": {
-    "Command": {
-        "command": "virsh dominfo {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "Id:\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "name": {
-              "regex": "Name:\\s+([^\\s]+)",
-              "group": 1
-            },
-            "uuid": {
-              "regex": "UUID:\\s+([a-f0-9-]+)",
-              "group": 1
-            },
-            "state": {
-              "regex": "State:\\s+([^\\s]+)",
-              "group": 1
-            },
-            "memory": {
-              "regex": "Max memory:\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "vcpus": {
-              "regex": "CPU\\(s\\):\\s+(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "cpu_time": {
-              "regex": "CPU time:\\s+([\\d\\.]+)",
-              "group": 1,
-              "transform": "number"
-            }
+      "params": [
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Domain [^\\s]+ started",
+            "transform": "boolean"
           }
         }
-      },
-      "has_worker": {
-        "target": {
-    "Command": {
-        "command": "virsh dominfo {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "exists": {
-              "regex": "Name:\\s+",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Command": {
+          "command": "virsh shutdown {worker_name}",
+          "in_vm": false
         }
       },
-      "create_snapshot": {
-        "target": {
-    "Command": {
-        "command": "virsh snapshot-create-as {worker_name} {snapshot_name} {snapshot_description}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name",
-          "snapshot_name",
-          "snapshot_description"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Domain snapshot [^\\s]+ created",
-              "transform": "boolean"
-            }
+      "params": [
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Domain [^\\s]+ is being shutdown",
+            "transform": "boolean"
           }
         }
-      },
-      "list_snapshots": {
-        "target": {
-    "Command": {
-        "command": "virsh snapshot-list {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "name": {
-              "regex": "^\\s+([^\\s]+)",
-              "group": 1
-            },
-            "creation_time": {
-              "regex": "^\\s+[^\\s]+\\s+([^\\s]+\\s[^\\s]+)",
-              "group": 1
-            },
-            "state": {
-              "regex": "^\\s+[^\\s]+\\s+[^\\s]+\\s[^\\s]+\\s+([^\\s]+)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "force_stop_worker": {
+      "target": {
+        "Command": {
+          "command": "virsh destroy {worker_name}",
+          "in_vm": false
         }
       },
-      "revert_to_snapshot": {
-        "target": {
-    "Command": {
-        "command": "virsh snapshot-revert {worker_name} {snapshot_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name",
-          "snapshot_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "successfully",
-              "transform": "boolean"
-            }
+      "params": [
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Domain [^\\s]+ destroyed",
+            "transform": "boolean"
           }
         }
-      },
-      "delete_snapshot": {
-        "target": {
-    "Command": {
-        "command": "virsh snapshot-delete {worker_name} {snapshot_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name",
-          "snapshot_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Domain snapshot [^\\s]+ deleted",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Command": {
+          "command": "virsh dominfo {worker_name}",
+          "in_vm": false
         }
       },
-      "has_snapshot": {
-        "target": {
-    "Command": {
-        "command": "virsh snapshot-list {worker_name} | grep {snapshot_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name",
-          "snapshot_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "exists": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "Id:\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "name": {
+            "regex": "Name:\\s+([^\\s]+)",
+            "group": 1
+          },
+          "uuid": {
+            "regex": "UUID:\\s+([a-f0-9-]+)",
+            "group": 1
+          },
+          "state": {
+            "regex": "State:\\s+([^\\s]+)",
+            "group": 1
+          },
+          "memory": {
+            "regex": "Max memory:\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "vcpus": {
+            "regex": "CPU\\(s\\):\\s+(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "cpu_time": {
+            "regex": "CPU time:\\s+([\\d\\.]+)",
+            "group": 1,
+            "transform": "number"
           }
         }
-      },
-      "list_volumes": {
-        "target": {
-    "Command": {
-        "command": "virsh domblklist {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "target": {
-              "regex": "^\\s*([^\\s]+)",
-              "group": 1
-            },
-            "source": {
-              "regex": "^\\s*[^\\s]+\\s+([^\\s]+)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "has_worker": {
+      "target": {
+        "Command": {
+          "command": "virsh dominfo {worker_name}",
+          "in_vm": false
         }
       },
-      "create_volume": {
-        "target": {
-    "Command": {
-        "command": "qemu-img create -f {disk_format} {image_path}/{disk_name}.{disk_format} {size_gb}G",
-        "in_vm": false
-    }
-},
-        "params": [
-          "disk_format",
-          "image_path",
-          "disk_name",
-          "size_gb"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "Formatting",
-              "transform": "boolean"
-            }
+      "params": [
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "exists": {
+            "regex": "Name:\\s+",
+            "transform": "boolean"
           }
         }
-      },
-      "attach_volume": {
-        "target": {
-    "Command": {
-        "command": "virsh attach-disk {worker_name} {image_path}/{disk_name}.{disk_format} {target_dev} --persistent",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name",
-          "image_path",
-          "disk_name",
-          "disk_format",
-          "target_dev"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "successfully|already exists",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "create_snapshot": {
+      "target": {
+        "Command": {
+          "command": "virsh snapshot-create-as {worker_name} {snapshot_name} {snapshot_description}",
+          "in_vm": false
         }
       },
-      "detach_volume": {
-        "target": {
-    "Command": {
-        "command": "virsh detach-disk {worker_name} {target_dev} --persistent",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name",
-          "target_dev"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": "successfully",
-              "transform": "boolean"
-            }
+      "params": [
+        "worker_name",
+        "snapshot_name",
+        "snapshot_description"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Domain snapshot [^\\s]+ created",
+            "transform": "boolean"
           }
         }
-      },
-      "get_networks": {
-        "target": {
-    "Command": {
-        "command": "virsh net-list --all",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\n",
-          "patterns": {
-            "name": {
-              "regex": "^\\s*([^\\s]+)",
-              "group": 1
-            },
-            "state": {
-              "regex": "^\\s*[^\\s]+\\s+([^\\s]+)",
-              "group": 1
-            },
-            "autostart": {
-              "regex": "^\\s*[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_snapshots": {
+      "target": {
+        "Command": {
+          "command": "virsh snapshot-list {worker_name}",
+          "in_vm": false
         }
       },
-      "execute_target": {
-        "target": {
-    "Command": {
-        "command": "virt-ssh-sh {worker_name} {target_string}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_name",
-          "target_string"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "output": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "name": {
+            "regex": "^\\s+([^\\s]+)",
+            "group": 1
+          },
+          "creation_time": {
+            "regex": "^\\s+[^\\s]+\\s+([^\\s]+\\s[^\\s]+)",
+            "group": 1
+          },
+          "state": {
+            "regex": "^\\s+[^\\s]+\\s+[^\\s]+\\s[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "revert_to_snapshot": {
+      "target": {
+        "Command": {
+          "command": "virsh snapshot-revert {worker_name} {snapshot_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_name",
+        "snapshot_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "successfully",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "delete_snapshot": {
+      "target": {
+        "Command": {
+          "command": "virsh snapshot-delete {worker_name} {snapshot_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_name",
+        "snapshot_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Domain snapshot [^\\s]+ deleted",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "has_snapshot": {
+      "target": {
+        "Command": {
+          "command": "virsh snapshot-list {worker_name} | grep {snapshot_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_name",
+        "snapshot_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "exists": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_volumes": {
+      "target": {
+        "Command": {
+          "command": "virsh domblklist {worker_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "target": {
+            "regex": "^\\s*([^\\s]+)",
+            "group": 1
+          },
+          "source": {
+            "regex": "^\\s*[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_volume": {
+      "target": {
+        "Command": {
+          "command": "qemu-img create -f {disk_format} {image_path}/{disk_name}.{disk_format} {size_gb}G",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "disk_format",
+        "image_path",
+        "disk_name",
+        "size_gb"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "Formatting",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "attach_volume": {
+      "target": {
+        "Command": {
+          "command": "virsh attach-disk {worker_name} {image_path}/{disk_name}.{disk_format} {target_dev} --persistent",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_name",
+        "image_path",
+        "disk_name",
+        "disk_format",
+        "target_dev"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "successfully|already exists",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "detach_volume": {
+      "target": {
+        "Command": {
+          "command": "virsh detach-disk {worker_name} {target_dev} --persistent",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_name",
+        "target_dev"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": "successfully",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "get_networks": {
+      "target": {
+        "Command": {
+          "command": "virsh net-list --all",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\n",
+        "patterns": {
+          "name": {
+            "regex": "^\\s*([^\\s]+)",
+            "group": 1
+          },
+          "state": {
+            "regex": "^\\s*[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          },
+          "autostart": {
+            "regex": "^\\s*[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "execute_target": {
+      "target": {
+        "Command": {
+          "command": "virt-ssh-sh {worker_name} {target_string}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_name",
+        "target_string"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "output": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
       }
     }
   }
+}

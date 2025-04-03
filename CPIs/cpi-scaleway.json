@@ -1,539 +1,539 @@
 {
-    "name": "scaleway",
-    "type": "command",
-    "default_settings": {
-      "type": "DEV1-S",
-      "image": "ubuntu_focal",
-      "zone": "fr-par-1",
-      "commercial_type": "DEV1-S",
-      "root_volume_size_gb": "20",
-      "boot_type": "local",
-      "project_id": "",
-      "ssh_key": ""
+  "name": "scaleway",
+  "type": "command",
+  "default_settings": {
+    "type": "DEV1-S",
+    "image": "ubuntu_focal",
+    "zone": "fr-par-1",
+    "commercial_type": "DEV1-S",
+    "root_volume_size_gb": "20",
+    "boot_type": "local",
+    "project_id": "",
+    "ssh_key": ""
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": {
+          "command": "scw version",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "version\\s+v([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "target": {
-    "Command": {
-        "command": "scw version",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "version": {
-              "regex": "version\\s+v([\\d\\.]+)",
-              "group": 1
-            }
-          }
+    "list_workers": {
+      "target": {
+        "Command": {
+          "command": "scw instance server list zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "list_workers": {
-        "target": {
-    "Command": {
-        "command": "scw instance server list zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "instances": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
+      "params": [
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "instances": {
+            "regex": "(\\[.*\\])",
+            "group": 1
           }
         }
-      },
-      "create_worker": {
-        "target": {
-    "Command": {
-        "command": "scw instance server create type={type} image={image} zone={zone} root-volume={root_volume_size_gb}GB boot-type={boot_type} name={name} {project_param} {ssh_key_param} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "type",
-          "image",
-          "zone",
-          "root_volume_size_gb",
-          "boot_type",
-          "name",
-          "project_param",
-          "ssh_key_param"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "commercial_type": {
-              "regex": "\"commercial_type\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "zone": {
-              "regex": "\"zone\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "public_ip": {
-              "regex": "\"address\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            }
-          }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": {
+          "command": "scw instance server create type={type} image={image} zone={zone} root-volume={root_volume_size_gb}GB boot-type={boot_type} name={name} {project_param} {ssh_key_param} -o json",
+          "in_vm": false
         }
       },
-      "get_worker": {
-        "target": {
-    "Command": {
-        "command": "scw instance server get {server_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "commercial_type": {
-              "regex": "\"commercial_type\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "zone": {
-              "regex": "\"zone\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "public_ip": {
-              "regex": "\"address\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            },
-            "private_ip": {
-              "regex": "\"private_ip\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            },
-            "image_name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            },
-            "creation_date": {
-              "regex": "\"creation_date\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "root_volume_size": {
-              "regex": "\"size\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            }
+      "params": [
+        "type",
+        "image",
+        "zone",
+        "root_volume_size_gb",
+        "boot_type",
+        "name",
+        "project_param",
+        "ssh_key_param"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "commercial_type": {
+            "regex": "\"commercial_type\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "zone": {
+            "regex": "\"zone\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "public_ip": {
+            "regex": "\"address\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
           }
         }
-      },
-      "delete_worker": {
-        "target": {
-    "Command": {
-        "command": "scw instance server delete {server_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Command": {
+          "command": "scw instance server get {server_id} zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "start_worker": {
-        "target": {
-    "Command": {
-        "command": "scw instance server start {server_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "commercial_type": {
+            "regex": "\"commercial_type\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "zone": {
+            "regex": "\"zone\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "public_ip": {
+            "regex": "\"address\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          },
+          "private_ip": {
+            "regex": "\"private_ip\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          },
+          "image_name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          },
+          "creation_date": {
+            "regex": "\"creation_date\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "root_volume_size": {
+            "regex": "\"size\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
           }
         }
-      },
-      "stop_worker": {
-        "target": {
-    "Command": {
-        "command": "scw instance server stop {server_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Command": {
+          "command": "scw instance server delete {server_id} zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "reboot_worker": {
-        "target": {
-    "Command": {
-        "command": "scw instance server reboot {server_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "list_images": {
-        "target": {
-    "Command": {
-        "command": "scw instance image list zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "images": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
-          }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Command": {
+          "command": "scw instance server start {server_id} zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "list_volumes": {
-        "target": {
-    "Command": {
-        "command": "scw instance volume list zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "volumes": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
+      "params": [
+        "server_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "create_volume": {
-        "target": {
-    "Command": {
-        "command": "scw instance volume create size={size_gb}GB name={name} volume-type={volume_type} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "size_gb",
-          "name",
-          "volume_type",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"size\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "volume_type": {
-              "regex": "\"volume_type\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Command": {
+          "command": "scw instance server stop {server_id} zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "attach_volume": {
-        "target": {
-    "Command": {
-        "command": "scw instance server attach-volume {server_id} volume-id={volume_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "volume_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "detach_volume": {
-        "target": {
-    "Command": {
-        "command": "scw instance server detach-volume {server_id} volume-id={volume_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "volume_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "reboot_worker": {
+      "target": {
+        "Command": {
+          "command": "scw instance server reboot {server_id} zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "delete_volume": {
-        "target": {
-    "Command": {
-        "command": "scw instance volume delete {volume_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "volume_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "create_snapshot": {
-        "target": {
-    "Command": {
-        "command": "scw instance snapshot create volume-id={volume_id} name={name} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "volume_id",
-          "name",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"size\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_images": {
+      "target": {
+        "Command": {
+          "command": "scw instance image list zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "list_snapshots": {
-        "target": {
-    "Command": {
-        "command": "scw instance snapshot list zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "snapshots": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
+      "params": [
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "images": {
+            "regex": "(\\[.*\\])",
+            "group": 1
           }
         }
-      },
-      "delete_snapshot": {
-        "target": {
-    "Command": {
-        "command": "scw instance snapshot delete {snapshot_id} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "snapshot_id",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "list_volumes": {
+      "target": {
+        "Command": {
+          "command": "scw instance volume list zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "list_worker_types": {
-        "target": {
-    "Command": {
-        "command": "scw instance server-type list zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "server_types": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
+      "params": [
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "volumes": {
+            "regex": "(\\[.*\\])",
+            "group": 1
           }
         }
-      },
-      "create_security_group": {
-        "target": {
-    "Command": {
-        "command": "scw instance security-group create name={name} description={description} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "name",
-          "description",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "create_volume": {
+      "target": {
+        "Command": {
+          "command": "scw instance volume create size={size_gb}GB name={name} volume-type={volume_type} zone={zone} -o json",
+          "in_vm": false
         }
       },
-      "add_security_group_rule": {
-        "target": {
-    "Command": {
-        "command": "scw instance security-group add-rule {security_group_id} protocol={protocol} direction={direction} action={action} port={port} zone={zone} -o json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "security_group_id",
-          "protocol",
-          "direction",
-          "action",
-          "port",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "size_gb",
+        "name",
+        "volume_type",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"size\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "volume_type": {
+            "regex": "\"volume_type\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "attach_volume": {
+      "target": {
+        "Command": {
+          "command": "scw instance server attach-volume {server_id} volume-id={volume_id} zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_id",
+        "volume_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "detach_volume": {
+      "target": {
+        "Command": {
+          "command": "scw instance server detach-volume {server_id} volume-id={volume_id} zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_id",
+        "volume_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "delete_volume": {
+      "target": {
+        "Command": {
+          "command": "scw instance volume delete {volume_id} zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "volume_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "create_snapshot": {
+      "target": {
+        "Command": {
+          "command": "scw instance snapshot create volume-id={volume_id} name={name} zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "volume_id",
+        "name",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"size\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_snapshots": {
+      "target": {
+        "Command": {
+          "command": "scw instance snapshot list zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "snapshots": {
+            "regex": "(\\[.*\\])",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_snapshot": {
+      "target": {
+        "Command": {
+          "command": "scw instance snapshot delete {snapshot_id} zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "snapshot_id",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_worker_types": {
+      "target": {
+        "Command": {
+          "command": "scw instance server-type list zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "server_types": {
+            "regex": "(\\[.*\\])",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_security_group": {
+      "target": {
+        "Command": {
+          "command": "scw instance security-group create name={name} description={description} zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "name",
+        "description",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "add_security_group_rule": {
+      "target": {
+        "Command": {
+          "command": "scw instance security-group add-rule {security_group_id} protocol={protocol} direction={direction} action={action} port={port} zone={zone} -o json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "security_group_id",
+        "protocol",
+        "direction",
+        "action",
+        "port",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
       }
     }
   }
+}

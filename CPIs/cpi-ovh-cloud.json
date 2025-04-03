@@ -1,696 +1,696 @@
 {
-    "name": "ovh_cloud",
-    "type": "command",
-    "default_settings": {
-      "region": "GRA7",
-      "flavor": "d2-2",
-      "image": "Ubuntu 22.04",
-      "ssh_key": "",
-      "network": "Ext-Net",
-      "monthly_billing": "false",
-      "project_id": ""
+  "name": "ovh_cloud",
+  "type": "command",
+  "default_settings": {
+    "region": "GRA7",
+    "flavor": "d2-2",
+    "image": "Ubuntu 22.04",
+    "ssh_key": "",
+    "network": "Ext-Net",
+    "monthly_billing": "false",
+    "project_id": ""
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": {
+          "command": "openstack --version",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "openstack ([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "target": {
-    "Command": {
-        "command": "openstack --version",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "version": {
-              "regex": "openstack ([\\d\\.]+)",
-              "group": 1
-            }
-          }
+    "list_workers": {
+      "target": {
+        "Command": {
+          "command": "openstack server list -f json",
+          "in_vm": false
         }
       },
-      "list_workers": {
-        "target": {
-    "Command": {
-        "command": "openstack server list -f json",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\},\\{",
-          "patterns": {
-            "id": {
-              "regex": "\"ID\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"Name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"Status\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "ip_addresses": {
-              "regex": "\"Networks\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "flavor": {
-              "regex": "\"Flavor\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "image": {
-              "regex": "\"Image\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\},\\{",
+        "patterns": {
+          "id": {
+            "regex": "\"ID\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"Name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"Status\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "ip_addresses": {
+            "regex": "\"Networks\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "flavor": {
+            "regex": "\"Flavor\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "image": {
+            "regex": "\"Image\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
           }
         }
-      },
-      "get_worker": {
-        "target": {
-    "Command": {
-        "command": "openstack server show -f json {server_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"status\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "flavor": {
-              "regex": "\"flavor\":\\s*\\{[^}]*\"original_name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "image": {
-              "regex": "\"image\":\\s*\\{[^}]*\"id\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            },
-            "created": {
-              "regex": "\"created\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "addresses": {
-              "regex": "\"addresses\":\\s*\\{[^}]*\"([^\"]+)\"",
-              "group": 1
-            },
-            "key_name": {
-              "regex": "\"key_name\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            }
-          }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Command": {
+          "command": "openstack server show -f json {server_id}",
+          "in_vm": false
         }
       },
-      "create_worker": {
-        "target": {
-    "Command": {
-        "command": "openstack server create --flavor {flavor} --image {image} --network {network} {ssh_key_param} {project_param} --wait {name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "flavor",
-          "image",
-          "network",
-          "ssh_key_param",
-          "project_param",
-          "name"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\\| id\\s+\\| ([a-f0-9-]+)",
-              "group": 1
-            },
-            "name": {
-              "regex": "\\| name\\s+\\| ([^\\|]+)",
-              "group": 1
-            },
-            "status": {
-              "regex": "\\| status\\s+\\| ([^\\|]+)",
-              "group": 1
-            },
-            "addresses": {
-              "regex": "\\| addresses\\s+\\| ([^\\|]+)",
-              "group": 1
-            },
-            "flavor": {
-              "regex": "\\| flavor\\s+\\| ([^\\|]+)",
-              "group": 1
-            }
+      "params": [
+        "server_id"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"status\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "flavor": {
+            "regex": "\"flavor\":\\s*\\{[^}]*\"original_name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "image": {
+            "regex": "\"image\":\\s*\\{[^}]*\"id\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          },
+          "created": {
+            "regex": "\"created\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "addresses": {
+            "regex": "\"addresses\":\\s*\\{[^}]*\"([^\"]+)\"",
+            "group": 1
+          },
+          "key_name": {
+            "regex": "\"key_name\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
           }
         }
-      },
-      "delete_worker": {
-        "target": {
-    "Command": {
-        "command": "openstack server delete --wait {server_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": {
+          "command": "openstack server create --flavor {flavor} --image {image} --network {network} {ssh_key_param} {project_param} --wait {name}",
+          "in_vm": false
         }
       },
-      "start_worker": {
-        "target": {
-    "Command": {
-        "command": "openstack server start {server_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "flavor",
+        "image",
+        "network",
+        "ssh_key_param",
+        "project_param",
+        "name"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\\| id\\s+\\| ([a-f0-9-]+)",
+            "group": 1
+          },
+          "name": {
+            "regex": "\\| name\\s+\\| ([^\\|]+)",
+            "group": 1
+          },
+          "status": {
+            "regex": "\\| status\\s+\\| ([^\\|]+)",
+            "group": 1
+          },
+          "addresses": {
+            "regex": "\\| addresses\\s+\\| ([^\\|]+)",
+            "group": 1
+          },
+          "flavor": {
+            "regex": "\\| flavor\\s+\\| ([^\\|]+)",
+            "group": 1
           }
         }
-      },
-      "stop_worker": {
-        "target": {
-    "Command": {
-        "command": "openstack server stop {server_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Command": {
+          "command": "openstack server delete --wait {server_id}",
+          "in_vm": false
         }
       },
-      "reboot_worker": {
-        "target": {
-    "Command": {
-        "command": "openstack server reboot --wait {server_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "resize_worker": {
-        "target": {
-    "Command": {
-        "command": "openstack server resize --flavor {flavor} --wait {server_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "flavor",
-          "server_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Command": {
+          "command": "openstack server start {server_id}",
+          "in_vm": false
         }
       },
-      "confirm_resize": {
-        "target": {
-    "Command": {
-        "command": "openstack server resize --confirm {server_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "revert_resize": {
-        "target": {
-    "Command": {
-        "command": "openstack server resize --revert {server_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Command": {
+          "command": "openstack server stop {server_id}",
+          "in_vm": false
         }
       },
-      "list_flavors": {
-        "target": {
-    "Command": {
-        "command": "openstack flavor list -f json",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\},\\{",
-          "patterns": {
-            "id": {
-              "regex": "\"ID\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"Name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "ram": {
-              "regex": "\"RAM\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "disk": {
-              "regex": "\"Disk\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "vcpus": {
-              "regex": "\"VCPUs\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            }
+      "params": [
+        "server_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "list_images": {
-        "target": {
-    "Command": {
-        "command": "openstack image list -f json",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\},\\{",
-          "patterns": {
-            "id": {
-              "regex": "\"ID\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"Name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"Status\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"Size\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number",
-              "optional": true
-            }
-          }
+      }
+    },
+    "reboot_worker": {
+      "target": {
+        "Command": {
+          "command": "openstack server reboot --wait {server_id}",
+          "in_vm": false
         }
       },
-      "create_volume": {
-        "target": {
-    "Command": {
-        "command": "openstack volume create --size {size_gb} --description {description} {name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "size_gb",
-          "description",
-          "name"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\\| id\\s+\\| ([a-f0-9-]+)",
-              "group": 1
-            },
-            "name": {
-              "regex": "\\| name\\s+\\| ([^\\|]+)",
-              "group": 1
-            },
-            "size": {
-              "regex": "\\| size\\s+\\| (\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "status": {
-              "regex": "\\| status\\s+\\| ([^\\|]+)",
-              "group": 1
-            }
+      "params": [
+        "server_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "list_volumes": {
-        "target": {
-    "Command": {
-        "command": "openstack volume list -f json",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\},\\{",
-          "patterns": {
-            "id": {
-              "regex": "\"ID\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"Name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"Status\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"Size\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "attached_to": {
-              "regex": "\"Attached to\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            }
-          }
+      }
+    },
+    "resize_worker": {
+      "target": {
+        "Command": {
+          "command": "openstack server resize --flavor {flavor} --wait {server_id}",
+          "in_vm": false
         }
       },
-      "attach_volume": {
-        "target": {
-    "Command": {
-        "command": "openstack server add volume {server_id} {volume_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "volume_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "flavor",
+        "server_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "detach_volume": {
-        "target": {
-    "Command": {
-        "command": "openstack server remove volume {server_id} {volume_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "server_id",
-          "volume_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "confirm_resize": {
+      "target": {
+        "Command": {
+          "command": "openstack server resize --confirm {server_id}",
+          "in_vm": false
         }
       },
-      "delete_volume": {
-        "target": {
-    "Command": {
-        "command": "openstack volume delete {volume_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "volume_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "create_snapshot": {
-        "target": {
-    "Command": {
-        "command": "openstack snapshot create --name {name} {volume_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "name",
-          "volume_id"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\\| id\\s+\\| ([a-f0-9-]+)",
-              "group": 1
-            },
-            "name": {
-              "regex": "\\| name\\s+\\| ([^\\|]+)",
-              "group": 1
-            },
-            "status": {
-              "regex": "\\| status\\s+\\| ([^\\|]+)",
-              "group": 1
-            },
-            "size": {
-              "regex": "\\| size\\s+\\| (\\d+)",
-              "group": 1,
-              "transform": "number"
-            }
-          }
+      }
+    },
+    "revert_resize": {
+      "target": {
+        "Command": {
+          "command": "openstack server resize --revert {server_id}",
+          "in_vm": false
         }
       },
-      "list_snapshots": {
-        "target": {
-    "Command": {
-        "command": "openstack snapshot list -f json",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\},\\{",
-          "patterns": {
-            "id": {
-              "regex": "\"ID\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"Name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"Status\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"Size\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            }
+      "params": [
+        "server_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "delete_snapshot": {
-        "target": {
-    "Command": {
-        "command": "openstack snapshot delete {snapshot_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "snapshot_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "list_flavors": {
+      "target": {
+        "Command": {
+          "command": "openstack flavor list -f json",
+          "in_vm": false
         }
       },
-      "create_ssh_key": {
-        "target": {
-    "Command": {
-        "command": "openstack keypair create --public-key {public_key_file} {key_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "public_key_file",
-          "key_name"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "name": {
-              "regex": "\\| name\\s+\\| ([^\\|]+)",
-              "group": 1
-            },
-            "fingerprint": {
-              "regex": "\\| fingerprint\\s+\\| ([^\\|]+)",
-              "group": 1
-            },
-            "type": {
-              "regex": "\\| type\\s+\\| ([^\\|]+)",
-              "group": 1
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\},\\{",
+        "patterns": {
+          "id": {
+            "regex": "\"ID\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"Name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "ram": {
+            "regex": "\"RAM\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "disk": {
+            "regex": "\"Disk\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "vcpus": {
+            "regex": "\"VCPUs\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
           }
         }
-      },
-      "list_ssh_keys": {
-        "target": {
-    "Command": {
-        "command": "openstack keypair list -f json",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\},\\{",
-          "patterns": {
-            "name": {
-              "regex": "\"Name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "fingerprint": {
-              "regex": "\"Fingerprint\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "type": {
-              "regex": "\"Type\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_images": {
+      "target": {
+        "Command": {
+          "command": "openstack image list -f json",
+          "in_vm": false
         }
       },
-      "delete_ssh_key": {
-        "target": {
-    "Command": {
-        "command": "openstack keypair delete {key_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "key_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\},\\{",
+        "patterns": {
+          "id": {
+            "regex": "\"ID\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"Name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"Status\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"Size\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number",
+            "optional": true
           }
         }
+      }
+    },
+    "create_volume": {
+      "target": {
+        "Command": {
+          "command": "openstack volume create --size {size_gb} --description {description} {name}",
+          "in_vm": false
+        }
       },
-      "list_regions": {
-        "target": {
-    "Command": {
-        "command": "openstack region list -f json",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\\},\\{",
-          "patterns": {
-            "region": {
-              "regex": "\"Region\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "description": {
-              "regex": "\"Description\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            }
+      "params": [
+        "size_gb",
+        "description",
+        "name"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\\| id\\s+\\| ([a-f0-9-]+)",
+            "group": 1
+          },
+          "name": {
+            "regex": "\\| name\\s+\\| ([^\\|]+)",
+            "group": 1
+          },
+          "size": {
+            "regex": "\\| size\\s+\\| (\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "status": {
+            "regex": "\\| status\\s+\\| ([^\\|]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_volumes": {
+      "target": {
+        "Command": {
+          "command": "openstack volume list -f json",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\},\\{",
+        "patterns": {
+          "id": {
+            "regex": "\"ID\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"Name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"Status\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"Size\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "attached_to": {
+            "regex": "\"Attached to\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          }
+        }
+      }
+    },
+    "attach_volume": {
+      "target": {
+        "Command": {
+          "command": "openstack server add volume {server_id} {volume_id}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_id",
+        "volume_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "detach_volume": {
+      "target": {
+        "Command": {
+          "command": "openstack server remove volume {server_id} {volume_id}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_id",
+        "volume_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "delete_volume": {
+      "target": {
+        "Command": {
+          "command": "openstack volume delete {volume_id}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "volume_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "create_snapshot": {
+      "target": {
+        "Command": {
+          "command": "openstack snapshot create --name {name} {volume_id}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "name",
+        "volume_id"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\\| id\\s+\\| ([a-f0-9-]+)",
+            "group": 1
+          },
+          "name": {
+            "regex": "\\| name\\s+\\| ([^\\|]+)",
+            "group": 1
+          },
+          "status": {
+            "regex": "\\| status\\s+\\| ([^\\|]+)",
+            "group": 1
+          },
+          "size": {
+            "regex": "\\| size\\s+\\| (\\d+)",
+            "group": 1,
+            "transform": "number"
+          }
+        }
+      }
+    },
+    "list_snapshots": {
+      "target": {
+        "Command": {
+          "command": "openstack snapshot list -f json",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\},\\{",
+        "patterns": {
+          "id": {
+            "regex": "\"ID\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"Name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"Status\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"Size\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
+          }
+        }
+      }
+    },
+    "delete_snapshot": {
+      "target": {
+        "Command": {
+          "command": "openstack snapshot delete {snapshot_id}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "snapshot_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "create_ssh_key": {
+      "target": {
+        "Command": {
+          "command": "openstack keypair create --public-key {public_key_file} {key_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "public_key_file",
+        "key_name"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "name": {
+            "regex": "\\| name\\s+\\| ([^\\|]+)",
+            "group": 1
+          },
+          "fingerprint": {
+            "regex": "\\| fingerprint\\s+\\| ([^\\|]+)",
+            "group": 1
+          },
+          "type": {
+            "regex": "\\| type\\s+\\| ([^\\|]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_ssh_keys": {
+      "target": {
+        "Command": {
+          "command": "openstack keypair list -f json",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\},\\{",
+        "patterns": {
+          "name": {
+            "regex": "\"Name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "fingerprint": {
+            "regex": "\"Fingerprint\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "type": {
+            "regex": "\"Type\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_ssh_key": {
+      "target": {
+        "Command": {
+          "command": "openstack keypair delete {key_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "key_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_regions": {
+      "target": {
+        "Command": {
+          "command": "openstack region list -f json",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\\},\\{",
+        "patterns": {
+          "region": {
+            "regex": "\"Region\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "description": {
+            "regex": "\"Description\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
           }
         }
       }
     }
   }
+}

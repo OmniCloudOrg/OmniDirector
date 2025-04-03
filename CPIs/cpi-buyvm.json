@@ -1,523 +1,545 @@
 {
-    "name": "buyvm",
-    "type": "command",
-    "default_settings": {
-      "location": "nj",
-      "plan": "ssd-1024",
-      "os": "ubuntu-20.04",
-      "hostname": "buyvm-server",
-      "enable_ipv6": "true",
-      "disk_size": "30"
+  "name": "buyvm",
+  "type": "command",
+  "default_settings": {
+    "location": "nj",
+    "plan": "ssd-1024",
+    "os": "ubuntu-20.04",
+    "hostname": "buyvm-server",
+    "enable_ipv6": "true",
+    "disk_size": "30"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": {
+          "command": "buyvm version",
+          "in_vm": false
+        }
+      },
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "([0-9.]+)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "target": {
-    "Command": {
-        "command": "buyvm version",
-        "in_vm": false
-    }
-},
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "version": {
-              "regex": "([0-9.]+)",
-              "group": 1
-            }
-          }
+    "list_workers": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm list --format json",
+          "in_vm": false
         }
       },
-      "list_workers": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm list --format json",
-        "in_vm": false
-    }
-},
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "vms": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "vms": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "create_worker": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm create --location {location} --plan {worker_type} --os {image} --hostname {name} --ssh-key {ssh_key_id} --ipv6 {enable_ipv6} --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "location",
-          "worker_type",
-          "image",
-          "name",
-          "ssh_key_id",
-          "enable_ipv6"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "worker_id": {
-              "regex": "\"worker_id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "hostname": {
-              "regex": "\"hostname\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "ipv4": {
-              "regex": "\"ipv4\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"status\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm create --location {location} --plan {worker_type} --os {image} --hostname {name} --ssh-key {ssh_key_id} --ipv6 {enable_ipv6} --format json",
+          "in_vm": false
         }
       },
-      "delete_worker": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm delete {worker_id} --confirm --format json",
-        "in_vm": false
-    }
-},
-        "params": ["worker_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "location",
+        "worker_type",
+        "image",
+        "name",
+        "ssh_key_id",
+        "enable_ipv6"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "worker_id": {
+            "regex": "\"worker_id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "hostname": {
+            "regex": "\"hostname\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "ipv4": {
+            "regex": "\"ipv4\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"status\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
-      },
-      "get_worker": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm info {worker_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["worker_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "vm": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm delete {worker_id} --confirm --format json",
+          "in_vm": false
         }
       },
-      "start_worker": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm start {worker_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["worker_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "worker_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "stop_worker": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm stop {worker_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["worker_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm info {worker_id} --format json",
+          "in_vm": false
         }
       },
-      "reboot_worker": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm reboot {worker_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["worker_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "worker_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "vm": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "list_locations": {
-        "target": {
-    "Command": {
-        "command": "buyvm location list --format json",
-        "in_vm": false
-    }
-},
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "locations": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm start {worker_id} --format json",
+          "in_vm": false
         }
       },
-      "list_plans": {
-        "target": {
-    "Command": {
-        "command": "buyvm plan list --location {location} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["location"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "plans": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "worker_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "list_os": {
-        "target": {
-    "Command": {
-        "command": "buyvm os list --format json",
-        "in_vm": false
-    }
-},
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "operating_systems": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm stop {worker_id} --format json",
+          "in_vm": false
         }
       },
-      "create_snapshot": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm snapshot create {worker_id} --name {snapshot_name} --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_id",
-          "snapshot_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "snapshot_id": {
-              "regex": "\"snapshot_id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "params": [
+        "worker_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "list_snapshots": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm snapshot list {worker_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["worker_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "snapshots": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "reboot_worker": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm reboot {worker_id} --format json",
+          "in_vm": false
         }
       },
-      "restore_snapshot": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm snapshot restore {worker_id} --snapshot {snapshot_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_id",
-          "snapshot_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "worker_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "delete_snapshot": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm snapshot delete {worker_id} --snapshot {snapshot_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_id",
-          "snapshot_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_locations": {
+      "target": {
+        "Command": {
+          "command": "buyvm location list --format json",
+          "in_vm": false
         }
       },
-      "create_ssh_key": {
-        "target": {
-    "Command": {
-        "command": "buyvm ssh-key add --name {name} --public-key \"}{ssh_public_key}\" --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "name",
-          "ssh_public_key"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "key_id": {
-              "regex": "\"key_id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "locations": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "list_ssh_keys": {
-        "target": {
-    "Command": {
-        "command": "buyvm ssh-key list --format json",
-        "in_vm": false
-    }
-},
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "keys": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_plans": {
+      "target": {
+        "Command": {
+          "command": "buyvm plan list --location {location} --format json",
+          "in_vm": false
         }
       },
-      "delete_ssh_key": {
-        "target": {
-    "Command": {
-        "command": "buyvm ssh-key delete {ssh_key_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["ssh_key_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "location"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "plans": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "reinstall_os": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm reinstall {worker_id} --os {image} --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_id",
-          "image"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_os": {
+      "target": {
+        "Command": {
+          "command": "buyvm os list --format json",
+          "in_vm": false
         }
       },
-      "resize_worker": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm resize {worker_id} --plan {worker_type} --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "worker_id",
-          "worker_type"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "operating_systems": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "get_console": {
-        "target": {
-    "Command": {
-        "command": "buyvm vm console {worker_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["worker_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "console_url": {
-              "regex": "\"console_url\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "create_snapshot": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm snapshot create {worker_id} --name {snapshot_name} --format json",
+          "in_vm": false
         }
       },
-      "list_block_volume": {
-        "target": {
-    "Command": {
-        "command": "buyvm storage list --format json",
-        "in_vm": false
-    }
-},
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "volumes": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "worker_id",
+        "snapshot_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "snapshot_id": {
+            "regex": "\"snapshot_id\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
-      },
-      "create_block_volume": {
-        "target": {
-    "Command": {
-        "command": "buyvm storage create --location {location} --size {size_gb} --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "location",
-          "size_gb"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "volume_id": {
-              "regex": "\"volume_id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_snapshots": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm snapshot list {worker_id} --format json",
+          "in_vm": false
         }
       },
-      "attach_block_volume": {
-        "target": {
-    "Command": {
-        "command": "buyvm storage attach {disk_id} --vm {worker_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": [
-          "disk_id",
-          "worker_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "worker_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "snapshots": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
-      },
-      "detach_block_volume": {
-        "target": {
-    "Command": {
-        "command": "buyvm storage detach {disk_id} --format json",
-        "in_vm": false
-    }
-},
-        "params": ["disk_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
-          }
+      }
+    },
+    "restore_snapshot": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm snapshot restore {worker_id} --snapshot {snapshot_id} --format json",
+          "in_vm": false
         }
       },
-      "delete_block_volume": {
-        "target": {
-    "Command": {
-        "command": "buyvm storage delete {disk_id} --confirm --format json",
-        "in_vm": false
-    }
-},
-        "params": ["disk_id"],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "result": {
-              "regex": "(.*)",
-              "group": 1
-            }
+      "params": [
+        "worker_id",
+        "snapshot_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_snapshot": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm snapshot delete {worker_id} --snapshot {snapshot_id} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_id",
+        "snapshot_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_ssh_key": {
+      "target": {
+        "Command": {
+          "command": "buyvm ssh-key add --name {name} --public-key \"}{ssh_public_key}\" --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "name",
+        "ssh_public_key"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "key_id": {
+            "regex": "\"key_id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_ssh_keys": {
+      "target": {
+        "Command": {
+          "command": "buyvm ssh-key list --format json",
+          "in_vm": false
+        }
+      },
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "keys": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_ssh_key": {
+      "target": {
+        "Command": {
+          "command": "buyvm ssh-key delete {ssh_key_id} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "ssh_key_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "reinstall_os": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm reinstall {worker_id} --os {image} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_id",
+        "image"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "resize_worker": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm resize {worker_id} --plan {worker_type} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_id",
+        "worker_type"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "get_console": {
+      "target": {
+        "Command": {
+          "command": "buyvm vm console {worker_id} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "worker_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "console_url": {
+            "regex": "\"console_url\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_block_volume": {
+      "target": {
+        "Command": {
+          "command": "buyvm storage list --format json",
+          "in_vm": false
+        }
+      },
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "volumes": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_block_volume": {
+      "target": {
+        "Command": {
+          "command": "buyvm storage create --location {location} --size {size_gb} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "location",
+        "size_gb"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "volume_id": {
+            "regex": "\"volume_id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "attach_block_volume": {
+      "target": {
+        "Command": {
+          "command": "buyvm storage attach {disk_id} --vm {worker_id} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "disk_id",
+        "worker_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "detach_block_volume": {
+      "target": {
+        "Command": {
+          "command": "buyvm storage detach {disk_id} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "disk_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_block_volume": {
+      "target": {
+        "Command": {
+          "command": "buyvm storage delete {disk_id} --confirm --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "disk_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "result": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
       }
     }
   }
+}

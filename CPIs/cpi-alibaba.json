@@ -13,11 +13,11 @@
     "actions": {
         "test_install": {
             "target": {
-    "Command": {
-        "command": "aliyun --version",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun --version",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -30,11 +30,11 @@
         },
         "list_workers": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeInstances --RegionId {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeInstances --RegionId {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -50,11 +50,11 @@
         },
         "create_worker": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs CreateInstance --RegionId {region} --ZoneId {zone} --ImageId {image_id} --InstanceType {worker_type} --SecurityGroupId {security_group} --InstanceName {name} --InternetMaxBandwidthOut {internet_max_bandwidth_out} --KeyPairName {ssh_key_name} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs CreateInstance --RegionId {region} --ZoneId {zone} --ImageId {image_id} --InstanceType {worker_type} --SecurityGroupId {security_group} --InstanceName {name} --InternetMaxBandwidthOut {internet_max_bandwidth_out} --KeyPairName {ssh_key_name} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region",
                 "zone",
@@ -76,11 +76,11 @@
         },
         "start_worker": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs StartInstance --InstanceId {worker_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs StartInstance --InstanceId {worker_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -96,11 +96,11 @@
         },
         "stop_worker": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs StopInstance --InstanceId {worker_id} --ForceStop {force} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs StopInstance --InstanceId {worker_id} --ForceStop {force} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -119,11 +119,11 @@
         },
         "reboot_worker": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs RebootInstance --InstanceId {worker_id} --ForceStop {force} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs RebootInstance --InstanceId {worker_id} --ForceStop {force} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -142,11 +142,11 @@
         },
         "delete_worker": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DeleteInstance --InstanceId {worker_id} --Force {force} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DeleteInstance --InstanceId {worker_id} --Force {force} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -165,11 +165,11 @@
         },
         "get_worker": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeInstances --RegionId {region} --InstanceIds '['{worker_id}']' --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeInstances --RegionId {region} --InstanceIds '['{worker_id}']' --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region",
                 "worker_id"
@@ -186,11 +186,11 @@
         },
         "list_regions": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeRegions --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeRegions --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -203,11 +203,11 @@
         },
         "list_regions": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeZones --RegionId {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeZones --RegionId {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -223,11 +223,11 @@
         },
         "list_worker_types": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeInstanceTypes --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeInstanceTypes --output json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -240,11 +240,11 @@
         },
         "list_images": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeImages --RegionId {region} --ImageOwnerAlias system --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeImages --RegionId {region} --ImageOwnerAlias system --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -260,11 +260,11 @@
         },
         "create_volume": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs CreateDisk --RegionId {region} --ZoneId {zone} --DiskName {disk_name} --DiskCategory {disk_type} --Size {size_gb} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs CreateDisk --RegionId {region} --ZoneId {zone} --DiskName {disk_name} --DiskCategory {disk_type} --Size {size_gb} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region",
                 "zone",
@@ -284,11 +284,11 @@
         },
         "list_volumes": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeDisks --RegionId {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeDisks --RegionId {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -304,11 +304,11 @@
         },
         "delete_volume": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DeleteDisk --DiskId {disk_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DeleteDisk --DiskId {disk_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id"
             ],
@@ -324,11 +324,11 @@
         },
         "attach_volume": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs AttachDisk --InstanceId {worker_id} --DiskId {disk_id} --DeleteWithInstance {auto_delete} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs AttachDisk --InstanceId {worker_id} --DiskId {disk_id} --DeleteWithInstance {auto_delete} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "disk_id"
@@ -348,11 +348,11 @@
         },
         "detach_volume": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DetachDisk --InstanceId {worker_id} --DiskId {disk_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DetachDisk --InstanceId {worker_id} --DiskId {disk_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "disk_id"
@@ -369,11 +369,11 @@
         },
         "resize_volume": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs ResizeDisk --DiskId {disk_id} --NewSize {size_gb} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs ResizeDisk --DiskId {disk_id} --NewSize {size_gb} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id",
                 "size_gb"
@@ -390,11 +390,11 @@
         },
         "resize_worker": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs ModifyInstanceSpec --InstanceId {worker_id} --InstanceType {worker_type} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs ModifyInstanceSpec --InstanceId {worker_id} --InstanceType {worker_type} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "worker_type"
@@ -411,11 +411,11 @@
         },
         "list_security_groups": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeSecurityGroups --RegionId {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeSecurityGroups --RegionId {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -431,11 +431,11 @@
         },
         "create_security_group": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs CreateSecurityGroup --RegionId {region} --SecurityGroupName {name} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs CreateSecurityGroup --RegionId {region} --SecurityGroupName {name} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region",
                 "name"
@@ -452,11 +452,11 @@
         },
         "create_firewall_rule": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs AuthorizeSecurityGroup --RegionId {region} --SecurityGroupId {security_group_id} --IpProtocol {protocol} --PortRange {port} --SourceCidrIp {source} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs AuthorizeSecurityGroup --RegionId {region} --SecurityGroupId {security_group_id} --IpProtocol {protocol} --PortRange {port} --SourceCidrIp {source} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region",
                 "security_group_id",
@@ -476,11 +476,11 @@
         },
         "create_snapshot": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs CreateSnapshot --DiskId {disk_id} --SnapshotName {snapshot_name} --Description {description} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs CreateSnapshot --DiskId {disk_id} --SnapshotName {snapshot_name} --Description {description} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id",
                 "snapshot_name",
@@ -498,11 +498,11 @@
         },
         "list_snapshots": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DescribeSnapshots --RegionId {region} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DescribeSnapshots --RegionId {region} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "region"
             ],
@@ -518,11 +518,11 @@
         },
         "delete_snapshot": {
             "target": {
-    "Command": {
-        "command": "aliyun ecs DeleteSnapshot --SnapshotId {snapshot_id} --output json",
-        "in_vm": false
-    }
-},
+                "Command": {
+                    "command": "aliyun ecs DeleteSnapshot --SnapshotId {snapshot_id} --output json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "snapshot_id"
             ],

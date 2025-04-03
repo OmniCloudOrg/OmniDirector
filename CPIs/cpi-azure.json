@@ -1,397 +1,397 @@
 {
-    "name": "azure",
-    "type": "command",
-    "default_settings": {
-      "location": "eastus",
-      "resource_group": "default-rg",
-      "worker_size": "Standard_B1s",
-      "image": "Canonical:UbuntuServer:18.04-LTS:latest",
-      "admin_username": "azureuser",
-      "disk_sku": "Standard_LRS"
+  "name": "azure",
+  "type": "command",
+  "default_settings": {
+    "location": "eastus",
+    "resource_group": "default-rg",
+    "worker_size": "Standard_B1s",
+    "image": "Canonical:UbuntuServer:18.04-LTS:latest",
+    "admin_username": "azureuser",
+    "disk_sku": "Standard_LRS"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": {
+          "command": "az --version",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "azure-cli\\s+([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "target": {
-    "Command": {
-        "command": "az --version",
-        "in_vm": false
-    }
-},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "version": {
-              "regex": "azure-cli\\s+([\\d\\.]+)",
-              "group": 1
-            }
-          }
+    "create_resource_group": {
+      "target": {
+        "Command": {
+          "command": "az group create --name {resource_group} --location {location}",
+          "in_vm": false
         }
       },
-      "create_resource_group": {
-        "target": {
-    "Command": {
-        "command": "az group create --name {resource_group} --location {location}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "location"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "location": {
-              "regex": "\"location\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "params": [
+        "resource_group",
+        "location"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "location": {
+            "regex": "\"location\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
-      },
-      "delete_resource_group": {
-        "target": {
-    "Command": {
-        "command": "az group delete --name {resource_group} --yes --no-wait",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "delete_resource_group": {
+      "target": {
+        "Command": {
+          "command": "az group delete --name {resource_group} --yes --no-wait",
+          "in_vm": false
         }
       },
-      "create_worker": {
-        "target": {
-    "Command": {
-        "command": "az vm create --resource-group {resource_group} --name {worker_name} --image {image} --admin-username {admin_username} --size {worker_size} --generate-ssh-keys",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "worker_name",
-          "image",
-          "admin_username",
-          "worker_size"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "public_ip": {
-              "regex": "\"publicIpAddress\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            },
-            "private_ip": {
-              "regex": "\"privateIpAddress\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "params": [
+        "resource_group"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "delete_worker": {
-        "target": {
-    "Command": {
-        "command": "az vm delete --resource-group {resource_group} --name {worker_name} --yes",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": {
+          "command": "az vm create --resource-group {resource_group} --name {worker_name} --image {image} --admin-username {admin_username} --size {worker_size} --generate-ssh-keys",
+          "in_vm": false
         }
       },
-      "start_worker": {
-        "target": {
-    "Command": {
-        "command": "az vm start --resource-group {resource_group} --name {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "resource_group",
+        "worker_name",
+        "image",
+        "admin_username",
+        "worker_size"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "public_ip": {
+            "regex": "\"publicIpAddress\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          },
+          "private_ip": {
+            "regex": "\"privateIpAddress\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
-      },
-      "stop_worker": {
-        "target": {
-    "Command": {
-        "command": "az vm stop --resource-group {resource_group} --name {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Command": {
+          "command": "az vm delete --resource-group {resource_group} --name {worker_name} --yes",
+          "in_vm": false
         }
       },
-      "list_workers": {
-        "target": {
-    "Command": {
-        "command": "az vm list --resource-group {resource_group}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group"
-        ],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\"name\"",
-          "patterns": {
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"powerState\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            },
-            "size": {
-              "regex": "\"vmSize\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "params": [
+        "resource_group",
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "get_worker": {
-        "target": {
-    "Command": {
-        "command": "az vm show --resource-group {resource_group} --name {worker_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "worker_name"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "location": {
-              "regex": "\"location\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"hardwareProfile\":\\s*\\{[^}]*\"vmSize\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "os_volume": {
-              "regex": "\"osProfileWindowsConfiguration\":\\s*\\{",
-              "transform": "boolean",
-              "optional": true
-            }
-          }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Command": {
+          "command": "az vm start --resource-group {resource_group} --name {worker_name}",
+          "in_vm": false
         }
       },
-      "create_volume": {
-        "target": {
-    "Command": {
-        "command": "az disk create --resource-group {resource_group} --name {disk_name} --size-gb {size_gb} --sku {disk_sku}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "disk_name",
-          "size_gb",
-          "disk_sku"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "params": [
+        "resource_group",
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "attach_volume": {
-        "target": {
-    "Command": {
-        "command": "az vm disk attach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "worker_name",
-          "disk_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Command": {
+          "command": "az vm stop --resource-group {resource_group} --name {worker_name}",
+          "in_vm": false
         }
       },
-      "detach_volume": {
-        "target": {
-    "Command": {
-        "command": "az vm disk detach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "worker_name",
-          "disk_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "resource_group",
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "list_volumes": {
-        "target": {
-    "Command": {
-        "command": "az disk list --resource-group {resource_group}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group"
-        ],
-        "parse_rules": {
-          "type": "array",
-          "separator": "\"name\"",
-          "patterns": {
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size_gb": {
-              "regex": "\"diskSizeGb\":\\s*(\\d+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "sku": {
-              "regex": "\"sku\":\\s*\\{[^}]*\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_workers": {
+      "target": {
+        "Command": {
+          "command": "az vm list --resource-group {resource_group}",
+          "in_vm": false
         }
       },
-      "has_volume": {
-        "target": {
-    "Command": {
-        "command": "az disk show --resource-group {resource_group} --name {disk_name}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "disk_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "exists": {
-              "regex": "\"name\"",
-              "transform": "boolean"
-            }
+      "params": [
+        "resource_group"
+      ],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\"name\"",
+        "patterns": {
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"powerState\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          },
+          "size": {
+            "regex": "\"vmSize\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Command": {
+          "command": "az vm show --resource-group {resource_group} --name {worker_name}",
+          "in_vm": false
+        }
       },
-      "create_snapshot": {
-        "target": {
-    "Command": {
-        "command": "az snapshot create --resource-group {resource_group} --name {snapshot_name} --source {disk_id}",
-        "in_vm": false
-    }
-},
-        "params": [
-          "resource_group",
-          "snapshot_name",
-          "disk_id"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "params": [
+        "resource_group",
+        "worker_name"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "location": {
+            "regex": "\"location\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"hardwareProfile\":\\s*\\{[^}]*\"vmSize\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "os_volume": {
+            "regex": "\"osProfileWindowsConfiguration\":\\s*\\{",
+            "transform": "boolean",
+            "optional": true
+          }
+        }
+      }
+    },
+    "create_volume": {
+      "target": {
+        "Command": {
+          "command": "az disk create --resource-group {resource_group} --name {disk_name} --size-gb {size_gb} --sku {disk_sku}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "resource_group",
+        "disk_name",
+        "size_gb",
+        "disk_sku"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "attach_volume": {
+      "target": {
+        "Command": {
+          "command": "az vm disk attach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "resource_group",
+        "worker_name",
+        "disk_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "detach_volume": {
+      "target": {
+        "Command": {
+          "command": "az vm disk detach --resource-group {resource_group} --vm-name {worker_name} --name {disk_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "resource_group",
+        "worker_name",
+        "disk_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_volumes": {
+      "target": {
+        "Command": {
+          "command": "az disk list --resource-group {resource_group}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "resource_group"
+      ],
+      "parse_rules": {
+        "type": "array",
+        "separator": "\"name\"",
+        "patterns": {
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size_gb": {
+            "regex": "\"diskSizeGb\":\\s*(\\d+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "sku": {
+            "regex": "\"sku\":\\s*\\{[^}]*\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "has_volume": {
+      "target": {
+        "Command": {
+          "command": "az disk show --resource-group {resource_group} --name {disk_name}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "resource_group",
+        "disk_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "exists": {
+            "regex": "\"name\"",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "create_snapshot": {
+      "target": {
+        "Command": {
+          "command": "az snapshot create --resource-group {resource_group} --name {snapshot_name} --source {disk_id}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "resource_group",
+        "snapshot_name",
+        "disk_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
       }
     }
   }
+}
