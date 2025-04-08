@@ -7806,3 +7806,78 @@ Usage - Attach, remove, and modify storage media used by a virtual machine:
 [2025-03-25 18:30:15] Logging system initialized
 [2025-03-25 18:30:15] Server running at http://0.0.0.0:8081
 [2025-03-25 18:30:15] Loaded CPI providers: ["exoscale", "rackspace", "alibaba-cloud", "truenas", "azure-api", "digital_ocean", "aws-lightsail", "virtualbox_windows", "gcp-api", "contabo", "scaleway", "ovh_cloud", "linode", "ec2", "vmware_esxi", "detee_cpi", "upcloud", "dummy", "qemu", "proxmox", "vultr", "equinix-metal", "gcp", "huawei-cloud", "buyvm", "tencent", "ec2-api", "ibm-cloud", "azure", "std_kvm", "hetzner_cloud", "atlantic", "oracle_cloud", "kamatera"]
+[2025-04-08 20:35:52] Logging system initialized
+[2025-04-08 20:35:52] Server running at http://0.0.0.0:8081
+[2025-04-08 20:35:52] Loaded CPI providers: ["aws-lightsail", "std_kvm", "azure-api", "hetzner_cloud", "vultr", "qemu", "ec2", "vmware_esxi", "gcp", "rackspace", "equinix-metal", "kamatera", "exoscale", "virtualbox_windows", "scaleway", "truenas", "buyvm", "ec2-api", "ibm-cloud", "proxmox", "alibaba-cloud", "oracle_cloud", "digital_ocean", "detee_cpi", "dummy", "huawei-cloud", "upcloud", "atlantic", "contabo", "azure", "ovh_cloud", "tencent", "linode", "gcp-api"]
+[2025-04-08 20:43:04] Logging system initialized
+[2025-04-08 20:43:05] Server running at http://0.0.0.0:8081
+[2025-04-08 20:43:05] Loaded CPI providers: ["atlantic", "oracle_cloud", "truenas", "vultr", "gcp", "std_kvm", "azure-api", "gcp-api", "scaleway", "proxmox", "linode", "qemu", "dummy", "equinix-metal", "ec2", "rackspace", "upcloud", "exoscale", "digital_ocean", "contabo", "ibm-cloud", "alibaba-cloud", "ec2-api", "hetzner_cloud", "kamatera", "detee_cpi", "buyvm", "virtualbox_windows", "azure", "ovh_cloud", "vmware_esxi", "aws-lightsail", "huawei-cloud", "tencent"]
+[2025-04-08 20:46:44] Logging system initialized
+[2025-04-08 20:46:45] Server running at http://0.0.0.0:8081
+[2025-04-08 20:46:45] Loaded CPI providers: ["huawei-cloud", "exoscale", "digital_ocean", "gcp-api", "contabo", "detee_cpi", "ec2-api", "azure-api", "alibaba-cloud", "aws-lightsail", "oracle_cloud", "std_kvm", "gcp", "dummy", "kamatera", "vmware_esxi", "scaleway", "vultr", "atlantic", "truenas", "qemu", "hetzner_cloud", "proxmox", "tencent", "ovh_cloud", "rackspace", "upcloud", "virtualbox_windows", "ibm-cloud", "linode", "ec2", "azure", "equinix-metal", "buyvm"]
+[2025-04-08 20:54:17] Logging system initialized
+[2025-04-08 20:54:17] Server running at http://0.0.0.0:8081
+[2025-04-08 20:54:17] Loaded CPI providers: ["vultr", "atlantic", "ovh_cloud", "scaleway", "ec2", "exoscale", "upcloud", "oracle_cloud", "proxmox", "tencent", "ibm-cloud", "buyvm", "virtualbox_windows", "azure", "gcp", "ec2-api", "kamatera", "alibaba-cloud", "detee_cpi", "equinix-metal", "truenas", "azure-api", "huawei-cloud", "digital_ocean", "qemu", "rackspace", "dummy", "contabo", "std_kvm", "virtualbox_linux", "vmware_esxi", "linode", "hetzner_cloud", "gcp-api", "aws-lightsail"]
+[2025-04-08 20:59:16] Logging system initialized
+[2025-04-08 20:59:17] Server running at http://0.0.0.0:8081
+[2025-04-08 20:59:17] Loaded CPI providers: ["virtualbox_windows", "atlantic", "buyvm", "exoscale", "azure", "digital_ocean", "contabo", "hetzner_cloud", "kamatera", "rackspace", "std_kvm", "vultr", "ibm-cloud", "gcp-api", "ovh_cloud", "alibaba-cloud", "qemu", "ec2-api", "gcp", "ec2", "proxmox", "huawei-cloud", "scaleway", "vmware_esxi", "equinix-metal", "truenas", "dummy", "oracle_cloud", "tencent", "azure-api", "upcloud", "aws-lightsail", "linode", "detee_cpi"]
+[2025-04-08 21:00:10] Logging system initialized
+[2025-04-08 21:00:10] Server running at http://0.0.0.0:8081
+[2025-04-08 21:00:10] Loaded CPI providers: ["truenas", "std_kvm", "scaleway", "dummy", "equinix-metal", "rackspace", "ec2-api", "tencent", "virtualbox_windows", "exoscale", "ec2", "buyvm", "ovh_cloud", "contabo", "detee_cpi", "linode", "kamatera", "oracle_cloud", "vmware_esxi", "upcloud", "alibaba-cloud", "proxmox", "azure-api", "ibm-cloud", "qemu", "aws-lightsail", "vultr", "atlantic", "digital_ocean", "huawei-cloud", "gcp-api", "gcp", "azure", "hetzner_cloud"]
+[2025-04-08 21:00:58] Logging system initialized
+[2025-04-08 21:00:58] Server running at http://0.0.0.0:8081
+[2025-04-08 21:00:58] Loaded CPI providers: ["qemu", "buyvm", "azure", "vultr", "gcp", "tencent", "hetzner_cloud", "proxmox", "kamatera", "alibaba-cloud", "ec2-api", "vmware_esxi", "azure-api", "exoscale", "virtualbox_windows", "dummy", "std_kvm", "detee_cpi", "upcloud", "equinix-metal", "contabo", "ibm-cloud", "rackspace", "aws-lightsail", "atlantic", "linode", "gcp-api", "ovh_cloud", "huawei-cloud", "oracle_cloud", "scaleway", "digital_ocean", "truenas", "ec2"]
+[2025-04-08 21:01:49] Logging system initialized
+[2025-04-08 21:01:49] Server running at http://0.0.0.0:8081
+[2025-04-08 21:01:49] Loaded CPI providers: ["contabo", "huawei-cloud", "exoscale", "vmware_esxi", "rackspace", "hetzner_cloud", "azure-api", "qemu", "azure", "linode", "tencent", "kamatera", "gcp", "ibm-cloud", "vultr", "proxmox", "buyvm", "std_kvm", "oracle_cloud", "digital_ocean", "virtualbox_windows", "upcloud", "ec2-api", "alibaba-cloud", "detee_cpi", "gcp-api", "scaleway", "truenas", "dummy", "ovh_cloud", "equinix-metal", "aws-lightsail", "ec2", "atlantic"]
+[2025-04-08 21:02:58] Logging system initialized
+[2025-04-08 21:02:58] Server running at http://0.0.0.0:8081
+[2025-04-08 21:02:58] Loaded CPI providers: ["ec2-api", "equinix-metal", "qemu", "vmware_esxi", "huawei-cloud", "upcloud", "gcp", "digital_ocean", "hetzner_cloud", "truenas", "std_kvm", "azure", "azure-api", "kamatera", "vultr", "atlantic", "linode", "buyvm", "ibm-cloud", "oracle_cloud", "exoscale", "dummy", "alibaba-cloud", "scaleway", "gcp-api", "detee_cpi", "ec2", "proxmox", "aws-lightsail", "ovh_cloud", "tencent", "contabo", "rackspace", "virtualbox_windows"]
+[2025-04-08 21:06:24] Logging system initialized
+[2025-04-08 21:06:24] Server running at http://0.0.0.0:8081
+[2025-04-08 21:06:24] Loaded CPI providers: ["ec2", "gcp-api", "scaleway", "std_kvm", "upcloud", "ec2-api", "virtualbox_windows", "huawei-cloud", "ibm-cloud", "alibaba-cloud", "vultr", "dummy", "azure-api", "truenas", "qemu", "atlantic", "ovh_cloud", "gcp", "proxmox", "rackspace", "hetzner_cloud", "oracle_cloud", "tencent", "linode", "azure", "detee_cpi", "buyvm", "vmware_esxi", "equinix-metal", "contabo", "digital_ocean", "kamatera", "exoscale", "aws-lightsail"]
+[2025-04-08 21:07:36] Logging system initialized
+[2025-04-08 21:07:37] Server running at http://0.0.0.0:8081
+[2025-04-08 21:07:37] Loaded CPI providers: ["azure-api", "virtualbox_windows", "alibaba-cloud", "dummy", "qemu", "oracle_cloud", "upcloud", "scaleway", "detee_cpi", "gcp-api", "azure", "kamatera", "vmware_esxi", "buyvm", "hetzner_cloud", "ec2", "ec2-api", "equinix-metal", "truenas", "vultr", "gcp", "linode", "ovh_cloud", "tencent", "ibm-cloud", "rackspace", "digital_ocean", "std_kvm", "contabo", "exoscale", "aws-lightsail", "huawei-cloud", "proxmox", "atlantic"]
+[2025-04-08 21:08:03] Logging system initialized
+[2025-04-08 21:08:03] Server running at http://0.0.0.0:8081
+[2025-04-08 21:08:03] Loaded CPI providers: ["digital_ocean", "std_kvm", "linode", "virtualbox_windows", "dummy", "atlantic", "ovh_cloud", "contabo", "gcp", "exoscale", "buyvm", "huawei-cloud", "kamatera", "alibaba-cloud", "upcloud", "ec2-api", "oracle_cloud", "gcp-api", "ibm-cloud", "proxmox", "aws-lightsail", "hetzner_cloud", "vultr", "scaleway", "truenas", "rackspace", "azure-api", "tencent", "qemu", "equinix-metal", "detee_cpi", "vmware_esxi", "azure", "ec2"]
+[2025-04-08 21:09:07] Logging system initialized
+[2025-04-08 21:09:08] Server running at http://0.0.0.0:8081
+[2025-04-08 21:09:08] Loaded CPI providers: ["detee_cpi", "contabo", "upcloud", "digital_ocean", "azure-api", "scaleway", "tencent", "proxmox", "vultr", "exoscale", "std_kvm", "equinix-metal", "qemu", "hetzner_cloud", "vmware_esxi", "ibm-cloud", "azure", "truenas", "atlantic", "gcp-api", "virtualbox_windows", "linode", "ec2-api", "ec2", "ovh_cloud", "alibaba-cloud", "kamatera", "buyvm", "huawei-cloud", "dummy", "rackspace", "oracle_cloud", "aws-lightsail", "gcp"]
+[2025-04-08 21:13:01] Logging system initialized
+[2025-04-08 21:13:01] Server running at http://0.0.0.0:8081
+[2025-04-08 21:13:01] Loaded CPI providers: ["vmware_esxi", "ovh_cloud", "std_kvm", "exoscale", "digital_ocean", "detee_cpi", "dummy", "buyvm", "equinix-metal", "aws-lightsail", "ec2-api", "gcp-api", "virtualbox_windows", "azure", "truenas", "atlantic", "vultr", "scaleway", "contabo", "qemu", "rackspace", "linode", "ec2", "proxmox", "ibm-cloud", "alibaba-cloud", "upcloud", "azure-api", "kamatera", "huawei-cloud", "oracle_cloud", "tencent", "gcp", "hetzner_cloud"]
+[2025-04-08 21:14:06] Logging system initialized
+[2025-04-08 21:14:06] Server running at http://0.0.0.0:8081
+[2025-04-08 21:14:06] Loaded CPI providers: ["gcp", "ec2", "ec2-api", "ovh_cloud", "scaleway", "atlantic", "digital_ocean", "linode", "equinix-metal", "rackspace", "gcp-api", "contabo", "aws-lightsail", "truenas", "alibaba-cloud", "exoscale", "std_kvm", "huawei-cloud", "kamatera", "detee_cpi", "vultr", "dummy", "upcloud", "oracle_cloud", "tencent", "buyvm", "vmware_esxi", "proxmox", "qemu", "hetzner_cloud", "azure-api", "azure", "virtualbox_windows", "ibm-cloud"]
+[2025-04-08 21:14:23] Logging system initialized
+[2025-04-08 21:14:23] Server running at http://0.0.0.0:8081
+[2025-04-08 21:14:23] Loaded CPI providers: ["azure", "azure-api", "qemu", "vmware_esxi", "gcp", "virtualbox_windows", "proxmox", "kamatera", "ec2-api", "std_kvm", "exoscale", "truenas", "hetzner_cloud", "huawei-cloud", "alibaba-cloud", "detee_cpi", "ibm-cloud", "vultr", "contabo", "upcloud", "digital_ocean", "buyvm", "aws-lightsail", "ovh_cloud", "rackspace", "linode", "tencent", "atlantic", "oracle_cloud", "scaleway", "equinix-metal", "gcp-api", "ec2", "dummy"]
+[2025-04-08 21:20:43] Logging system initialized
+[2025-04-08 21:20:43] Server running at http://0.0.0.0:8081
+[2025-04-08 21:20:43] Loaded CPI providers: ["dummy", "aws-lightsail", "gcp", "ec2", "truenas", "exoscale", "rackspace", "ec2-api", "hetzner_cloud", "qemu", "atlantic", "ibm-cloud", "equinix-metal", "scaleway", "kamatera", "proxmox", "digital_ocean", "upcloud", "azure", "alibaba-cloud", "vmware_esxi", "huawei-cloud", "virtualbox_windows", "contabo", "buyvm", "ovh_cloud", "azure-api", "vultr", "tencent", "detee_cpi", "std_kvm", "oracle_cloud", "gcp-api", "linode"]
+[2025-04-08 21:27:46] Logging system initialized
+[2025-04-08 21:27:46] Server running at http://0.0.0.0:8081
+[2025-04-08 21:27:46] Loaded CPI providers: ["azure-api", "std_kvm", "vultr", "azure", "gcp-api", "oracle_cloud", "tencent", "proxmox", "ovh_cloud", "digital_ocean", "rackspace", "exoscale", "contabo", "truenas", "huawei-cloud", "equinix-metal", "qemu", "dummy", "atlantic", "ibm-cloud", "ec2", "aws-lightsail", "buyvm", "hetzner_cloud", "scaleway", "upcloud", "alibaba-cloud", "gcp", "linode", "vmware_esxi", "detee_cpi", "ec2-api", "kamatera", "virtualbox_windows"]
+[2025-04-08 21:34:30] Logging system initialized
+[2025-04-08 21:34:31] Server running at http://0.0.0.0:8081
+[2025-04-08 21:34:31] Loaded CPI providers: ["contabo", "digital_ocean", "truenas", "buyvm", "linode", "ec2", "alibaba-cloud", "rackspace", "vultr", "hetzner_cloud", "azure-api", "kamatera", "gcp", "huawei-cloud", "tencent", "std_kvm", "detee_cpi", "aws-lightsail", "ovh_cloud", "exoscale", "vmware_esxi", "ibm-cloud", "dummy", "ec2-api", "proxmox", "virtualbox_windows", "scaleway", "upcloud", "oracle_cloud", "atlantic", "qemu", "gcp-api", "azure", "equinix-metal"]
+[2025-04-08 21:35:25] Logging system initialized
+[2025-04-08 21:35:25] Server running at http://0.0.0.0:8081
+[2025-04-08 21:35:25] Loaded CPI providers: ["upcloud", "ec2", "proxmox", "gcp-api", "kamatera", "dummy", "contabo", "atlantic", "scaleway", "detee_cpi", "std_kvm", "truenas", "ibm-cloud", "gcp", "vmware_esxi", "digital_ocean", "vultr", "azure-api", "exoscale", "virtualbox_windows", "qemu", "azure", "buyvm", "ovh_cloud", "ec2-api", "equinix-metal", "alibaba-cloud", "aws-lightsail", "hetzner_cloud", "linode", "tencent", "oracle_cloud", "virtualbox_linux", "huawei-cloud", "rackspace"]
+[2025-04-08 21:38:04] Logging system initialized
+[2025-04-08 21:38:04] Server running at http://0.0.0.0:8081
+[2025-04-08 21:38:04] Loaded CPI providers: ["atlantic", "azure", "qemu", "proxmox", "linode", "std_kvm", "exoscale", "ibm-cloud", "ec2-api", "upcloud", "truenas", "ec2", "aws-lightsail", "detee_cpi", "virtualbox_linux", "azure-api", "oracle_cloud", "vmware_esxi", "digital_ocean", "gcp", "buyvm", "kamatera", "dummy", "scaleway", "vultr", "equinix-metal", "contabo", "rackspace", "tencent", "gcp-api", "alibaba-cloud", "huawei-cloud", "virtualbox_windows", "ovh_cloud", "hetzner_cloud"]
+[2025-04-08 21:39:13] Logging system initialized
+[2025-04-08 21:39:13] Server running at http://0.0.0.0:8081
+[2025-04-08 21:39:13] Loaded CPI providers: ["rackspace", "gcp-api", "truenas", "scaleway", "huawei-cloud", "aws-lightsail", "atlantic", "hetzner_cloud", "vmware_esxi", "ibm-cloud", "linode", "vultr", "oracle_cloud", "ec2", "tencent", "dummy", "digital_ocean", "detee_cpi", "azure", "ec2-api", "contabo", "azure-api", "qemu", "exoscale", "alibaba-cloud", "equinix-metal", "gcp", "virtualbox_linux", "upcloud", "std_kvm", "buyvm", "proxmox", "ovh_cloud", "virtualbox_windows", "kamatera"]
+[2025-04-08 21:39:19] Logging system initialized
+[2025-04-08 21:39:20] Server running at http://0.0.0.0:8081
+[2025-04-08 21:39:20] Loaded CPI providers: ["dummy", "ovh_cloud", "hetzner_cloud", "azure-api", "atlantic", "alibaba-cloud", "vultr", "exoscale", "virtualbox_linux", "linode", "qemu", "huawei-cloud", "ec2-api", "contabo", "aws-lightsail", "equinix-metal", "scaleway", "virtualbox_windows", "vmware_esxi", "ibm-cloud", "oracle_cloud", "buyvm", "ec2", "gcp", "gcp-api", "kamatera", "truenas", "upcloud", "detee_cpi", "azure", "rackspace", "tencent", "proxmox", "std_kvm", "digital_ocean"]
+[2025-04-08 21:40:09] Logging system initialized
+[2025-04-08 21:40:09] Server running at http://0.0.0.0:8081
+[2025-04-08 21:40:09] Loaded CPI providers: ["hetzner_cloud", "contabo", "digital_ocean", "atlantic", "buyvm", "rackspace", "ec2", "detee_cpi", "gcp-api", "dummy", "gcp", "linode", "qemu", "upcloud", "exoscale", "ovh_cloud", "truenas", "vmware_esxi", "virtualbox_linux", "proxmox", "alibaba-cloud", "ibm-cloud", "equinix-metal", "ec2-api", "aws-lightsail", "virtualbox_windows", "scaleway", "huawei-cloud", "std_kvm", "tencent", "vultr", "azure", "azure-api", "oracle_cloud", "kamatera"]
+[2025-04-08 21:40:22] Logging system initialized
+[2025-04-08 21:40:23] Server running at http://0.0.0.0:8081
+[2025-04-08 21:40:23] Loaded CPI providers: ["oracle_cloud", "qemu", "buyvm", "rackspace", "dummy", "detee_cpi", "ec2-api", "azure", "equinix-metal", "virtualbox_windows", "truenas", "linode", "aws-lightsail", "kamatera", "vultr", "tencent", "ovh_cloud", "digital_ocean", "ec2", "proxmox", "gcp-api", "std_kvm", "gcp", "upcloud", "exoscale", "vmware_esxi", "huawei-cloud", "alibaba-cloud", "ibm-cloud", "contabo", "azure-api", "scaleway", "virtualbox_linux", "atlantic", "hetzner_cloud"]

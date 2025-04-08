@@ -1,3 +1,28 @@
+//! # CPI System Module
+//!
+//! The CPI (Component Provider Interface) system provides a modular framework for
+//! loading, validating, and executing actions from various providers.
+//!
+//! This module implements a thread-safe, concurrent system for managing CPI providers,
+//! handling initialization, registration, validation, and execution of provider actions.
+//!
+//! ## Key Features
+//!
+//! * Thread-safe provider management using concurrent maps
+//! * Parallel loading and validation of providers
+//! * Error tracking and reporting
+//! * Action execution with parameter validation
+//!
+//! ## Usage
+//!
+//! ```rust
+//! // Initialize the CPI system
+//! let cpi_system = omni_director::cpis::initialize()?;
+//!
+//! // Execute an action on a provider
+//! let result = cpi_system.execute("provider_name", "action_name", params)?;
+//! ```
+
 pub mod error;
 pub mod executor;
 pub mod loader;
@@ -18,9 +43,27 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex, Once};
 use std::sync::atomic::{AtomicBool, Ordering};
 
+/// Ensures the initialization happens exactly once
 static INIT: Once = Once::new();
+/// Tracks whether the system has been fully initialized
 static INITIALIZED: AtomicBool = AtomicBool::new(false);
 
+/// Measures and logs the execution time of a function in debug mode
+///
+/// # Arguments
+///
+/// * `name` - The name of the action being timed, used in the debug log
+/// * `f` - The function to time
+///
+/// # Returns
+///
+/// The result of the function execution
+///
+/// # Examples
+///
+/// ```
+/// let result = time("Loading providers", || load_all_providers());
+/// ```
 #[cfg(debug_assertions)]
 fn time<T, A: ToString, F: FnOnce() -> T>(name: A, f: F) -> T {
     let time = std::time::Instant::now();
@@ -29,11 +72,37 @@ fn time<T, A: ToString, F: FnOnce() -> T>(name: A, f: F) -> T {
     debug!("{} Took {:?}", action, time.elapsed());
     out
 }
+
+/// No-op version of the time function for release builds
+///
+/// Simply executes the function without timing in non-debug builds
 #[cfg(not(debug_assertions))]
 fn time<T, A: ToString, F: FnOnce() -> T>(_: A, f: F) -> T {
     f()
 }
 
+/// Initializes the CPI system and loads all providers
+///
+/// This function handles the initialization of the CPI system, ensuring that
+/// it only happens once, even when called from multiple threads. It configures 
+/// logging, loads all providers, and returns a usable CPI system instance.
+///
+/// # Returns
+///
+/// * `Result<CpiSystem, CpiError>` - A Result containing either a fully initialized 
+///   CPI system or an error if initialization failed
+///
+/// # Examples
+///
+/// ```
+/// let cpi_system = match cpis::initialize() {
+///     Ok(system) => system,
+///     Err(e) => {
+///         error!("Failed to initialize CPI system: {}", e);
+///         return Err(e.into());
+///     }
+/// };
+/// ```
 pub fn initialize() -> Result<CpiSystem, error::CpiError> {
     // Skip initialization if already done
     if INITIALIZED.load(Ordering::SeqCst) {
@@ -79,32 +148,88 @@ pub fn initialize() -> Result<CpiSystem, error::CpiError> {
     }
 }
 
-// Public API for the CPI system
+/// Main struct representing the CPI system
+///
+/// This struct provides the public API for the CPI system, allowing clients to
+/// load, query, and execute provider actions. It uses thread-safe data structures
+/// to enable concurrent access from multiple threads.
 pub struct CpiSystem {
+    /// Map of provider names to Provider instances
     providers: Arc<DashMap<String, Provider>>,
+    /// Map of provider names to their source file paths
+    /// This enables proper error reporting and debugging
+    provider_sources: Arc<DashMap<String, String>>,
 }
 
 impl Clone for CpiSystem {
+    /// Creates a clone of the CPI system that shares the same underlying data
+    ///
+    /// This is an efficient operation as it only increments reference counters
+    /// for the Arc-wrapped DashMaps.
     fn clone(&self) -> Self {
         Self {
             providers: Arc::clone(&self.providers),
+            provider_sources: Arc::clone(&self.provider_sources),
         }
     }
 }
 
 // Use a lazy static pattern for the providers to ensure they're shared
 lazy_static::lazy_static! {
+    /// Global shared map of providers accessible across all CPI system instances
     static ref GLOBAL_PROVIDERS: Arc<DashMap<String, Provider>> = Arc::new(DashMap::new());
+    /// Global shared map of provider source files accessible across all CPI system instances
+    static ref GLOBAL_PROVIDER_SOURCES: Arc<DashMap<String, String>> = Arc::new(DashMap::new());
 }
 
 impl CpiSystem {
+    /// Creates a new CPI system instance
+    ///
+    /// This creates a new instance that shares the same underlying data
+    /// with all other instances, enabling efficient sharing of providers
+    /// across multiple parts of the application.
+    ///
+    /// # Returns
+    ///
+    /// A new CPI system instance
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let cpi_system = CpiSystem::new();
+    /// ```
     pub fn new() -> Self {
         Self {
             providers: Arc::clone(&GLOBAL_PROVIDERS),
+            provider_sources: Arc::clone(&GLOBAL_PROVIDER_SOURCES),
         }
     }
 
-    // Load all providers from the ./CPIs directory with enhanced error reporting
+    /// Loads all providers from the ./CPIs directory
+    ///
+    /// This method scans the CPIs directory, validates each provider file,
+    /// and registers valid providers. It handles errors gracefully and provides
+    /// detailed error reporting. The method can be called from multiple threads
+    /// safely due to the use of concurrent data structures.
+    ///
+    /// # Returns
+    ///
+    /// * `Result<usize, CpiError>` - The number of successfully loaded providers or an error
+    ///
+    /// # Errors
+    ///
+    /// * `CpiError::NoProvidersLoaded` - If no valid providers were found
+    /// * Other errors from the validation and registration process
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let cpi_system = CpiSystem::new();
+    /// match cpi_system.load_all_providers() {
+    ///     Ok(count) => println!("Loaded {} providers", count),
+    ///     Err(e) => eprintln!("Failed to load providers: {}", e),
+    /// }
+    /// ```
     pub fn load_all_providers(&self) -> Result<usize, CpiError> {
         // If providers are already loaded, just return the count
         if !self.providers.is_empty() {
@@ -133,6 +258,48 @@ impl CpiSystem {
             match serde_json::from_str::<Value>(cpi_value) {
                 Ok(json_value) => {
                     if let Ok(provider) = serde_json::from_str::<Provider>(cpi_value) {
+                        // Check for naming collisions using atomic operation
+                        info!("Attempting to load CPI: {}...", provider.name);
+
+                        match self.providers.entry(provider.name.clone()) {
+                            dashmap::mapref::entry::Entry::Vacant(entry) => {
+                                // Store the provider
+                                entry.insert(provider.clone());
+                                
+                                // Store the mapping from provider name to source file
+                                self.provider_sources.insert(provider.name.clone(), cpi_key.to_string());
+
+                                info!("Successfully loaded provider: {}", provider.name);
+                            },
+                            dashmap::mapref::entry::Entry::Occupied(occupied_entry) => {
+                                // Get the source file for the existing provider
+                                let existing_provider_name = occupied_entry.key().clone();
+                                let existing_file = self.provider_sources.get(&existing_provider_name)
+                                    .map(|s| s.value().clone())
+                                    .unwrap_or_else(|| "unknown file".to_string());
+
+                                let time = chrono::Local::now().format("[%Y-%m-%d %H:%M:%S%.3f]");
+                                let prefix = format!("{} [unknown] ✖ ERROR [omni_director::cpis] : ", time);
+                                
+                                // Format the entire error message with prefixes on each line
+                                let error_message = format!(
+                                    "------------------------------------------------------------------------\n\
+                                     {0}\x1b[1;31mNaming collision detected for CPI '{1}'\n\
+                                     {0}The colliding CPI can be found in file: {2:?}\n\
+                                     {0}The already registered CPI can be found in file: {3:?}\n\
+                                     {0}Please edit the CPI name within the file to avoid conflicts\n\
+                                     {0}Each CPI must have a unique name in its file under the \"name\" key\n\
+                                     {0}Skipping this CPI to prevent conflicts\x1b[0m\n\
+                                     {0}------------------------------------------------------------------------",
+                                    prefix, provider.name, cpi_key, existing_file
+                                );
+                        
+                                // Log the entire message in one call to prevent threading issues
+                                error!("{}", error_message);
+                                return;
+                            }
+                        }
+
                         // Validate in parallel
                         if self.validate_provider_file(
                             PathBuf::from(cpi_key),
@@ -186,7 +353,7 @@ impl CpiSystem {
             warn!("===============================================");
             warn!("\x1b[31m❌ Failed to load {} providers:\x1b[0m", failed_cpis.len());
             for failed in &failed_cpis {
-            warn!("   \x1b[31m- {}\x1b[0m", failed);
+                warn!("   \x1b[31m- {}\x1b[0m", failed);
             }
             warn!("===============================================");
         }
@@ -197,7 +364,24 @@ impl CpiSystem {
         Ok(loaded_count)
     }
 
-    // Optimized validation with direct JSON value
+    /// Validates a provider file using a pre-parsed JSON value
+    ///
+    /// This is an optimized validation method that accepts a pre-parsed JSON value
+    /// to avoid parsing the same content multiple times.
+    ///
+    /// # Arguments
+    ///
+    /// * `path` - The path to the provider file
+    /// * `json` - The pre-parsed JSON value
+    ///
+    /// # Returns
+    ///
+    /// * `Result<(), CpiError>` - Ok if validation passed, or an error
+    ///
+    /// # Errors
+    ///
+    /// * `CpiError::InvalidPath` - If the path is invalid
+    /// * Other errors from the validation process
     fn validate_provider_file(&self, path: PathBuf, json: &Value) -> Result<(), CpiError> {
         debug!("Validating CPI file: {}", path.display());
 
@@ -208,49 +392,44 @@ impl CpiSystem {
         }
     }
 
-    // Direct provider registration - optimized version
+    /// Registers a provider directly with optimized processing
+    ///
+    /// This is a more efficient version of provider registration that avoids
+    /// redundant operations when the provider has already been parsed and validated.
+    ///
+    /// # Arguments
+    ///
+    /// * `provider_file` - The source file path for the provider
+    /// * `provider` - The already parsed Provider instance
+    ///
+    /// # Returns
+    ///
+    /// * `Result<(), CpiError>` - Ok if registration succeeded, or an error
     fn register_provider_direct(
         &self,
-        provider_name: String,
+        provider_file: String,
         provider: Provider,
     ) -> Result<(), CpiError> {
         debug!("Registering provider: {:?}", provider.name);
+        
+        // Store the mapping from provider name to source file
+        self.provider_sources.insert(provider.name.clone(), provider_file);
+        
+        // Store the provider itself
         self.providers.insert(provider.name.clone(), provider);
+        
         Ok(())
     }
 
-    // Enhanced provider registration with better error reporting
-    pub fn register_provider(
-        &self,
-        provider_name: String,
-        provider_content: String,
-        should_test: bool,
-    ) -> Result<(), CpiError> {
-        // Map string to provider struct using serde
-        let provider: Provider = serde_json::from_str(&provider_content).map_err(|e| {
-            error!("Failed to parse JSON for provider {} Error: {}", provider_name, e);
-            CpiError::SerdeError(Box::new(e))
-        })?;
-        debug!("Registering provider: {:?}", provider.name);
-
-        if should_test {
-            info!("Running test command on provider '{}'", provider.name);
-            let test_result = executor::execute_action(&provider, "test_install", HashMap::new());
-
-            match test_result {
-                Ok(_) => {
-                    debug!("Test command succeeded for provider '{}'", provider.name);
-                }
-                Err(e) => {
-                    error!("Test command failed for provider '{}': {}", provider.name, e);
-                    return Err(e);
-                }
-            }
-        }
-
-        self.providers.insert(provider.name.clone(), provider);
-        Ok(())
-    }
+    /// Registers a provider with optional testing
+    ///
+    /// This method parses a provider from its JSON content, optionally runs a test
+    /// command, and registers it in the system. It provides enhanced error reporting
+    /// for better diagnostics.
+    ///
+    /// # Arguments
+    ///
+    /// * `provider_name` - The name
 
     // Get available providers
     pub fn get_providers(&self) -> Vec<String> {
@@ -328,6 +507,11 @@ impl CpiSystem {
                 Err(CpiError::ProviderNotFound(provider_name.to_string()))
             }
         }
+    }
+    
+    // Get the source file for a provider
+    pub fn get_provider_source(&self, provider_name: &str) -> Option<String> {
+        self.provider_sources.get(provider_name).map(|s| s.value().clone())
     }
 }
 

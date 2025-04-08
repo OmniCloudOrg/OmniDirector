@@ -1,5 +1,5 @@
 {
-    "name": "virtualbox_windows",
+    "name": "virtualbox_linux",
     "type": "command",
     "default_settings": {
       "os_type": "Ubuntu_64",
