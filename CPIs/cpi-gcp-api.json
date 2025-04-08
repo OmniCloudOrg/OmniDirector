@@ -1,382 +1,382 @@
 {
-    "name": "gcp-api",
-    "type": "endpoint",
-    "default_settings": {
-      "api_url": "https://compute.googleapis.com/compute/v1",
-      "project": "",
-      "zone": "us-central1-a",
-      "region": "us-central1",
-      "machine_type": "e2-medium",
-      "image_project": "debian-cloud",
-      "image_family": "debian-11"
+  "name": "gcp-api",
+  "type": "endpoint",
+  "default_settings": {
+    "api_url": "https://compute.googleapis.com/compute/v1",
+    "project": "",
+    "zone": "us-central1-a",
+    "region": "us-central1",
+    "machine_type": "e2-medium",
+    "image_project": "debian-cloud",
+    "image_family": "debian-11"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "access_token"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "projects": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects",
-            "method": "Get",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
-          }
-        },
-        "params": [
-          "api_url",
-          "access_token"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "projects": {
-              "regex": "(.*)",
-              "group": 1
-            }
+    "list_workers": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/instances",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
           }
         }
       },
-      "list_workers": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/instances",
-            "method": "Get",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "items": {
+            "regex": "\"items\":\\s*(\\[.*\\])",
+            "group": 1,
+            "optional": true
           }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "items": {
-              "regex": "\"items\":\\s*(\\[.*\\])",
-              "group": 1,
-              "optional": true
-            }
+        }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/instances",
+          "method": "Post",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"name\":\"{name}\",\"machineType\":\"projects/{project}/zones/{zone}/machineTypes/{machine_type}\",\"disks\":[{\"boot\":true,\"autoDelete\":true,\"initializeParams\":{\"sourceImage\":\"projects/{image_project}/global/images/family/{image_family}\"}}],\"networkInterfaces\":[{\"network\":\"global/networks/default\",\"accessConfigs\":[{\"type\":\"ONE_TO_ONE_NAT\",\"name\":\"External NAT\"}]}]}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone",
+        "name",
+        "machine_type",
+        "image_project",
+        "image_family"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"status\":\\s*\"([^\"]+)\"",
+            "group": 1,
+            "optional": true
+          }
+        }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/instances/{name}",
+          "method": "Delete",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
           }
         }
       },
-      "create_worker": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/instances",
-            "method": "Post",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            },
-            "body": "{\"name\":\"{name}\",\"machineType\":\"projects/{project}/zones/{zone}/machineTypes/{machine_type}\",\"disks\":[{\"boot\":true,\"autoDelete\":true,\"initializeParams\":{\"sourceImage\":\"projects/{image_project}/global/images/family/{image_family}\"}}],\"networkInterfaces\":[{\"network\":\"global/networks/default\",\"accessConfigs\":[{\"type\":\"ONE_TO_ONE_NAT\",\"name\":\"External NAT\"}]}]}"
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone",
+        "name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "operation": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone",
-          "name",
-          "machine_type",
-          "image_project",
-          "image_family"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"status\":\\s*\"([^\"]+)\"",
-              "group": 1,
-              "optional": true
-            }
+        }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/instances/{name}",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
           }
         }
       },
-      "delete_worker": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/instances/{name}",
-            "method": "Delete",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone",
+        "name"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "machineType": {
+            "regex": "\"machineType\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "status": {
+            "regex": "\"status\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "zone": {
+            "regex": "\"zone\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone",
-          "name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "operation": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+        }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/instances/{name}/start",
+          "method": "Post",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
           }
         }
       },
-      "get_worker": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/instances/{name}",
-            "method": "Get",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone",
+        "name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "operation": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone",
-          "name"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "machineType": {
-              "regex": "\"machineType\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "status": {
-              "regex": "\"status\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "zone": {
-              "regex": "\"zone\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+        }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/instances/{name}/stop",
+          "method": "Post",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
           }
         }
       },
-      "start_worker": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/instances/{name}/start",
-            "method": "Post",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone",
+        "name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "operation": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone",
-          "name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "operation": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+        }
+      }
+    },
+    "create_disk": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/disks",
+          "method": "Post",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"name\":\"{name}\",\"sizeGb\":\"{size_gb}\",\"type\":\"projects/{project}/zones/{zone}/diskTypes/{disk_type}\"}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone",
+        "name",
+        "size_gb",
+        "disk_type"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "name": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "attach_disk": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/instances/{instance_name}/attachDisk",
+          "method": "Post",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"source\":\"projects/{project}/zones/{zone}/disks/{disk_name}\",\"deviceName\":\"{device_name}\"}"
+        }
+      },
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone",
+        "instance_name",
+        "disk_name",
+        "device_name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "operation": {
+            "regex": "\"name\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_regions": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/regions",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
           }
         }
       },
-      "stop_worker": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/instances/{name}/stop",
-            "method": "Post",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
+      "params": [
+        "api_url",
+        "access_token",
+        "project"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "items": {
+            "regex": "\"items\":\\s*(\\[.*\\])",
+            "group": 1
           }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone",
-          "name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "operation": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+        }
+      }
+    },
+    "list_zones": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
           }
         }
       },
-      "create_disk": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/disks",
-            "method": "Post",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            },
-            "body": "{\"name\":\"{name}\",\"sizeGb\":\"{size_gb}\",\"type\":\"projects/{project}/zones/{zone}/diskTypes/{disk_type}\"}"
+      "params": [
+        "api_url",
+        "access_token",
+        "project"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "items": {
+            "regex": "\"items\":\\s*(\\[.*\\])",
+            "group": 1
           }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone",
-          "name",
-          "size_gb",
-          "disk_type"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "id": {
-              "regex": "\"id\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "name": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+        }
+      }
+    },
+    "list_machine_types": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/projects/{project}/zones/{zone}/machineTypes",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {access_token}",
+            "Content-Type": "application/json"
           }
         }
       },
-      "attach_disk": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/instances/{instance_name}/attachDisk",
-            "method": "Post",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            },
-            "body": "{\"source\":\"projects/{project}/zones/{zone}/disks/{disk_name}\",\"deviceName\":\"{device_name}\"}"
-          }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone",
-          "instance_name",
-          "disk_name",
-          "device_name"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "operation": {
-              "regex": "\"name\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
-        }
-      },
-      "list_regions": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/regions",
-            "method": "Get",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
-          }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "items": {
-              "regex": "\"items\":\\s*(\\[.*\\])",
-              "group": 1
-            }
-          }
-        }
-      },
-      "list_zones": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones",
-            "method": "Get",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
-          }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "items": {
-              "regex": "\"items\":\\s*(\\[.*\\])",
-              "group": 1
-            }
-          }
-        }
-      },
-      "list_machine_types": {
-        "target": {
-          "Endpoint": {
-            "url": "{api_url}/projects/{project}/zones/{zone}/machineTypes",
-            "method": "Get",
-            "headers": {
-              "Authorization": "Bearer {access_token}",
-              "Content-Type": "application/json"
-            }
-          }
-        },
-        "params": [
-          "api_url",
-          "access_token",
-          "project",
-          "zone"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "items": {
-              "regex": "\"items\":\\s*(\\[.*\\])",
-              "group": 1
-            }
+      "params": [
+        "api_url",
+        "access_token",
+        "project",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "items": {
+            "regex": "\"items\":\\s*(\\[.*\\])",
+            "group": 1
           }
         }
       }
     }
   }
+}

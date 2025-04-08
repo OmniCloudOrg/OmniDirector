@@ -1,18 +1,21 @@
 {
-  "name": "dummy",
+  "name": "linode",
   "type": "command",
   "default_settings": {
-    "region": "dummy-region-1",
-    "size": "dummy-small",
-    "image": "dummy/ubuntu20.04",
-    "password": "dummy-password",
+    "region": "us-east",
+    "type": "g6-standard-1",
+    "image": "linode/ubuntu20.04",
+    "root_pass": "auto-generate",
+    "authorized_keys": [],
+    "backups_enabled": "false",
+    "private_ip": "true",
     "tags": []
   },
   "actions": {
     "test_install": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo dummy-cli version 1.2.3\"",
+          "command": "linode-cli --version",
           "in_vm": false
         }
       },
@@ -21,7 +24,7 @@
         "type": "object",
         "patterns": {
           "version": {
-            "regex": "dummy-cli version ([\\d\\.]+)",
+            "regex": "linode-cli ([\\d\\.]+)",
             "group": 1
           }
         }
@@ -30,7 +33,7 @@
     "list_workers": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo 1 test-vm-1 dummy-region-1 small running 192.168.1.1 & echo 2 test-vm-2 dummy-region-2 medium stopped 192.168.1.2\"",
+          "command": "linode-cli linodes list --format 'id,label,region,type,status,ipv4' --no-headers",
           "in_vm": false
         }
       },
@@ -52,7 +55,7 @@
             "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)",
             "group": 1
           },
-          "size": {
+          "type": {
             "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
             "group": 1
           },
@@ -60,7 +63,7 @@
             "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
             "group": 1
           },
-          "ip": {
+          "ipv4": {
             "regex": "^\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+([^\\s]+)",
             "group": 1
           }
@@ -70,16 +73,19 @@
     "create_worker": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo 3 {label} 192.168.1.3\"",
+          "command": "linode-cli linodes create --label {label} --region {region} --type {type} --image {image} --root_pass {root_pass} --backups_enabled {backups_enabled} --private_ip {private_ip} --tags {tags} --format 'id,label,ipv4' --no-headers",
           "in_vm": false
         }
       },
       "params": [
         "label",
         "region",
-        "size",
+        "type",
         "image",
-        "password"
+        "root_pass",
+        "backups_enabled",
+        "private_ip",
+        "tags"
       ],
       "parse_rules": {
         "type": "object",
@@ -93,7 +99,7 @@
             "regex": "^\\d+\\s+([^\\s]+)",
             "group": 1
           },
-          "ip": {
+          "ipv4": {
             "regex": "^\\d+\\s+[^\\s]+\\s+([^\\s]+)",
             "group": 1
           }
@@ -103,12 +109,12 @@
     "delete_worker": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo Instance {instance_id} deleted successfully\"",
+          "command": "linode-cli linodes delete {linode_id}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id"
+        "linode_id"
       ],
       "parse_rules": {
         "type": "object",
@@ -123,12 +129,12 @@
     "get_worker": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo {\\\"id\\\": {instance_id}, \\\"label\\\": \\\"test-vm-{instance_id}\\\", \\\"region\\\": \\\"dummy-region-1\\\", \\\"type\\\": \\\"small\\\", \\\"status\\\": \\\"running\\\", \\\"ipv4\\\": [\\\"192.168.1.{instance_id}\\\"], \\\"ipv6\\\": \\\"fe80::{instance_id}\\\", \\\"specs\\\": {\\\"memory\\\": 1024, \\\"disk\\\": 25600, \\\"vcpus\\\": 1}}\"",
+          "command": "linode-cli linodes view {linode_id}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id"
+        "linode_id"
       ],
       "parse_rules": {
         "type": "properties",
@@ -183,12 +189,12 @@
     "boot_worker": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo Instance {instance_id} booted successfully\"",
+          "command": "linode-cli linodes boot {linode_id}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id"
+        "linode_id"
       ],
       "parse_rules": {
         "type": "object",
@@ -203,12 +209,12 @@
     "reboot_worker": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo Instance {instance_id} rebooted successfully\"",
+          "command": "linode-cli linodes reboot {linode_id}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id"
+        "linode_id"
       ],
       "parse_rules": {
         "type": "object",
@@ -223,12 +229,12 @@
     "shutdown_worker": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo Instance {instance_id} shutdown successfully\"",
+          "command": "linode-cli linodes shutdown {linode_id}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id"
+        "linode_id"
       ],
       "parse_rules": {
         "type": "object",
@@ -240,15 +246,36 @@
         }
       }
     },
-    "list_volumes": {
+    "resize_worker": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo 1 system-disk 10240 ext4 & echo 2 data-disk 15360 ext4\"",
+          "command": "linode-cli linodes resize {linode_id} --type {new_type}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id"
+        "linode_id",
+        "new_type"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_worker_volumes": {
+      "target": {
+        "Command": {
+          "command": "linode-cli linodes disks-list {linode_id} --format 'id,label,size,filesystem' --no-headers",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "linode_id"
       ],
       "parse_rules": {
         "type": "array",
@@ -278,12 +305,12 @@
     "create_volume": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo {\\\"id\\\": 3, \\\"label\\\": \\\"{disk_label}\\\", \\\"size\\\": {size_mb}}\"",
+          "command": "linode-cli linodes disk-create {linode_id} --label {disk_label} --size {size_mb} --filesystem {filesystem}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id",
+        "linode_id",
         "disk_label",
         "size_mb",
         "filesystem"
@@ -311,13 +338,35 @@
     "delete_volume": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo Disk {disk_id} deleted successfully\"",
+          "command": "linode-cli linodes disk-delete {linode_id} {disk_id}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id",
+        "linode_id",
         "disk_id"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "resize_volume": {
+      "target": {
+        "Command": {
+          "command": "linode-cli linodes disk-resize {linode_id} {disk_id} --size {new_size_mb}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "linode_id",
+        "disk_id",
+        "new_size_mb"
       ],
       "parse_rules": {
         "type": "object",
@@ -332,16 +381,16 @@
     "create_snapshot": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo {\\\"id\\\": \\\"snap-123\\\", \\\"label\\\": \\\"{snapshot_label}\\\", \\\"created\\\": \\\"2025-03-17T12:00:00\\\"}\"",
+          "command": "linode-cli linodes snapshot-create {linode_id} --label {snapshot_label}",
           "in_vm": false
         }
       },
       "params": [
-        "instance_id",
+        "linode_id",
         "snapshot_label"
       ],
       "parse_rules": {
-        "type": "properties",
+        "type": "object",
         "patterns": {
           "id": {
             "regex": "\"id\": \"([^\"]+)\"",
@@ -361,7 +410,7 @@
     "list_snapshots": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo snap-123 backup-1 2025-03-15 12:00:00 5120 1 & echo snap-456 backup-2 2025-03-16 12:00:00 5120 2\"",
+          "command": "linode-cli images list --is_public false --format 'id,label,created,size,linode_id' --no-headers",
           "in_vm": false
         }
       },
@@ -387,7 +436,7 @@
             "group": 1,
             "transform": "number"
           },
-          "instance_id": {
+          "linode_id": {
             "regex": "^[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+(\\d+)",
             "group": 1,
             "transform": "number"
@@ -398,12 +447,12 @@
     "delete_snapshot": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo Snapshot {snapshot_id} deleted successfully\"",
+          "command": "linode-cli images delete {image_id}",
           "in_vm": false
         }
       },
       "params": [
-        "snapshot_id"
+        "image_id"
       ],
       "parse_rules": {
         "type": "object",
@@ -418,7 +467,7 @@
     "list_regions": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo dummy-region-1 US & echo dummy-region-2 EU & echo dummy-region-3 AP\"",
+          "command": "linode-cli regions list --format 'id,country' --no-headers",
           "in_vm": false
         }
       },
@@ -438,10 +487,10 @@
         }
       }
     },
-    "list_sizes": {
+    "list_worker_types": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo dummy-small Basic 1 1024 25600 10.00 & echo dummy-medium Standard 2 2048 51200 20.00 & echo dummy-large Premium 4 4096 102400 40.00\"",
+          "command": "linode-cli linodes types --format 'id,label,vcpus,memory,disk,price_monthly' --no-headers",
           "in_vm": false
         }
       },
@@ -473,7 +522,7 @@
             "group": 1,
             "transform": "number"
           },
-          "price": {
+          "price_monthly": {
             "regex": "^[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+\\d+\\s+\\d+\\s+([\\d\\.]+)",
             "group": 1,
             "transform": "number"
@@ -484,7 +533,7 @@
     "list_images": {
       "target": {
         "Command": {
-          "command": "cmd /c \"}echo dummy/ubuntu20.04 ubuntu-20.04 5120 2025-01-01 12:00:00 Ubuntu 20.04 LTS & echo dummy/debian11 debian-11 4096 2025-01-01 12:00:00 Debian 11 & echo dummy/centos8 centos-8 4096 2025-01-01 12:00:00 CentOS 8\"",
+          "command": "linode-cli images list --is_public true --format 'id,label,size,created,description' --no-headers",
           "in_vm": false
         }
       },
@@ -513,83 +562,6 @@
           "description": {
             "regex": "^[^\\s]+\\s+[^\\s]+\\s+\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+(.+)",
             "group": 1
-          }
-        }
-      }
-    },
-    "direct_target": {
-      "target": {
-        "Command": {
-          "command": "{target}",
-          "in_vm": false
-        }
-      },
-      "params": [
-        "target"
-      ],
-      "parse_rules": {
-        "type": "object",
-        "patterns": {
-          "output": {
-            "regex": "(.*)",
-            "group": 1
-          }
-        }
-      }
-    },
-    "direct_target_json": {
-      "target": {
-        "Command": {
-          "command": "{target}",
-          "in_vm": false
-        }
-      },
-      "params": [
-        "target"
-      ],
-      "parse_rules": {
-        "type": "properties",
-        "patterns": {
-          "raw_json": {
-            "regex": "(.*)",
-            "group": 1
-          }
-        }
-      }
-    },
-    "get_dummy_error": {
-      "target": {
-        "Command": {
-          "command": "cmd /c \"}echo ERROR: This is a simulated error & exit /b 1\"",
-          "in_vm": false
-        }
-      },
-      "params": [],
-      "parse_rules": {
-        "type": "object",
-        "patterns": {
-          "error": {
-            "regex": "ERROR: (.+)",
-            "group": 1
-          }
-        }
-      }
-    },
-    "get_dummy_malformed": {
-      "target": {
-        "Command": {
-          "command": "cmd /c \"}echo This output does not match any expected format\"",
-          "in_vm": false
-        }
-      },
-      "params": [],
-      "parse_rules": {
-        "type": "object",
-        "patterns": {
-          "id": {
-            "regex": "ID: (\\d+)",
-            "group": 1,
-            "transform": "number"
           }
         }
       }

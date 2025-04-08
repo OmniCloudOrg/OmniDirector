@@ -8,9 +8,8 @@ use anyhow::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    ez_logging::init()?;
-
     // Initialize the CPI system
+    println!("Initializing CPI system...");
     let cpi_system = cpis::initialize()?;
 
     // List available providers

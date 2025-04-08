@@ -3,7 +3,12 @@
     "type": "command",
     "actions": {
         "test_install": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli --version"},
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli detee-cli --version",
+                    "in_vm": false
+                }
+            },
             "params": [],
             "parse_rules": {
                 "type": "object",
@@ -21,7 +26,12 @@
             }
         },
         "setup_container": {
-            "target": {"Command": "docker run --pull always -dt --name detee-cli --volume ~/.detee/container_volume/cli:/root/.detee/cli:rw --volume ~/.detee/container_volume/.ssh:/root/.ssh:rw --entrypoint /usr/bin/fish detee/detee-cli:latest"},
+            "target": {
+                "Command": {
+                    "command": "docker run --pull always -dt --name detee-cli --volume ~/.detee/container_volume/cli:/root/.detee/cli:rw --volume ~/.detee/container_volume/.ssh:/root/.ssh:rw --entrypoint /usr/bin/fish detee/detee-cli:latest",
+                    "in_vm": false
+                }
+            },
             "params": [],
             "parse_rules": {
                 "type": "object",
@@ -34,7 +44,12 @@
             }
         },
         "setup_account": {
-            "target": {"Command": "docker exec -i detee-cli bash -c 'if [ ! -f /root/.ssh/id_ed25519.pub ]; then ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N \"}\"; fi && detee-cli account ssh-pubkey-path /root/.ssh/id_ed25519.pub && detee-cli account brain-url http://164.92.249.180:31337'"},
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli bash -c 'if [ ! -f /root/.ssh/id_ed25519.pub ]; then ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N \"}\"; fi && detee-cli account ssh-pubkey-path /root/.ssh/id_ed25519.pub && detee-cli account brain-url http://164.92.249.180:31337'",
+                    "in_vm": false
+                }
+            },
             "params": [],
             "parse_rules": {
                 "type": "object",
@@ -47,7 +62,12 @@
             }
         },
         "get_account_info": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli account"},
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli detee-cli account",
+                    "in_vm": false
+                }
+            },
             "params": [],
             "parse_rules": {
                 "type": "properties",
@@ -80,8 +100,19 @@
             }
         },
         "create_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm deploy --distro {distro} --vcpus {vcpus} --memory {memory_mb} --disk {disk_gb} --hours {hours}"},
-            "params": ["distro", "vcpus", "memory_mb", "disk_gb", "hours"],
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli detee-cli vm deploy --distro {distro} --vcpus {vcpus} --memory {memory_mb} --disk {disk_gb} --hours {hours}",
+                    "in_vm": false
+                }
+            },
+            "params": [
+                "distro",
+                "vcpus",
+                "memory_mb",
+                "disk_gb",
+                "hours"
+            ],
             "parse_rules": {
                 "type": "properties",
                 "patterns": {
@@ -122,7 +153,12 @@
             }
         },
         "list_workers": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm list"},
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli detee-cli vm list",
+                    "in_vm": false
+                }
+            },
             "params": [],
             "parse_rules": {
                 "type": "array",
@@ -168,8 +204,15 @@
             }
         },
         "get_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm list | grep {worker_id}"},
-            "params": ["worker_id"],
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli detee-cli vm list | grep {worker_id}",
+                    "in_vm": false
+                }
+            },
+            "params": [
+                "worker_id"
+            ],
             "parse_rules": {
                 "type": "properties",
                 "patterns": {
@@ -209,8 +252,15 @@
             }
         },
         "has_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm list | grep {worker_id}"},
-            "params": ["worker_id"],
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli detee-cli vm list | grep {worker_id}",
+                    "in_vm": false
+                }
+            },
+            "params": [
+                "worker_id"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -222,8 +272,18 @@
             }
         },
         "update_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm update {vcpus_param} {memory_param} {hours_param} {worker_id}"},
-            "params": ["worker_id", "vcpus_param", "memory_param", "hours_param"],
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli detee-cli vm update {vcpus_param} {memory_param} {hours_param} {worker_id}",
+                    "in_vm": false
+                }
+            },
+            "params": [
+                "worker_id",
+                "vcpus_param",
+                "memory_param",
+                "hours_param"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -246,8 +306,15 @@
             }
         },
         "delete_worker": {
-            "target": {"Command": "docker exec -i detee-cli detee-cli vm delete {worker_id}"},
-            "params": ["worker_id"],
+            "target": {
+                "Command": {
+                    "command": "docker exec -i detee-cli detee-cli vm delete {worker_id}",
+                    "in_vm": false
+                }
+            },
+            "params": [
+                "worker_id"
+            ],
             "parse_rules": {
                 "type": "object",
                 "patterns": {

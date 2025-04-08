@@ -35,21 +35,40 @@ RUN --mount=type=bind,source=src,target=src \
 # Create a new stage for running the application with minimal runtime dependencies
 FROM debian:bookworm-slim AS final
 
-# Create a non-privileged user that the app will run under.
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
+# Install SSL library
+RUN apt-get update && apt-get install -y libssl3 && rm -rf /var/lib/apt/lists/*
 
-USER appuser
+# Copy the CPIs directory from the source to the final image
+COPY ./CPIs /CPIs
 
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/server /bin/
+
+# Create a non-privileged user that the app will run under.
+ARG UID=10001
+RUN adduser \
+--disabled-password \
+--gecos "" \
+--home "/nonexistent" \
+--shell "/sbin/nologin" \
+--no-create-home \
+--uid "${UID}" \
+appuser
+
+# Fix permissions on the CPIs dir
+RUN chmod -R a+rx /CPIs && \
+    chown -R appuser:appuser /CPIs
+
+# Fix permissions on the /bin dir
+RUN chmod 777 /bin/server && \
+    chown -R appuser:appuser /bin/server
+
+# fix log file permissions
+RUN touch /bin/server.log && \
+    chmod a+rwx /bin/server.log && \
+    chown -R appuser:appuser /bin/server.log
+
+USER appuser
 
 # Expose the port that the application listens on.
 EXPOSE 3000

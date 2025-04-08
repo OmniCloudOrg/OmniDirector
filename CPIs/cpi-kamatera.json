@@ -14,7 +14,12 @@
     },
     "actions": {
         "test_install": {
-            "target": {"Command": "kamatera version"},
+            "target": {
+                "Command": {
+                    "command": "kamatera version",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -26,7 +31,12 @@
             }
         },
         "list_workers": {
-            "target": {"Command": "kamatera server list --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server list --format json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -38,7 +48,12 @@
             }
         },
         "create_worker": {
-            "target": {"Command": "kamatera server create --name {name} --datacenter {datacenter} --cpu {cpu_type} --cpu-count {cpu_cores} --ram {ram_mb} --disk size={disk_size_gb} --image {image} --network name={network_name},ip=auto --password random --ssh-key {ssh_key_name} --power-on {power_on} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server create --name {name} --datacenter {datacenter} --cpu {cpu_type} --cpu-count {cpu_cores} --ram {ram_mb} --disk size={disk_size_gb} --image {image} --network name={network_name},ip=auto --password random --ssh-key {ssh_key_name} --power-on {power_on} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "datacenter",
@@ -66,7 +81,12 @@
             }
         },
         "delete_worker": {
-            "target": {"Command": "kamatera server terminate {worker_id} --force {force} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server terminate {worker_id} --force {force} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -84,7 +104,12 @@
             }
         },
         "get_worker": {
-            "target": {"Command": "kamatera server info {worker_id} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server info {worker_id} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -99,7 +124,12 @@
             }
         },
         "start_worker": {
-            "target": {"Command": "kamatera server power {worker_id} --operation on --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server power {worker_id} --operation on --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -114,7 +144,12 @@
             }
         },
         "stop_worker": {
-            "target": {"Command": "kamatera server power {worker_id} --operation off --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server power {worker_id} --operation off --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -129,7 +164,12 @@
             }
         },
         "reboot_worker": {
-            "target": {"Command": "kamatera server power {worker_id} --operation restart --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server power {worker_id} --operation restart --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -144,7 +184,12 @@
             }
         },
         "list_datacenters": {
-            "target": {"Command": "kamatera datacenter list --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera datacenter list --format json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -156,7 +201,12 @@
             }
         },
         "list_images": {
-            "target": {"Command": "kamatera image list --datacenter {datacenter} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera image list --datacenter {datacenter} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "datacenter"
             ],
@@ -171,7 +221,12 @@
             }
         },
         "resize_worker": {
-            "target": {"Command": "kamatera server resize {worker_id} --cpu {cpu_type} --cpu-count {cpu_cores} --ram {ram_mb} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server resize {worker_id} --cpu {cpu_type} --cpu-count {cpu_cores} --ram {ram_mb} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "cpu_type",
@@ -189,7 +244,12 @@
             }
         },
         "create_snapshot": {
-            "target": {"Command": "kamatera server backup create {worker_id} --name {snapshot_name} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server backup create {worker_id} --name {snapshot_name} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "snapshot_name"
@@ -209,7 +269,12 @@
             }
         },
         "list_snapshots": {
-            "target": {"Command": "kamatera server backup list {worker_id} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server backup list {worker_id} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -224,7 +289,12 @@
             }
         },
         "restore_snapshot": {
-            "target": {"Command": "kamatera server backup restore {worker_id} --backup-id {snapshot_id} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server backup restore {worker_id} --backup-id {snapshot_id} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "snapshot_id"
@@ -240,7 +310,12 @@
             }
         },
         "delete_snapshot": {
-            "target": {"Command": "kamatera server backup delete {worker_id} --backup-id {snapshot_id} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server backup delete {worker_id} --backup-id {snapshot_id} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "snapshot_id"
@@ -256,7 +331,12 @@
             }
         },
         "create_volume": {
-            "target": {"Command": "kamatera server disk add {worker_id} --size {size_gb} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server disk add {worker_id} --size {size_gb} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "size_gb"
@@ -276,7 +356,12 @@
             }
         },
         "resize_volume": {
-            "target": {"Command": "kamatera server disk resize {worker_id} --disk-id {disk_id} --size {size_gb} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server disk resize {worker_id} --disk-id {disk_id} --size {size_gb} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "disk_id",
@@ -293,7 +378,12 @@
             }
         },
         "delete_volume": {
-            "target": {"Command": "kamatera server disk remove {worker_id} --disk-id {disk_id} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server disk remove {worker_id} --disk-id {disk_id} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id",
                 "disk_id"
@@ -309,7 +399,12 @@
             }
         },
         "list_volumes": {
-            "target": {"Command": "kamatera server info {worker_id} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera server info {worker_id} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -324,7 +419,12 @@
             }
         },
         "create_ssh_key": {
-            "target": {"Command": "kamatera ssh-key create --name {name} --public-key \"}{ssh_public_key}\" --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera ssh-key create --name {name} --public-key \"}{ssh_public_key}\" --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "ssh_public_key"
@@ -344,7 +444,12 @@
             }
         },
         "list_ssh_keys": {
-            "target": {"Command": "kamatera ssh-key list --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera ssh-key list --format json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -356,7 +461,12 @@
             }
         },
         "delete_ssh_key": {
-            "target": {"Command": "kamatera ssh-key delete {ssh_key_id} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera ssh-key delete {ssh_key_id} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "ssh_key_id"
             ],
@@ -371,7 +481,12 @@
             }
         },
         "get_target_status": {
-            "target": {"Command": "kamatera target info {target_id} --format json"},
+            "target": {
+                "Command": {
+                    "command": "kamatera target info {target_id} --format json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "target_id"
             ],

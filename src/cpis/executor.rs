@@ -6,7 +6,12 @@ use log::{debug, error, info, trace, warn};
 use run_script::ScriptOptions;
 use serde_json::Value;
 use std::collections::HashMap;
+use ssh2::Session;
+use std::io::prelude::*;
+use std::net::TcpStream;
+use std::time::Duration;
 use std::time::Instant;
+use std::env;
 
 // Main function to execute a CPI action
 pub fn execute_action(
@@ -112,12 +117,21 @@ fn execute_sub_action(
     let result: Value;
     match &action_def.target {
         ActionTarget::Command(command) => {
-            let cmd = fill_template(command, params)?;
+            let cmd = fill_template(&command.command, params)?;
 
             // Here it is, the call you have been digging around for
             // This is where we actually run the assembled command
             // defined by the CPI ini the system shell.
-            let output = execute_command(&cmd)?;
+            let output;
+            if command.in_vm.unwrap_or(false) {
+                // If the command is to be run in a VM, we need to use the VM's shell
+                // This is a placeholder for actual VM execution logic
+                // You would need to implement this based on your VM management library
+                output = execute_command_vm(&cmd)?;
+            } else {
+                // If the command is to be run on the host, we can use the system shell
+                output = execute_command(&cmd)?;
+            }
 
             // Parse the output according to the parse rules
             debug!("Parsing command output ({} bytes)", output.len());
@@ -310,5 +324,150 @@ fn execute_command(cmd: &str) -> Result<String, CpiError> {
                 cmd, e
             )))
         }
+    }
+}
+
+/// Execute a command on a remote VM via SSH using the ssh2 crate
+/// 
+/// Retrieves SSH credentials from environment variables:
+/// - OMNI_SSH_HOST: Hostname or IP address
+/// - OMNI_SSH_USER: SSH username
+/// - OMNI_SSH_PASSWORD: SSH password
+/// 
+/// # Arguments
+/// * `command` - The command to execute on the remote VM
+/// 
+/// # Returns
+/// * The command output as a string if successful
+/// * A CpiError if any part of the operation fails
+pub fn execute_command_vm(command: &str) -> Result<String, CpiError> {
+    println!("Executing command on VM: {}", command);
+
+
+    // TODO: Here we load osme VM details from the environment, we would
+    // actually requisition these details from the orchestrator API
+
+
+    // Get SSH credentials from environment variables
+    let host = env::var("OMNI_SSH_HOST").map_err(|_| {
+        let err_msg = "Missing OMNI_SSH_HOST environment variable";
+        error!("{}", err_msg);
+        CpiError::ExecutionFailed(err_msg.to_string())
+    })?;
+    
+    let username = env::var("OMNI_SSH_USER").map_err(|_| {
+        let err_msg = "Missing OMNI_SSH_USER environment variable";
+        error!("{}", err_msg);
+        CpiError::ExecutionFailed(err_msg.to_string())
+    })?;
+    
+    let password = env::var("OMNI_SSH_PASSWORD").map_err(|_| {
+        let err_msg = "Missing OMNI_SSH_PASSWORD environment variable";
+        error!("{}", err_msg);
+        CpiError::ExecutionFailed(err_msg.to_string())
+    })?;
+    
+
+
+
+    debug!("Executing VM command on host '{}' as user '{}'", host, username);
+    let start = Instant::now();
+
+    // Connect with timeout
+    let tcp = match TcpStream::connect_timeout(
+        &format!("{}:22", host).parse().map_err(|e| {
+            error!("Invalid host address: {}", e);
+            CpiError::ExecutionFailed(format!("Invalid host address: {}", e))
+        })?,
+        Duration::from_secs(10)
+    ) {
+        Ok(stream) => {
+            // Set read/write timeouts
+            let _ = stream.set_read_timeout(Some(Duration::from_secs(30)));
+            let _ = stream.set_write_timeout(Some(Duration::from_secs(30)));
+            stream
+        },
+        Err(e) => {
+            error!("Failed to connect to SSH server: {}", e);
+            return Err(CpiError::ExecutionFailed(
+                format!("Failed to connect to SSH server {}: {}", host, e)
+            ));
+        }
+    };
+
+    // Create SSH session
+    let mut sess = Session::new().map_err(|e| {
+        error!("Failed to create SSH session: {}", e);
+        CpiError::ExecutionFailed(format!("Failed to create SSH session: {}", e))
+    })?;
+
+    sess.set_tcp_stream(tcp);
+    sess.handshake().map_err(|e| {
+        error!("SSH handshake failed: {}", e);
+        CpiError::ExecutionFailed(format!("SSH handshake failed: {}", e))
+    })?;
+
+    // Authenticate with password
+    sess.userauth_password(&username, &password).map_err(|e| {
+        error!("SSH authentication failed: {}", e);
+        CpiError::ExecutionFailed(format!("SSH authentication failed: {}", e))
+    })?;
+
+    // Execute command
+    debug!("Opening SSH channel");
+    let mut channel = sess.channel_session().map_err(|e| {
+        error!("Failed to open SSH channel: {}", e);
+        CpiError::ExecutionFailed(format!("Failed to open SSH channel: {}", e))
+    })?;
+
+    debug!("Executing command: {}", command);
+    channel.exec(command).map_err(|e| {
+        error!("Failed to execute command: {}", e);
+        CpiError::ExecutionFailed(format!("Failed to execute command: {}", e))
+    })?;
+
+    // Read output
+    let mut output = String::new();
+    channel.read_to_string(&mut output).map_err(|e| {
+        error!("Failed to read command output: {}", e);
+        CpiError::ExecutionFailed(format!("Failed to read command output: {}", e))
+    })?;
+
+    // Read stderr
+    let mut stderr = String::new();
+    channel.stderr().read_to_string(&mut stderr).map_err(|e| {
+        error!("Failed to read stderr: {}", e);
+        CpiError::ExecutionFailed(format!("Failed to read stderr: {}", e))
+    })?;
+
+    // Get exit status
+    channel.wait_close().map_err(|e| {
+        error!("Failed to close SSH channel: {}", e);
+        CpiError::ExecutionFailed(format!("Failed to close SSH channel: {}", e))
+    })?;
+
+    let exit_status = channel.exit_status().map_err(|e| {
+        error!("Failed to get exit status: {}", e);
+        CpiError::ExecutionFailed(format!("Failed to get exit status: {}", e))
+    })?;
+
+    let duration = start.elapsed();
+    debug!("Command completed in {:?} with status {}", duration, exit_status);
+
+    if !stderr.is_empty() {
+        debug!("Command stderr: {}", truncate_output(&stderr, 200));
+    }
+
+    if exit_status == 0 {
+        debug!("Command succeeded with output: {} bytes", output.len());
+        trace!("Command output: {}", truncate_output(&output, 200));
+        Ok(output)
+    } else {
+        error!("Command failed with exit code: {}", exit_status);
+        error!("Command stderr: {}", truncate_output(&stderr, 500));
+        Err(CpiError::ExecutionFailed(format!(
+            "Command failed with exit code {}: {}",
+            exit_status, stderr
+        )))
     }
 }

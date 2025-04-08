@@ -14,7 +14,10 @@
   "actions": {
     "test_install": {
       "target": {
-        "Command": "qemu-img --version"
+        "Command": {
+          "command": "qemu-img --version",
+          "in_vm": false
+        }
       },
       "params": [],
       "parse_rules": {
@@ -29,7 +32,10 @@
     },
     "create_volume": {
       "target": {
-        "Command": "qemu-img create -f {disk_format} {image_dir}/{disk_name}.{disk_format} {disk_size_gb}G"
+        "Command": {
+          "command": "qemu-img create -f {disk_format} {image_dir}/{disk_name}.{disk_format} {disk_size_gb}G",
+          "in_vm": false
+        }
       },
       "params": [
         "disk_format",
@@ -49,7 +55,10 @@
     },
     "delete_volume": {
       "target": {
-        "Command": "rm -f {image_dir}/{disk_name}.{disk_format}"
+        "Command": {
+          "command": "rm -f {image_dir}/{disk_name}.{disk_format}",
+          "in_vm": false
+        }
       },
       "params": [
         "image_dir",
@@ -68,7 +77,10 @@
     },
     "resize_volume": {
       "target": {
-        "Command": "qemu-img resize {image_dir}/{disk_name}.{disk_format} {new_size_gb}G"
+        "Command": {
+          "command": "qemu-img resize {image_dir}/{disk_name}.{disk_format} {new_size_gb}G",
+          "in_vm": false
+        }
       },
       "params": [
         "image_dir",
@@ -88,7 +100,10 @@
     },
     "get_volume_info": {
       "target": {
-        "Command": "qemu-img info {image_dir}/{disk_name}.{disk_format}"
+        "Command": {
+          "command": "qemu-img info {image_dir}/{disk_name}.{disk_format}",
+          "in_vm": false
+        }
       },
       "params": [
         "image_dir",
@@ -125,7 +140,10 @@
     },
     "create_snapshot": {
       "target": {
-        "Command": "qemu-img snapshot -c {snapshot_name} {image_dir}/{disk_name}.{disk_format}"
+        "Command": {
+          "command": "qemu-img snapshot -c {snapshot_name} {image_dir}/{disk_name}.{disk_format}",
+          "in_vm": false
+        }
       },
       "params": [
         "snapshot_name",
@@ -145,7 +163,10 @@
     },
     "list_snapshots": {
       "target": {
-        "Command": "qemu-img snapshot -l {image_dir}/{disk_name}.{disk_format}"
+        "Command": {
+          "command": "qemu-img snapshot -l {image_dir}/{disk_name}.{disk_format}",
+          "in_vm": false
+        }
       },
       "params": [
         "image_dir",
@@ -181,7 +202,10 @@
     },
     "apply_snapshot": {
       "target": {
-        "Command": "qemu-img snapshot -a {snapshot_name} {image_dir}/{disk_name}.{disk_format}"
+        "Command": {
+          "command": "qemu-img snapshot -a {snapshot_name} {image_dir}/{disk_name}.{disk_format}",
+          "in_vm": false
+        }
       },
       "params": [
         "snapshot_name",
@@ -201,7 +225,10 @@
     },
     "delete_snapshot": {
       "target": {
-        "Command": "qemu-img snapshot -d {snapshot_name} {image_dir}/{disk_name}.{disk_format}"
+        "Command": {
+          "command": "qemu-img snapshot -d {snapshot_name} {image_dir}/{disk_name}.{disk_format}",
+          "in_vm": false
+        }
       },
       "params": [
         "snapshot_name",
@@ -221,7 +248,10 @@
     },
     "has_snapshot": {
       "target": {
-        "Command": "qemu-img snapshot -l {image_dir}/{disk_name}.{disk_format} | grep {snapshot_name}"
+        "Command": {
+          "command": "qemu-img snapshot -l {image_dir}/{disk_name}.{disk_format} | grep {snapshot_name}",
+          "in_vm": false
+        }
       },
       "params": [
         "image_dir",
@@ -241,7 +271,10 @@
     },
     "convert_volume": {
       "target": {
-        "Command": "qemu-img convert -f {source_format} -O {target_format} {source_path} {target_path}"
+        "Command": {
+          "command": "qemu-img convert -f {source_format} -O {target_format} {source_path} {target_path}",
+          "in_vm": false
+        }
       },
       "params": [
         "source_format",
@@ -261,7 +294,10 @@
     },
     "start_worker": {
       "target": {
-        "Command": "{qemu_binary} -name {worker_name} -m {memory_mb} -smp {cpus} -drive file={image_dir}/{disk_name}.{disk_format},format={disk_format} -vnc :{vnc_display} -netdev user,id=net0 -device {network_model},netdev=net0 -daemonize"
+        "Command": {
+          "command": "{qemu_binary} -name {worker_name} -m {memory_mb} -smp {cpus} -drive file={image_dir}/{disk_name}.{disk_format},format={disk_format} -vnc :{vnc_display} -netdev user,id=net0 -device {network_model},netdev=net0 -daemonize",
+          "in_vm": false
+        }
       },
       "params": [
         "qemu_binary",
@@ -286,7 +322,10 @@
     },
     "stop_worker": {
       "target": {
-        "Command": "pkill -f \"}{qemu_binary}.*-name {worker_name}\""
+        "Command": {
+          "command": "pkill -f \"{qemu_binary}.*-name {worker_name}\"",
+          "in_vm": false
+        }
       },
       "params": [
         "qemu_binary",
@@ -304,7 +343,10 @@
     },
     "list_workers": {
       "target": {
-        "Command": "ps -eo args | grep \"}{qemu_binary}\" | grep \"-name\" | sed -e 's/.*-name \\([^ ]*\\).*/\\1/'"
+        "Command": {
+          "command": "ps -eo args | grep \"{qemu_binary}\" | grep \"-name\" | sed -e 's/.*-name \\([^ ]*\\).*/\\1/'",
+          "in_vm": false
+        }
       },
       "params": [
         "qemu_binary"
@@ -322,7 +364,10 @@
     },
     "has_worker": {
       "target": {
-        "Command": "ps -eo args | grep \"}{qemu_binary}.*-name {worker_name}\""
+        "Command": {
+          "command": "ps -eo args | grep \"{qemu_binary}.*-name {worker_name}\"",
+          "in_vm": false
+        }
       },
       "params": [
         "qemu_binary",
@@ -340,7 +385,10 @@
     },
     "get_worker_info": {
       "target": {
-        "Command": "ps -eo pid,args | grep \"}{qemu_binary}.*-name {worker_name}\""
+        "Command": {
+          "command": "ps -eo pid,args | grep \"{qemu_binary}.*-name {worker_name}\"",
+          "in_vm": false
+        }
       },
       "params": [
         "qemu_binary",
@@ -381,7 +429,10 @@
     },
     "create_worker_template": {
       "target": {
-        "Command": "echo '{qemu_start_target}' > {template_dir}/{template_name}.sh && chmod +x {template_dir}/{template_name}.sh"
+        "Command": {
+          "command": "echo '{qemu_start_target}' > {template_dir}/{template_name}.sh && chmod +x {template_dir}/{template_name}.sh",
+          "in_vm": false
+        }
       },
       "params": [
         "qemu_start_target",

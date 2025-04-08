@@ -12,7 +12,12 @@
     },
     "actions": {
         "test_install": {
-            "target": {"Command": "metal --version"},
+            "target": {
+                "Command": {
+                    "command": "metal --version",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -24,7 +29,12 @@
             }
         },
         "list_workers": {
-            "target": {"Command": "metal device list --project-id {project_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal device list --project-id {project_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "project_id"
             ],
@@ -39,7 +49,12 @@
             }
         },
         "create_worker": {
-            "target": {"Command": "metal device create --hostname {name} --plan {worker_type} --metro {metro} --operating-system {operating_system} --project-id {project_id} --billing-cycle {billing_cycle} {ssh_key_param} {user_data_param} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal device create --hostname {name} --plan {worker_type} --metro {metro} --operating-system {operating_system} --project-id {project_id} --billing-cycle {billing_cycle} {ssh_key_param} {user_data_param} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "worker_type",
@@ -75,7 +90,12 @@
             }
         },
         "delete_worker": {
-            "target": {"Command": "metal device delete {worker_id} --force -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal device delete {worker_id} --force -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -90,7 +110,12 @@
             }
         },
         "get_worker": {
-            "target": {"Command": "metal device get {worker_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal device get {worker_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -105,7 +130,12 @@
             }
         },
         "reboot_worker": {
-            "target": {"Command": "metal device reboot {worker_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal device reboot {worker_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -120,7 +150,12 @@
             }
         },
         "shutdown_worker": {
-            "target": {"Command": "metal device power-off {worker_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal device power-off {worker_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -135,7 +170,12 @@
             }
         },
         "power_on_worker": {
-            "target": {"Command": "metal device power-on {worker_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal device power-on {worker_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -150,7 +190,12 @@
             }
         },
         "list_metros": {
-            "target": {"Command": "metal metro list -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal metro list -o json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -162,7 +207,12 @@
             }
         },
         "list_worker_types": {
-            "target": {"Command": "metal plan list -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal plan list -o json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -174,7 +224,12 @@
             }
         },
         "list_operating_systems": {
-            "target": {"Command": "metal operating-system list -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal operating-system list -o json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -186,7 +241,12 @@
             }
         },
         "list_projects": {
-            "target": {"Command": "metal project list -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal project list -o json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -198,7 +258,12 @@
             }
         },
         "create_project": {
-            "target": {"Command": "metal project create --name {name} {payment_method_param} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal project create --name {name} {payment_method_param} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name"
             ],
@@ -220,7 +285,12 @@
             }
         },
         "delete_project": {
-            "target": {"Command": "metal project delete {project_id} --force -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal project delete {project_id} --force -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "project_id"
             ],
@@ -235,7 +305,12 @@
             }
         },
         "create_ssh_key": {
-            "target": {"Command": "metal ssh-key create --key \"}{ssh_public_key}\" --label {name} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal ssh-key create --key \"}{ssh_public_key}\" --label {name} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "name",
                 "ssh_public_key"
@@ -255,7 +330,12 @@
             }
         },
         "list_ssh_keys": {
-            "target": {"Command": "metal ssh-key list -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal ssh-key list -o json",
+                    "in_vm": false
+                }
+            },
             "parse_rules": {
                 "type": "object",
                 "patterns": {
@@ -267,7 +347,12 @@
             }
         },
         "delete_ssh_key": {
-            "target": {"Command": "metal ssh-key delete {ssh_key_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal ssh-key delete {ssh_key_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "ssh_key_id"
             ],
@@ -282,7 +367,12 @@
             }
         },
         "create_volume": {
-            "target": {"Command": "metal volume create --size {size_gb} --plan {disk_type} --project-id {project_id} --metro {metro} --description {description} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal volume create --size {size_gb} --plan {disk_type} --project-id {project_id} --metro {metro} --description {description} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "size_gb",
                 "disk_type",
@@ -308,7 +398,12 @@
             }
         },
         "list_volumes": {
-            "target": {"Command": "metal volume list --project-id {project_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal volume list --project-id {project_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "project_id"
             ],
@@ -323,7 +418,12 @@
             }
         },
         "delete_volume": {
-            "target": {"Command": "metal volume delete {disk_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal volume delete {disk_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id"
             ],
@@ -338,7 +438,12 @@
             }
         },
         "attach_volume": {
-            "target": {"Command": "metal volume attach {disk_id} --device-id {worker_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal volume attach {disk_id} --device-id {worker_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id",
                 "worker_id"
@@ -354,7 +459,12 @@
             }
         },
         "detach_volume": {
-            "target": {"Command": "metal volume detach {disk_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal volume detach {disk_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "disk_id"
             ],
@@ -369,7 +479,12 @@
             }
         },
         "create_ip": {
-            "target": {"Command": "metal ip request --type public_ipv4 --project-id {project_id} --metro {metro} --quantity {quantity} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal ip request --type public_ipv4 --project-id {project_id} --metro {metro} --quantity {quantity} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "project_id",
                 "metro",
@@ -393,7 +508,12 @@
             }
         },
         "list_ips": {
-            "target": {"Command": "metal ip list --project-id {project_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal ip list --project-id {project_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "project_id"
             ],
@@ -408,7 +528,12 @@
             }
         },
         "assign_ip": {
-            "target": {"Command": "metal ip assign {ip_id} --device-id {worker_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal ip assign {ip_id} --device-id {worker_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "ip_id",
                 "worker_id"
@@ -424,7 +549,12 @@
             }
         },
         "unassign_ip": {
-            "target": {"Command": "metal ip unassign {ip_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal ip unassign {ip_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "ip_id"
             ],
@@ -439,7 +569,12 @@
             }
         },
         "create_bgp_session": {
-            "target": {"Command": "metal bgp-session create --project-id {project_id} --device-id {worker_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal bgp-session create --project-id {project_id} --device-id {worker_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "project_id",
                 "worker_id"
@@ -459,7 +594,12 @@
             }
         },
         "list_bgp_sessions": {
-            "target": {"Command": "metal bgp-session list --device-id {worker_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal bgp-session list --device-id {worker_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "worker_id"
             ],
@@ -474,7 +614,12 @@
             }
         },
         "enable_bgp": {
-            "target": {"Command": "metal project bgp-enable --project-id {project_id} --asn {asn} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal project bgp-enable --project-id {project_id} --asn {asn} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "project_id",
                 "asn"
@@ -490,7 +635,12 @@
             }
         },
         "get_bgp_ranges": {
-            "target": {"Command": "metal project bgp-ranges --project-id {project_id} -o json"},
+            "target": {
+                "Command": {
+                    "command": "metal project bgp-ranges --project-id {project_id} -o json",
+                    "in_vm": false
+                }
+            },
             "params": [
                 "project_id"
             ],

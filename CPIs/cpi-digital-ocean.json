@@ -13,7 +13,12 @@
   },
   "actions": {
     "test_install": {
-      "target": {"Command": "doctl version"},
+      "target": {
+        "Command": {
+          "command": "doctl version",
+          "in_vm": false
+        }
+      },
       "params": [],
       "parse_rules": {
         "type": "object",
@@ -26,7 +31,12 @@
       }
     },
     "list_workers": {
-      "target": {"Command": "doctl compute droplet list --format ID,Name,PublicIPv4,Memory,VCPUs,Disk,Region,Status --no-header"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet list --format ID,Name,PublicIPv4,Memory,VCPUs,Disk,Region,Status --no-header",
+          "in_vm": false
+        }
+      },
       "params": [],
       "parse_rules": {
         "type": "array",
@@ -72,7 +82,12 @@
       }
     },
     "create_worker": {
-      "target": {"Command": "doctl compute droplet create {droplet_name} --region {region} --size {size} --image {image} --ssh-keys {ssh_keys} --enable-backups {backups} --enable-ipv6 {ipv6} --enable-monitoring {monitoring} --enable-private-networking {private_networking} --format ID,Name,PublicIPv4 --no-header"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet create {droplet_name} --region {region} --size {size} --image {image} --ssh-keys {ssh_keys} --enable-backups {backups} --enable-ipv6 {ipv6} --enable-monitoring {monitoring} --enable-private-networking {private_networking} --format ID,Name,PublicIPv4 --no-header",
+          "in_vm": false
+        }
+      },
       "params": [
         "droplet_name",
         "region",
@@ -104,7 +119,12 @@
       }
     },
     "delete_worker": {
-      "target": {"Command": "doctl compute droplet delete {droplet_id} --force"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet delete {droplet_id} --force",
+          "in_vm": false
+        }
+      },
       "params": [
         "droplet_id"
       ],
@@ -119,7 +139,12 @@
       }
     },
     "get_worker": {
-      "target": {"Command": "doctl compute droplet get {droplet_id} --format ID,Name,PublicIPv4,PrivateIPv4,Memory,VCPUs,Disk,Region,Status,Features --no-header"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet get {droplet_id} --format ID,Name,PublicIPv4,PrivateIPv4,Memory,VCPUs,Disk,Region,Status,Features --no-header",
+          "in_vm": false
+        }
+      },
       "params": [
         "droplet_id"
       ],
@@ -174,7 +199,12 @@
       }
     },
     "power_on_worker": {
-      "target": {"Command": "doctl compute droplet-action power-on {droplet_id}"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet-action power-on {droplet_id}",
+          "in_vm": false
+        }
+      },
       "params": [
         "droplet_id"
       ],
@@ -189,7 +219,12 @@
       }
     },
     "shutdown_worker": {
-      "target": {"Command": "doctl compute droplet-action power-off {droplet_id}"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet-action power-off {droplet_id}",
+          "in_vm": false
+        }
+      },
       "params": [
         "droplet_id"
       ],
@@ -204,7 +239,12 @@
       }
     },
     "shutdown_worker": {
-      "target": {"Command": "doctl compute droplet-action shutdown {droplet_id}"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet-action shutdown {droplet_id}",
+          "in_vm": false
+        }
+      },
       "params": [
         "droplet_id"
       ],
@@ -219,7 +259,12 @@
       }
     },
     "reboot_worker": {
-      "target": {"Command": "doctl compute droplet-action reboot {droplet_id}"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet-action reboot {droplet_id}",
+          "in_vm": false
+        }
+      },
       "params": [
         "droplet_id"
       ],
@@ -234,7 +279,12 @@
       }
     },
     "list_snapshots": {
-      "target": {"Command": "doctl compute snapshot list --format ID,Name,Created,Regions,ResourceID,ResourceType,MinDiskSize,Size --no-header"},
+      "target": {
+        "Command": {
+          "command": "doctl compute snapshot list --format ID,Name,Created,Regions,ResourceID,ResourceType,MinDiskSize,Size --no-header",
+          "in_vm": false
+        }
+      },
       "params": [],
       "parse_rules": {
         "type": "array",
@@ -269,7 +319,12 @@
       }
     },
     "create_snapshot": {
-      "target": {"Command": "doctl compute droplet-action snapshot {droplet_id} --snapshot-name {snapshot_name}"},
+      "target": {
+        "Command": {
+          "command": "doctl compute droplet-action snapshot {droplet_id} --snapshot-name {snapshot_name}",
+          "in_vm": false
+        }
+      },
       "params": [
         "droplet_id",
         "snapshot_name"
@@ -285,7 +340,12 @@
       }
     },
     "delete_snapshot": {
-      "target": {"Command": "doctl compute snapshot delete {snapshot_id} --force"},
+      "target": {
+        "Command": {
+          "command": "doctl compute snapshot delete {snapshot_id} --force",
+          "in_vm": false
+        }
+      },
       "params": [
         "snapshot_id"
       ],
@@ -300,7 +360,12 @@
       }
     },
     "list_regions": {
-      "target": {"Command": "doctl compute region list --format Slug,Name,Available --no-header"},
+      "target": {
+        "Command": {
+          "command": "doctl compute region list --format Slug,Name,Available --no-header",
+          "in_vm": false
+        }
+      },
       "params": [],
       "parse_rules": {
         "type": "array",
@@ -323,7 +388,12 @@
       }
     },
     "list_sizes": {
-      "target": {"Command": "doctl compute size list --format Slug,Memory,VCPUs,Disk,PriceMonthly,PriceHourly --no-header"},
+      "target": {
+        "Command": {
+          "command": "doctl compute size list --format Slug,Memory,VCPUs,Disk,PriceMonthly,PriceHourly --no-header",
+          "in_vm": false
+        }
+      },
       "params": [],
       "parse_rules": {
         "type": "array",
@@ -357,7 +427,12 @@
       }
     },
     "list_images": {
-      "target": {"Command": "doctl compute image list --public --format Slug,Name,Type,Distribution,MinDiskSize --no-header"},
+      "target": {
+        "Command": {
+          "command": "doctl compute image list --public --format Slug,Name,Type,Distribution,MinDiskSize --no-header",
+          "in_vm": false
+        }
+      },
       "params": [],
       "parse_rules": {
         "type": "array",

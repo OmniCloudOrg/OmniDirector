@@ -1,534 +1,654 @@
 {
-    "name": "upcloud",
-    "type": "command",
-    "default_settings": {
-      "zone": "fi-hel1",
-      "plan": "1xCPU-1GB",
-      "os": "Ubuntu Server 22.04 LTS (Jammy Jellyfish)",
-      "storage_size": "25",
-      "login_user": "root",
-      "ssh_key": "",
-      "hostname": "server1",
-      "timezone": "UTC"
+  "name": "upcloud",
+  "type": "command",
+  "default_settings": {
+    "zone": "fi-hel1",
+    "plan": "1xCPU-1GB",
+    "os": "Ubuntu Server 22.04 LTS (Jammy Jellyfish)",
+    "storage_size": "25",
+    "login_user": "root",
+    "ssh_key": "",
+    "hostname": "server1",
+    "timezone": "UTC"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": {
+          "command": "upctl version",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "upctl version ([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
     },
-    "actions": {
-      "test_install": {
-        "target": {"Command": "upctl version"},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "version": {
-              "regex": "upctl version ([\\d\\.]+)",
-              "group": 1
-            }
-          }
+    "list_workers": {
+      "target": {
+        "Command": {
+          "command": "upctl server list --format json",
+          "in_vm": false
         }
       },
-      "list_workers": {
-        "target": {"Command": "upctl server list --format json"},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "servers": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "servers": {
+            "regex": "(\\[.*\\])",
+            "group": 1
           }
         }
-      },
-      "get_worker": {
-        "target": {"Command": "upctl server show {server_uuid} --format json"},
-        "params": [
-          "server_uuid"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "uuid": {
-              "regex": "\"uuid\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "hostname": {
-              "regex": "\"hostname\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "title": {
-              "regex": "\"title\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "zone": {
-              "regex": "\"zone\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "memory": {
-              "regex": "\"memory\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "cores": {
-              "regex": "\"cores\":\\s*([\\d]+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "ip_addresses": {
-              "regex": "\"ip_addresses\":\\s*(\\[.*?\\])",
-              "group": 1
-            }
-          }
+      }
+    },
+    "get_worker": {
+      "target": {
+        "Command": {
+          "command": "upctl server show {server_uuid} --format json",
+          "in_vm": false
         }
       },
-      "create_worker": {
-        "target": {"Command": "upctl server create --hostname {hostname} --title {title} --zone {zone} --plan {plan} --storage-size {storage_size} --os {os} --login-user {login_user} {ssh_key_param} --format json"},
-        "params": [
-          "hostname",
-          "title",
-          "zone",
-          "plan",
-          "storage_size",
-          "os",
-          "login_user",
-          "ssh_key_param"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "uuid": {
-              "regex": "\"uuid\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "hostname": {
-              "regex": "\"hostname\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "title": {
-              "regex": "\"title\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "zone": {
-              "regex": "\"zone\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "memory": {
-              "regex": "\"memory\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "cores": {
-              "regex": "\"cores\":\\s*([\\d]+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "ip_addresses": {
-              "regex": "\"ip_addresses\":\\s*(\\[.*?\\])",
-              "group": 1
-            }
+      "params": [
+        "server_uuid"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "uuid": {
+            "regex": "\"uuid\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "hostname": {
+            "regex": "\"hostname\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "title": {
+            "regex": "\"title\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "zone": {
+            "regex": "\"zone\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "memory": {
+            "regex": "\"memory\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "cores": {
+            "regex": "\"cores\":\\s*([\\d]+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "ip_addresses": {
+            "regex": "\"ip_addresses\":\\s*(\\[.*?\\])",
+            "group": 1
           }
         }
-      },
-      "delete_worker": {
-        "target": {"Command": "upctl server delete {server_uuid}"},
-        "params": [
-          "server_uuid"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": {
+          "command": "upctl server create --hostname {hostname} --title {title} --zone {zone} --plan {plan} --storage-size {storage_size} --os {os} --login-user {login_user} {ssh_key_param} --format json",
+          "in_vm": false
         }
       },
-      "start_worker": {
-        "target": {"Command": "upctl server start {server_uuid}"},
-        "params": [
-          "server_uuid"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "hostname",
+        "title",
+        "zone",
+        "plan",
+        "storage_size",
+        "os",
+        "login_user",
+        "ssh_key_param"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "uuid": {
+            "regex": "\"uuid\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "hostname": {
+            "regex": "\"hostname\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "title": {
+            "regex": "\"title\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "zone": {
+            "regex": "\"zone\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "memory": {
+            "regex": "\"memory\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "cores": {
+            "regex": "\"cores\":\\s*([\\d]+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "ip_addresses": {
+            "regex": "\"ip_addresses\":\\s*(\\[.*?\\])",
+            "group": 1
           }
         }
-      },
-      "stop_worker": {
-        "target": {"Command": "upctl server stop {server_uuid} {stop_type_param}"},
-        "params": [
-          "server_uuid",
-          "stop_type_param"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "delete_worker": {
+      "target": {
+        "Command": {
+          "command": "upctl server delete {server_uuid}",
+          "in_vm": false
         }
       },
-      "restart_worker": {
-        "target": {"Command": "upctl server restart {server_uuid} {stop_type_param}"},
-        "params": [
-          "server_uuid",
-          "stop_type_param"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_uuid"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "modify_worker": {
-        "target": {"Command": "upctl server modify {server_uuid} {plan_param} {hostname_param} {title_param} --format json"},
-        "params": [
-          "server_uuid",
-          "plan_param",
-          "hostname_param",
-          "title_param"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "uuid": {
-              "regex": "\"uuid\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "hostname": {
-              "regex": "\"hostname\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "title": {
-              "regex": "\"title\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "plan": {
-              "regex": "\"plan\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "start_worker": {
+      "target": {
+        "Command": {
+          "command": "upctl server start {server_uuid}",
+          "in_vm": false
         }
       },
-      "list_volumes": {
-        "target": {"Command": "upctl storage list --format json"},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "storages": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
+      "params": [
+        "server_uuid"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "get_volume": {
-        "target": {"Command": "upctl storage show {storage_uuid} --format json"},
-        "params": [
-          "storage_uuid"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "uuid": {
-              "regex": "\"uuid\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "title": {
-              "regex": "\"title\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"size\":\\s*([\\d]+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "type": {
-              "regex": "\"type\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "zone": {
-              "regex": "\"zone\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
-          }
+      }
+    },
+    "stop_worker": {
+      "target": {
+        "Command": {
+          "command": "upctl server stop {server_uuid} {stop_type_param}",
+          "in_vm": false
         }
       },
-      "create_volume": {
-        "target": {"Command": "upctl storage create --title {title} --zone {zone} --size {size} --tier {tier} --format json"},
-        "params": [
-          "title",
-          "zone",
-          "size",
-          "tier"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "uuid": {
-              "regex": "\"uuid\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "title": {
-              "regex": "\"title\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"size\":\\s*([\\d]+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "tier": {
-              "regex": "\"tier\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "zone": {
-              "regex": "\"zone\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "params": [
+        "server_uuid",
+        "stop_type_param"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "delete_volume": {
-        "target": {"Command": "upctl storage delete {storage_uuid}"},
-        "params": [
-          "storage_uuid"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "restart_worker": {
+      "target": {
+        "Command": {
+          "command": "upctl server restart {server_uuid} {stop_type_param}",
+          "in_vm": false
         }
       },
-      "attach_volume": {
-        "target": {"Command": "upctl server storage-attach {server_uuid} --storage {storage_uuid} --type {attachment_type} --address {attachment_address} --format json"},
-        "params": [
-          "server_uuid",
-          "storage_uuid",
-          "attachment_type",
-          "attachment_address"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "server_uuid",
+        "stop_type_param"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
-      },
-      "detach_volume": {
-        "target": {"Command": "upctl server storage-detach {server_uuid} --address {attachment_address}"},
-        "params": [
-          "server_uuid",
-          "attachment_address"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
-          }
+      }
+    },
+    "modify_worker": {
+      "target": {
+        "Command": {
+          "command": "upctl server modify {server_uuid} {plan_param} {hostname_param} {title_param} --format json",
+          "in_vm": false
         }
       },
-      "create_backup": {
-        "target": {"Command": "upctl storage backup-create {storage_uuid} --title {title} --format json"},
-        "params": [
-          "storage_uuid",
-          "title"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "uuid": {
-              "regex": "\"uuid\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "title": {
-              "regex": "\"title\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "state": {
-              "regex": "\"state\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "created": {
-              "regex": "\"created\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "size": {
-              "regex": "\"size\":\\s*([\\d]+)",
-              "group": 1,
-              "transform": "number"
-            }
+      "params": [
+        "server_uuid",
+        "plan_param",
+        "hostname_param",
+        "title_param"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "uuid": {
+            "regex": "\"uuid\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "hostname": {
+            "regex": "\"hostname\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "title": {
+            "regex": "\"title\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "plan": {
+            "regex": "\"plan\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
-      },
-      "list_backups": {
-        "target": {"Command": "upctl storage backup-list --format json"},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "backups": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
-          }
+      }
+    },
+    "list_volumes": {
+      "target": {
+        "Command": {
+          "command": "upctl storage list --format json",
+          "in_vm": false
         }
       },
-      "delete_backup": {
-        "target": {"Command": "upctl storage backup-delete {backup_uuid}"},
-        "params": [
-          "backup_uuid"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "storages": {
+            "regex": "(\\[.*\\])",
+            "group": 1
           }
         }
-      },
-      "list_plans": {
-        "target": {"Command": "upctl plan list --format json"},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "plans": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
-          }
+      }
+    },
+    "get_volume": {
+      "target": {
+        "Command": {
+          "command": "upctl storage show {storage_uuid} --format json",
+          "in_vm": false
         }
       },
-      "list_regions": {
-        "target": {"Command": "upctl zone list --format json"},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "zones": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
+      "params": [
+        "storage_uuid"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "uuid": {
+            "regex": "\"uuid\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "title": {
+            "regex": "\"title\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"size\":\\s*([\\d]+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "type": {
+            "regex": "\"type\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "zone": {
+            "regex": "\"zone\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
-      },
-      "list_templates": {
-        "target": {"Command": "upctl template list --format json"},
-        "params": [],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "templates": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
-          }
+      }
+    },
+    "create_volume": {
+      "target": {
+        "Command": {
+          "command": "upctl storage create --title {title} --zone {zone} --size {size} --tier {tier} --format json",
+          "in_vm": false
         }
       },
-      "create_firewall_rule": {
-        "target": {"Command": "upctl firewall rule create {server_uuid} --action {action} --direction {direction} --family {family} --position {position} --protocol {protocol} {destination_param} {source_param} {port_param} {comment_param} --format json"},
-        "params": [
-          "server_uuid",
-          "action",
-          "direction",
-          "family",
-          "position",
-          "protocol",
-          "destination_param",
-          "source_param",
-          "port_param",
-          "comment_param"
-        ],
-        "parse_rules": {
-          "type": "properties",
-          "patterns": {
-            "position": {
-              "regex": "\"position\":\\s*([\\d]+)",
-              "group": 1,
-              "transform": "number"
-            },
-            "action": {
-              "regex": "\"action\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "direction": {
-              "regex": "\"direction\":\\s*\"([^\"]+)\"",
-              "group": 1
-            },
-            "protocol": {
-              "regex": "\"protocol\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+      "params": [
+        "title",
+        "zone",
+        "size",
+        "tier"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "uuid": {
+            "regex": "\"uuid\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "title": {
+            "regex": "\"title\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"size\":\\s*([\\d]+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "tier": {
+            "regex": "\"tier\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "zone": {
+            "regex": "\"zone\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
           }
         }
-      },
-      "list_firewall_rules": {
-        "target": {"Command": "upctl firewall rule list {server_uuid} --format json"},
-        "params": [
-          "server_uuid"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "rules": {
-              "regex": "(\\[.*\\])",
-              "group": 1
-            }
-          }
+      }
+    },
+    "delete_volume": {
+      "target": {
+        "Command": {
+          "command": "upctl storage delete {storage_uuid}",
+          "in_vm": false
         }
       },
-      "delete_firewall_rule": {
-        "target": {"Command": "upctl firewall rule delete {server_uuid} {position}"},
-        "params": [
-          "server_uuid",
-          "position"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "success": {
-              "regex": ".*",
-              "transform": "boolean"
-            }
+      "params": [
+        "storage_uuid"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "attach_volume": {
+      "target": {
+        "Command": {
+          "command": "upctl server storage-attach {server_uuid} --storage {storage_uuid} --type {attachment_type} --address {attachment_address} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_uuid",
+        "storage_uuid",
+        "attachment_type",
+        "attachment_address"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "detach_volume": {
+      "target": {
+        "Command": {
+          "command": "upctl server storage-detach {server_uuid} --address {attachment_address}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_uuid",
+        "attachment_address"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "create_backup": {
+      "target": {
+        "Command": {
+          "command": "upctl storage backup-create {storage_uuid} --title {title} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "storage_uuid",
+        "title"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "uuid": {
+            "regex": "\"uuid\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "title": {
+            "regex": "\"title\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "state": {
+            "regex": "\"state\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "created": {
+            "regex": "\"created\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "size": {
+            "regex": "\"size\":\\s*([\\d]+)",
+            "group": 1,
+            "transform": "number"
+          }
+        }
+      }
+    },
+    "list_backups": {
+      "target": {
+        "Command": {
+          "command": "upctl storage backup-list --format json",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "backups": {
+            "regex": "(\\[.*\\])",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_backup": {
+      "target": {
+        "Command": {
+          "command": "upctl storage backup-delete {backup_uuid}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "backup_uuid"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
+          }
+        }
+      }
+    },
+    "list_plans": {
+      "target": {
+        "Command": {
+          "command": "upctl plan list --format json",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "plans": {
+            "regex": "(\\[.*\\])",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_regions": {
+      "target": {
+        "Command": {
+          "command": "upctl zone list --format json",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "zones": {
+            "regex": "(\\[.*\\])",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_templates": {
+      "target": {
+        "Command": {
+          "command": "upctl template list --format json",
+          "in_vm": false
+        }
+      },
+      "params": [],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "templates": {
+            "regex": "(\\[.*\\])",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_firewall_rule": {
+      "target": {
+        "Command": {
+          "command": "upctl firewall rule create {server_uuid} --action {action} --direction {direction} --family {family} --position {position} --protocol {protocol} {destination_param} {source_param} {port_param} {comment_param} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_uuid",
+        "action",
+        "direction",
+        "family",
+        "position",
+        "protocol",
+        "destination_param",
+        "source_param",
+        "port_param",
+        "comment_param"
+      ],
+      "parse_rules": {
+        "type": "properties",
+        "patterns": {
+          "position": {
+            "regex": "\"position\":\\s*([\\d]+)",
+            "group": 1,
+            "transform": "number"
+          },
+          "action": {
+            "regex": "\"action\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "direction": {
+            "regex": "\"direction\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "protocol": {
+            "regex": "\"protocol\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_firewall_rules": {
+      "target": {
+        "Command": {
+          "command": "upctl firewall rule list {server_uuid} --format json",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_uuid"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "rules": {
+            "regex": "(\\[.*\\])",
+            "group": 1
+          }
+        }
+      }
+    },
+    "delete_firewall_rule": {
+      "target": {
+        "Command": {
+          "command": "upctl firewall rule delete {server_uuid} {position}",
+          "in_vm": false
+        }
+      },
+      "params": [
+        "server_uuid",
+        "position"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "success": {
+            "regex": ".*",
+            "transform": "boolean"
           }
         }
       }
     }
   }
+}
