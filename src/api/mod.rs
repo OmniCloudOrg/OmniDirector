@@ -69,7 +69,7 @@ impl From<anyhow::Error> for ApiError {
 type ApiResult<T> = Result<Json<T>, ApiError>;
 
 // Route handlers
-#[post("/vms/action", format = "json", data = "<action_request>")]
+#[post("/action", format = "json", data = "<action_request>")]
 async fn execute_action(
     action_request: Json<CpiActionRequest>,
     cpi_state: &rocket::State<CpiState>,
@@ -99,14 +99,14 @@ async fn execute_action(
 }
 
 // Get available providers
-#[get("/vms/providers")]
+#[get("/providers")]
 async fn get_providers(cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<String>> {
     let providers = cpi_state.cpi_system.get_providers();
     Ok(Json(providers))
 }
 
 // Get available actions for a provider
-#[get("/vms/actions/<provider>")]
+#[get("/actions/<provider>")]
 async fn get_actions(
     provider: String,
     cpi_state: &rocket::State<CpiState>,
@@ -116,7 +116,7 @@ async fn get_actions(
 }
 
 // Get all unique actions across all providers
-#[get("/vms/actions")]
+#[get("/actions")]
 async fn get_all_unique_actions(cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<String>> {
     let providers = cpi_state.cpi_system.get_providers();
     let mut all_actions = Vec::new();
@@ -145,7 +145,7 @@ async fn get_all_unique_actions(cpi_state: &rocket::State<CpiState>) -> ApiResul
 }
 
 // Get required parameters for an action
-#[get("/vms/params/<provider>/<action>")]
+#[get("/params/<provider>/<action>")]
 async fn get_action_params(
     provider: String,
     action: String,
