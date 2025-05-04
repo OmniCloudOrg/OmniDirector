@@ -4,9 +4,13 @@ use rocket::{self, get, post, response::Responder, routes, serde::json::Json};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, env, sync::Arc};
 
+// Create the index module
+pub mod index;
+
 // CPI System instance stored in application state
-struct CpiState {
-    cpi_system: Arc<cpis::CpiSystem>,
+// This needs to be public so index.rs can access it
+pub struct CpiState {
+    pub cpi_system: Arc<cpis::CpiSystem>,
 }
 
 // Request format for CPI actions
@@ -187,6 +191,7 @@ pub async fn rocket() -> rocket::Rocket<rocket::Build> {
         .mount(
             "/",
             routes![
+                index::index,
                 execute_action,
                 get_providers,
                 get_actions,
