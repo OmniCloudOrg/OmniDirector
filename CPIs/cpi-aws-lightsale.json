@@ -1,5 +1,5 @@
 {
-    "name": "aws-lightsail",
+    "name": "lightsail",
     "type": "command",
     "default_settings": {
         "region": "us-east-1",
