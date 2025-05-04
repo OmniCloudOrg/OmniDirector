@@ -1,5 +1,5 @@
 {
-    "name": "huawei-cloud",
+    "name": "huawei",
     "type": "command",
     "default_settings": {
         "region": "ap-southeast-1",

@@ -1,5 +1,5 @@
 {
-    "name": "alibaba-cloud",
+    "name": "alibaba",
     "type": "command",
     "default_settings": {
         "region": "cn-hangzhou",
