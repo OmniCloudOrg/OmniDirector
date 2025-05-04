@@ -24,6 +24,10 @@ pub fn execute_action(
         "Executing action '{}' from provider '{}'",
         action_name, provider.name
     );
+    println!(
+        "[TIMING] Starting execution of action '{}' from provider '{}'",
+        action_name, provider.name
+    );
 
     // Get the action definition
     let action_def = provider.get_action(action_name)?;
@@ -35,10 +39,20 @@ pub fn execute_action(
     validate_params(action_def, &all_params)?;
 
     // Execute the action and its sub-actions
+    let exec_start = Instant::now();
     let result = execute_sub_action(action_def, &all_params)?;
+    let exec_duration = exec_start.elapsed();
+    println!(
+        "[TIMING] Action '{}' execution (excluding setup/validation): {:?}",
+        action_name, exec_duration
+    );
 
     let duration = start.elapsed();
     info!("Action '{}' completed in {:?}", action_name, duration);
+    println!(
+        "[TIMING] Total time for action '{}': {:?}",
+        action_name, duration
+    );
 
     Ok(result)
 }
