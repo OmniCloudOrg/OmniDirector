@@ -1,5 +1,5 @@
 {
-  "name": "std_kvm",
+  "name": "std-kvm",
   "type": "command",
   "default_settings": {
     "memory_mb": "2048",

@@ -1,5 +1,5 @@
 {
-  "name": "oracle_cloud",
+  "name": "oracle-cloud",
   "type": "command",
   "default_settings": {
     "compartment_id": "ocid1.compartment.oc1..example",

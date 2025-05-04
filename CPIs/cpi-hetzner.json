@@ -1,5 +1,5 @@
 {
-  "name": "hetzner_cloud",
+  "name": "hetzner-cloud",
   "type": "command",
   "default_settings": {
     "server_type": "cx11",

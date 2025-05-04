@@ -1,5 +1,5 @@
 {
-  "name": "vmware_esxi",
+  "name": "vmware-esxi",
   "type": "command",
   "default_settings": {
     "host": "esxi.local",

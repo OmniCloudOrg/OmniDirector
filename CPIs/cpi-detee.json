@@ -1,5 +1,5 @@
 {
-    "name": "detee_cpi",
+    "name": "detee",
     "type": "command",
     "actions": {
         "test_install": {

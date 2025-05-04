@@ -1,5 +1,5 @@
 {
-  "name": "ovh_cloud",
+  "name": "ovh-cloud",
   "type": "command",
   "default_settings": {
     "region": "GRA7",

@@ -1,5 +1,5 @@
 {
-  "name": "digital_ocean",
+  "name": "digital-ocean",
   "type": "command",
   "default_settings": {
     "region": "nyc1",
