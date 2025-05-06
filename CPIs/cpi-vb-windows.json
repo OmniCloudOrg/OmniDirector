@@ -404,7 +404,7 @@
     "attach_volume": {
       "target": {
         "Command": {
-          "command": "VBoxManage.exe storageattach \"{worker_name}\" --storagectl {controller_name} --port {port} --device 0 --type hdd --medium {disk_path}",
+          "command": "VBoxManage.exe storageattach \"{worker_name}\" --storagectl {controller_name} --port {port} --device 0 --type dvddrive --medium {disk_path}",
           "in_vm": false
         }
       },
