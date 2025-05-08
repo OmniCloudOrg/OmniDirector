@@ -25,6 +25,7 @@
 
 pub mod error;
 pub mod executor;
+pub mod extensions;
 pub mod loader;
 pub mod logger;
 pub mod parser;
@@ -32,6 +33,7 @@ pub mod provider;
 pub mod validator;
 
 use self::error::CpiError;
+use self::extensions::ExtensionManager;
 use self::provider::Provider;
 use self::validator::validate_cpi_format;
 use dashmap::DashMap;
@@ -121,7 +123,7 @@ pub fn initialize() -> Result<CpiSystem, error::CpiError> {
     // Use Once to ensure initialization happens exactly once
     let mut result = Ok(0);
     INIT.call_once(|| {
-        match system.load_all_providers() {
+        match system.load_all_providers_and_extensions() {
             Ok(count) => {
                 result = Ok(count);
                 INITIALIZED.store(true, Ordering::SeqCst);
@@ -159,6 +161,8 @@ pub struct CpiSystem {
     /// Map of provider names to their source file paths
     /// This enables proper error reporting and debugging
     provider_sources: Arc<DashMap<String, String>>,
+    /// Extension manager for dynamically loaded extensions
+    pub extensions: Arc<ExtensionManager>,
 }
 
 impl Clone for CpiSystem {
@@ -170,6 +174,7 @@ impl Clone for CpiSystem {
         Self {
             providers: Arc::clone(&self.providers),
             provider_sources: Arc::clone(&self.provider_sources),
+            extensions: Arc::clone(&self.extensions),
         }
     }
 }
@@ -180,6 +185,8 @@ lazy_static::lazy_static! {
     static ref GLOBAL_PROVIDERS: Arc<DashMap<String, Provider>> = Arc::new(DashMap::new());
     /// Global shared map of provider source files accessible across all CPI system instances
     static ref GLOBAL_PROVIDER_SOURCES: Arc<DashMap<String, String>> = Arc::new(DashMap::new());
+    /// Global shared extension manager accessible across all CPI system instances
+    static ref GLOBAL_EXTENSIONS: Arc<ExtensionManager> = Arc::new(ExtensionManager::new());
 }
 
 impl CpiSystem {
@@ -202,12 +209,13 @@ impl CpiSystem {
         Self {
             providers: Arc::clone(&GLOBAL_PROVIDERS),
             provider_sources: Arc::clone(&GLOBAL_PROVIDER_SOURCES),
+            extensions: Arc::clone(&GLOBAL_EXTENSIONS),
         }
     }
 
-    /// Loads all providers from the ./CPIs directory
+    /// Loads all providers from the ./CPIs directory and all extensions from the ./Extensions directory
     ///
-    /// This method scans the CPIs directory, validates each provider file,
+    /// This method scans the CPIs and Extensions directories, validates each provider file and extension,
     /// and registers valid providers. It handles errors gracefully and provides
     /// detailed error reporting. The method can be called from multiple threads
     /// safely due to the use of concurrent data structures.
@@ -220,17 +228,7 @@ impl CpiSystem {
     ///
     /// * `CpiError::NoProvidersLoaded` - If no valid providers were found
     /// * Other errors from the validation and registration process
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let cpi_system = CpiSystem::new();
-    /// match cpi_system.load_all_providers() {
-    ///     Ok(count) => println!("Loaded {} providers", count),
-    ///     Err(e) => eprintln!("Failed to load providers: {}", e),
-    /// }
-    /// ```
-    pub fn load_all_providers(&self) -> Result<usize, CpiError> {
+    pub fn load_all_providers_and_extensions(&self) -> Result<usize, CpiError> {
         // If providers are already loaded, just return the count
         if !self.providers.is_empty() {
             debug!("Providers already loaded, count: {}", self.providers.len());
@@ -325,6 +323,38 @@ impl CpiSystem {
             }
         });
 
+        // Now load extensions
+        info!("Loading extensions from ./Extensions directory");
+        let extensions_dir = PathBuf::from("./Extensions");
+        
+        if extensions_dir.exists() && extensions_dir.is_dir() {
+            match self.extensions.load_all_extensions(&extensions_dir) {
+                Ok(count) => {
+                    info!("Loaded {} extensions", count);
+                    
+                    // Register extensions as providers
+                    for ext_name in self.extensions.get_extensions() {
+                        match self.extensions.extension_to_provider(&ext_name) {
+                            Ok(provider) => {
+                                // Register the provider
+                                self.providers.insert(provider.name.clone(), provider.clone());
+                                self.provider_sources.insert(provider.name.clone(), format!("extension:{}", ext_name));
+                                info!("Registered extension '{}' as provider", ext_name);
+                            },
+                            Err(e) => {
+                                error!("Failed to convert extension '{}' to provider: {}", ext_name, e);
+                            }
+                        }
+                    }
+                },
+                Err(e) => {
+                    warn!("Failed to load extensions: {}", e);
+                }
+            }
+        } else {
+            debug!("Extensions directory not found, skipping extension loading");
+        }
+
         let loaded_count = self.providers.len();
         if loaded_count == 0 {
             return Err(CpiError::NoProvidersLoaded);
@@ -364,6 +394,13 @@ impl CpiSystem {
         info!("============================================");
 
         Ok(loaded_count)
+    }
+
+    /// Loads all providers from the ./CPIs directory
+    ///
+    /// This method is kept for backward compatibility but delegates to the new method
+    pub fn load_all_providers(&self) -> Result<usize, CpiError> {
+        self.load_all_providers_and_extensions()
     }
 
     /// Validates a provider file using a pre-parsed JSON value
@@ -475,7 +512,7 @@ impl CpiSystem {
         let start = std::time::Instant::now();
 
         let result = time("Executing CPI actions", || {
-            executor::execute_action(&provider, action_name, params)
+            executor::execute_action(Arc::new(self.clone()), &provider, action_name, params)
         });
 
         let duration = start.elapsed();

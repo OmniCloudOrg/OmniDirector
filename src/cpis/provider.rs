@@ -62,6 +62,42 @@ pub enum EndPointMethod {
     Custom(String),
 }
 
+impl EndPointMethod {
+    // Convert EndPointMethod to a reqwest Method
+    pub fn to_reqwest_method(&self) -> Result<reqwest::Method, CpiError> {
+        match self {
+            EndPointMethod::Get => Ok(reqwest::Method::GET),
+            EndPointMethod::Post => Ok(reqwest::Method::POST),
+            EndPointMethod::Put => Ok(reqwest::Method::PUT),
+            EndPointMethod::Patch => Ok(reqwest::Method::PATCH),
+            EndPointMethod::Delete => Ok(reqwest::Method::DELETE),
+            EndPointMethod::Option => Ok(reqwest::Method::OPTIONS),
+            EndPointMethod::Custom(method) => {
+                // Try to parse the custom method
+                method.parse::<reqwest::Method>().map_err(|_| {
+                    CpiError::InvalidParameterType(
+                        "method".to_string(),
+                        "valid HTTP method".to_string(),
+                    )
+                })
+            }
+        }
+    }
+
+    // Convert EndPointMethod to a string
+    pub fn to_string(&self) -> String {
+        match self {
+            EndPointMethod::Get => "GET".to_string(),
+            EndPointMethod::Post => "POST".to_string(),
+            EndPointMethod::Put => "PUT".to_string(),
+            EndPointMethod::Patch => "PATCH".to_string(),
+            EndPointMethod::Delete => "DELETE".to_string(),
+            EndPointMethod::Option => "OPTIONS".to_string(),
+            EndPointMethod::Custom(method) => method.clone(),
+        }
+    }
+}
+
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 pub enum ParseRules {
