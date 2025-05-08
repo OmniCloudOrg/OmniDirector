@@ -219,6 +219,8 @@ impl ExtensionManager {
             error!("Extension not found: {}", extension_name);
             CpiError::ProviderNotFound(extension_name.to_string())
         })?;
+
+        println!("Executing action '{}' on extension '{}'", action, extension_name);
         
         // Execute the action
         extension.execute_action(action, &params).map_err(|e| {
@@ -236,7 +238,7 @@ pub fn is_extension_command(command: &str) -> bool {
 // Extension function to extract the action name from a command
 pub fn extract_extension_action(command: &str) -> Option<&str> {
     if command.starts_with("__extension__:") {
-        Some(&command[13..]) // 13 is the length of "__extension__:"
+        Some(&command[14..]) // 13 is the length of "__extension__:"
     } else {
         None
     }

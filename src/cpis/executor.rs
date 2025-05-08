@@ -367,11 +367,21 @@ fn execute_sub_action(
             let cmd = fill_template(&command.command, params)?;
 
             // Check if this is an extension command
-            let output = if is_extension_command(&cmd) {
+            if is_extension_command(&cmd) {
                 if let Some(action) = extract_extension_action(&cmd) {
-                    // Call the extension
+                    // *** MODIFIED: Call the extension and directly use the result without parsing ***
+                    debug!("Calling extension '{}' action '{}'", provider_name, action);
+                    
                     match cpi_system.extensions.execute_action(provider_name, action, params.clone()) {
-                        Ok(result) => serde_json::to_string(&result).unwrap_or_else(|_| "{}".to_string()),
+                        Ok(result) => {
+                            // Log the extension result for debugging
+                            debug!("Extension result: {}", serde_json::to_string(&result).unwrap_or_else(|_| "{}".to_string()));
+                            
+                            // Return the extension result directly without parsing
+                            let duration = start.elapsed();
+                            debug!("Sub-action execution completed in {:?}", duration);
+                            return Ok(result);
+                        },
                         Err(e) => return Err(e),
                     }
                 } else {
@@ -379,11 +389,14 @@ fn execute_sub_action(
                         "Invalid extension command".to_string()
                     ));
                 }
-            } else if command.in_vm.unwrap_or(false) {
-                // Original VM command execution
+            }
+            
+            // Execute regular command (non-extension)
+            let output = if command.in_vm.unwrap_or(false) {
+                // VM command execution
                 execute_command_vm(&cmd)?
             } else {
-                // Original command execution
+                // Local command execution
                 execute_command(&cmd)?
             };
 
@@ -504,4 +517,3 @@ fn execute_sub_action(
 
     Ok(result)
 }
-
