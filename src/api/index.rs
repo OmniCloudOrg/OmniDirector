@@ -159,7 +159,7 @@ Response:
 
     <!-- Three-column Provider Explorer Modal -->
     <div id="providersModal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden backdrop-blur-sm flex items-center justify-center">
-        <div class="bg-dark-surface w-11/12 max-w-6xl rounded-lg shadow-lg p-6 mx-4 my-8 animate-fade-in max-h-[90vh] flex flex-col">
+        <div class="bg-dark-surface w-11/12 max-w-[80vw] rounded-lg shadow-lg p-6 mx-4 my-8 animate-fade-in max-h-[90vh] flex flex-col">
             <!-- Modal header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">CPI System Explorer</h2>
