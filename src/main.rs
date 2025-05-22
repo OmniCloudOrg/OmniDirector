@@ -10,13 +10,14 @@ use anyhow::Result;
 async fn main() -> Result<()> {
     // Initialize the CPI system
     println!("Initializing CPI system...");
-    let cpi_system = cpis::initialize()?;
+    let cpi_system = cpis::initialize();
 
     // List available providers
+    // TODO: @tristanpoland - Uncomment this when the cpi_system is implemented
     println!("Available providers:");
-    for provider in cpi_system.get_providers() {
-        println!("  - {}", provider);
-    }
+    // for provider in cpi_system.get_providers() {
+    //     println!("  - {}", provider);
+    // }
 
     //let input_dir: &str = "./";
     //try_compile(input_dir).expect("Could not compile");
