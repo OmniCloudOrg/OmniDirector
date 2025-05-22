@@ -196,7 +196,7 @@ fn has_target_extension(path: &Path, target_ext: &str) -> bool {
     since = "0.1.4",
     note = "This function is experimental and may change or be removed at any time"
 )]
-pub fn load_extension(path: &Path) -> Result<()> {
+fn load_extension(path: &Path) -> Result<()> {
     let name = path.file_stem()
         .and_then(OsStr::to_str)
         .ok_or_else(|| CpiError::InvalidPath(path.to_string_lossy().to_string()))?
