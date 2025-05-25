@@ -168,7 +168,6 @@ pub async fn rocket() -> rocket::Rocket<rocket::Build> {
     println!("Server running at http://{}:{}", host, &port);
 
     // Initialize CPI system
-    let cpis = cpis::initialize();
 
     // TODO: @tristanpoland @meowesque Update this to use the new cpi system
     // Log loaded providers
