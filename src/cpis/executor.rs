@@ -89,9 +89,10 @@ impl PluginExecutor {
         Ok(())
     }
 
-    /// Execute a feature action
+    /// Execute a feature action for a specific provider (plugin)
     pub async fn execute_action(
         &self,
+        provider: &str,
         feature: &str,
         action: &str,
         arguments: HashMap<String, Value>,
@@ -101,12 +102,12 @@ impl PluginExecutor {
         let start_time = Instant::now();
         let timeout = timeout.unwrap_or(Duration::from_secs(30));
 
-        // Validate that the feature and action exist
+        // Validate that the feature and action exist for the provider
         self.feature_registry.validate_action(feature, action, &arguments).await?;
 
         // Create execution context
         let (response_sender, response_receiver) = tokio::sync::oneshot::channel();
-        
+
         let pending_request = PendingRequest {
             request_id,
             feature: feature.to_string(),
@@ -123,7 +124,8 @@ impl PluginExecutor {
             pending.insert(request_id, pending_request);
         }
 
-        // Emit the feature action event
+
+        // Emit the feature action event (compat: do NOT include provider in event key)
         let event = FeatureActionEvent {
             feature: feature.to_string(),
             action: action.to_string(),
@@ -151,17 +153,17 @@ impl PluginExecutor {
         }
     }
 
-    /// Execute multiple actions in parallel
+    /// Execute multiple actions in parallel, each with explicit provider
     pub async fn execute_batch(
         &self,
-        batch: Vec<(String, String, HashMap<String, Value>)>, // feature, action, args
+        batch: Vec<(String, String, String, HashMap<String, Value>)>, // provider, feature, action, args
         timeout: Option<Duration>,
     ) -> Vec<Result<Value, PluginError>> {
-        let futures = batch.into_iter().map(|(feature, action, args)| {
+        let futures = batch.into_iter().map(|(provider, feature, action, args)| {
             let executor = self;
             let timeout = timeout;
             async move {
-                executor.execute_action(&feature, &action, args, timeout).await
+                executor.execute_action(&provider, &feature, &action, args, timeout).await
             }
         });
 
@@ -282,7 +284,8 @@ impl PluginExecutor {
             .collect();
         
         // Execute the action
-        self.execute_action(feature, action, final_args, timeout).await
+        // Use plugin_name for provider-based dispatch
+        self.execute_action(plugin_name, feature, action, final_args, timeout).await
     }
 
     /// Execute an action and emit completion event (for use by plugins)
@@ -413,7 +416,9 @@ impl ExecutionRequestBuilder {
         let feature = self.feature.ok_or_else(|| PluginError::InvalidArgument("Feature not specified".to_string()))?;
         let action = self.action.ok_or_else(|| PluginError::InvalidArgument("Action not specified".to_string()))?;
 
-        executor.execute_action(&feature, &action, self.arguments, self.timeout).await
+        // Use plugin_name if present, otherwise error
+        let provider = self.plugin_name.as_deref().ok_or_else(|| PluginError::InvalidArgument("Plugin name not specified".to_string()))?;
+        executor.execute_action(provider, &feature, &action, self.arguments, self.timeout).await
     }
 
     pub async fn execute_with_context(

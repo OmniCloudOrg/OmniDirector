@@ -54,7 +54,8 @@ pub struct PluginSystem {
 impl PluginSystem {
     /// Create a new plugin system instance
     pub fn new(server_context: Arc<dyn ServerContext>) -> Self {
-        let event_system = Arc::new(EventSystem::new());
+        // Use the event system from the provided server_context, not a new one
+        let event_system = server_context.events();
         let plugin_registry = Arc::new(PluginRegistry::new());
         let feature_registry = Arc::new(FeatureRegistry::new());
         let argument_manager = Arc::new(ArgumentManager::new());
@@ -72,15 +73,15 @@ impl PluginSystem {
     pub async fn initialize(&self) -> Result<(), PluginError> {
         // Load feature schemas from JSON files
         self.feature_registry.load_schemas("./features").await?;
-        
-        // Load plugins from the plugins directory
-        self.plugin_registry.load_plugins("./plugins", Arc::clone(&self.event_system)).await?;
-        
-        // Initialize all loaded plugins
-        for plugin_name in self.plugin_registry.list_plugins().await {
-            self.initialize_plugin(&plugin_name).await?;
-        }
 
+        // Load plugins from the plugins directory, passing the main context
+        self.plugin_registry.load_plugins(
+            "./plugins",
+            Arc::clone(&self.event_system),
+            Arc::clone(&self.server_context),
+        ).await?;
+
+        // No need to call initialize_plugin again, as plugins are now initialized at load time
         Ok(())
     }
 

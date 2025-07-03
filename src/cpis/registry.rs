@@ -35,6 +35,7 @@ impl PluginRegistry {
         &self,
         plugins_dir: P,
         event_system: Arc<EventSystem>,
+        context: Arc<dyn super::ServerContext>,
     ) -> Result<usize, PluginError> {
         let plugins_dir = plugins_dir.as_ref();
 
@@ -60,7 +61,7 @@ impl PluginRegistry {
             let is_plugin_lib = path.extension().and_then(|s| s.to_str()) == Some("dylib");
 
             if is_plugin_lib {
-                match self.load_plugin_from_library(&path).await {
+                match self.load_plugin_from_library(&path, Arc::clone(&context)).await {
                     Ok(_) => loaded_count += 1,
                     Err(e) => eprintln!("Failed to load plugin from {:?}: {}", path, e),
                 }
@@ -74,6 +75,7 @@ impl PluginRegistry {
     async fn load_plugin_from_library<P: AsRef<Path>>(
         &self,
         library_path: P,
+        context: Arc<dyn super::ServerContext>,
     ) -> Result<(), PluginError> {
         let library_path = library_path.as_ref();
 
@@ -121,21 +123,18 @@ impl PluginRegistry {
             "Plugin created: {} (version: {}, features: {:?})",
             plugin_name, plugin_version, plugin_features
         );
-
         // Create metadata
         let metadata = PluginMetadata::new(plugin_name.clone(), plugin_version, plugin_features);
 
         // Create plugin instance
-
         let mut plugin_instance = PluginInstance::new(plugin, metadata);
         plugin_instance.set_state(PluginState::Loading);
 
-        // Initialize plugin before storing in Arc
+        // Call pre_init and init with the correct context before storing
         plugin_instance.set_state(PluginState::PreInitialized);
-        // You may need to pass a real context here if required
-        // plugin_instance.plugin_mut().pre_init(...).await?;
+        plugin_instance.plugin_mut().pre_init(Arc::clone(&context)).await?;
         plugin_instance.set_state(PluginState::Initialized);
-        // plugin_instance.plugin_mut().init(...).await?;
+        plugin_instance.plugin_mut().init(Arc::clone(&context)).await?;
         plugin_instance.set_state(PluginState::Running);
 
         // Store the library and plugin

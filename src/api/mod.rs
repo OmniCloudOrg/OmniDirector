@@ -16,6 +16,7 @@ pub struct CpiState {
 // Request format for plugin actions
 #[derive(Debug, Deserialize)]
 struct PluginActionRequest {
+    provider: String, // new field for provider/plugin name
     feature: String,
     action: String,
     #[serde(default)]
@@ -87,18 +88,21 @@ async fn execute_action(
     cpi_state: &rocket::State<CpiState>,
 ) -> ApiResult<PluginActionResponse> {
     let request = action_request.into_inner();
-    println!("🎯 Received action request: feature={}, action={}", request.feature, request.action);
+    println!("🎯 Received action request: provider={}, feature={}, action={}", request.provider, request.feature, request.action);
 
     let start_time = std::time::Instant::now();
     
-    // Execute the plugin action
+    // Execute the plugin action (now with provider)
     let timeout = Duration::from_secs(request.timeout_seconds);
-    let result = cpi_state.executor.execute_action(
-        &request.feature,
-        &request.action,
-        request.params,
-        Some(timeout),
-    ).await;
+    // Use ExecutionRequestBuilder to ensure provider is set
+    let result = crate::cpis::executor::ExecutionRequestBuilder::new()
+        .plugin_name(&request.provider)
+        .feature(&request.feature)
+        .action(&request.action)
+        .arguments(request.params)
+        .timeout(timeout)
+        .execute(&cpi_state.executor)
+        .await;
 
     let execution_time_ms = start_time.elapsed().as_millis() as u64;
 
@@ -131,6 +135,15 @@ async fn execute_action(
 }
 
 // Get available features (replaces get_providers)
+
+// Get available providers (plugin names)
+#[get("/providers")]
+async fn get_providers(cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<String>> {
+    let providers = cpi_state.plugin_system.plugin_registry.list_plugins().await;
+    Ok(Json(providers))
+}
+
+// Get available features (capabilities)
 #[get("/features")]
 async fn get_features(cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<String>> {
     let features = cpi_state.plugin_system.get_available_features().await;
@@ -232,12 +245,12 @@ async fn execute_batch(
     let timeout = Duration::from_secs(request.timeout_seconds);
 
     // Convert to the format expected by executor
-    let batch_actions: Vec<(String, String, HashMap<String, Value>)> = request.actions
+    let batch_actions: Vec<(String, String, String, HashMap<String, Value>)> = request.actions
         .iter()
-        .map(|req| (req.feature.clone(), req.action.clone(), req.params.clone()))
+        .map(|req| (req.provider.clone(), req.feature.clone(), req.action.clone(), req.params.clone()))
         .collect();
 
-    // Execute batch
+    // Execute batch (now with provider)
     let results = cpi_state.executor.execute_batch(batch_actions, Some(timeout)).await;
     let total_execution_time_ms = start_time.elapsed().as_millis() as u64;
 
@@ -354,13 +367,6 @@ async fn health_check(cpi_state: &rocket::State<CpiState>) -> ApiResult<serde_js
     Ok(Json(health))
 }
 
-// Backward compatibility endpoints (map old provider routes to new feature routes)
-#[get("/providers")]
-async fn get_providers_compat(cpi_state: &rocket::State<CpiState>) -> ApiResult<Vec<String>> {
-    // Return features as "providers" for backward compatibility
-    get_features(cpi_state).await
-}
-
 #[get("/actions/<provider>")]
 async fn get_provider_actions_compat(
     provider: String,
@@ -419,7 +425,7 @@ pub async fn rocket(
                 get_system_stats,
                 health_check,
                 // Backward compatibility routes
-                get_providers_compat,
+                get_providers,
                 get_provider_actions_compat,
                 get_provider_action_params_compat,
             ],

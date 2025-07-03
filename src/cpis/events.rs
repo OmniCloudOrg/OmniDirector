@@ -113,17 +113,18 @@ impl EventSystem {
         F: Fn(T) -> Result<(), EventError> + Send + Sync + 'static,
     {
         let handler_name = format!("{}::{}", event_key, T::type_name());
-        let typed_handler = TypedEventHandler::new(handler_name, handler);
-        
+        println!("[EventSystem] on_event: registering handler for key='{}' type='{}' handler_name='{}' instance={:p}", event_key, T::type_name(), handler_name, self);
+        let typed_handler = TypedEventHandler::new(handler_name.clone(), handler);
+
         let mut handlers = self.handlers.write().await;
         handlers.entry(event_key.to_string())
             .or_insert_with(Vec::new)
             .push(Arc::new(typed_handler));
-        
+
         // Update stats
         let mut stats = self.stats.write().await;
         stats.total_handlers += 1;
-        
+
         Ok(())
     }
 
@@ -132,16 +133,22 @@ impl EventSystem {
     where
         T: Event,
     {
+        // Debug: Print event emission
+        println!("[EventSystem] emit_event: key='{}' type='{}'", event_key, T::type_name());
         let data = event.serialize()?;
         let handlers = self.handlers.read().await;
 
         if let Some(event_handlers) = handlers.get(event_key) {
+            println!("[EventSystem] Found {} handler(s) for key '{}'", event_handlers.len(), event_key);
             for handler in event_handlers {
+                println!("[EventSystem] Invoking handler: {}", handler.handler_name());
                 if let Err(e) = handler.handle(&data).await {
                     // Log error but continue processing other handlers
                     eprintln!("Handler {} failed: {}", handler.handler_name(), e);
                 }
             }
+        } else {
+            println!("[EventSystem] No handlers registered for key '{}'", event_key);
         }
 
         // Update stats

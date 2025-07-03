@@ -34,9 +34,9 @@ async fn main() -> Result<()> {
         .build()
         .map_err(|e| anyhow::anyhow!("Failed to create server context: {}", e))?;
 
-    // Initialize the new plugin system
+    // Initialize the new plugin system, using the event system from the context
     println!("📦 Initializing Plugin System...");
-    let plugin_system = Arc::new(PluginSystem::new(server_context));
+    let plugin_system = Arc::new(PluginSystem::new(server_context as Arc<dyn cpis::context::ServerContext>));
     
     // Load features and plugins
     match plugin_system.initialize().await {
