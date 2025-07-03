@@ -1,519 +1,496 @@
-// executor.rs - Using run_script crate for reliable shell execution
-use super::error::CpiError;
-use super::parser;
-use super::provider::{ActionDef, ActionTarget, Provider, Command};
-use super::extensions::{is_extension_command, extract_extension_action};
-use super::CpiSystem;
-use log::{debug, error, info, trace, warn};
-use run_script::ScriptOptions;
-use serde_json::Value;
+//! # Plugin Executor
+//!
+//! Handles the execution of plugin actions through the event system.
+//! No case statements - everything is handled through event callbacks.
+
 use std::collections::HashMap;
-use ssh2::Session;
-use std::io::prelude::*;
-use std::net::TcpStream;
-use std::time::Duration;
-use std::time::Instant;
-use std::env;
 use std::sync::Arc;
+use std::time::{Duration, Instant};
+use tokio::sync::RwLock;
+use serde_json::Value;
+use uuid::Uuid;
+use super::{
+    PluginError, FeatureActionEvent, FeatureActionCompleteEvent, 
+    EventSystem, FeatureRegistry, ArgumentManager, ServerContext
+};
 
-// Main function to execute a CPI action
-pub fn execute_action(
-    cpi_system: Arc<CpiSystem>,
-    provider: &Provider,
-    action_name: &str,
-    params: HashMap<String, Value>,
-) -> Result<Value, CpiError> {
-    let start = Instant::now();
-    debug!(
-        "Executing action '{}' from provider '{}'",
-        action_name, provider.name
-    );
-    println!(
-        "[TIMING] Starting execution of action '{}' from provider '{}'",
-        action_name, provider.name
-    );
-
-    // Get the action definition
-    let action_def = provider.get_action(action_name)?;
-
-    // Merge default settings with provided params
-    let all_params = merge_params(provider, params)?;
-
-    // Validate required parameters
-    validate_params(action_def, &all_params)?;
-
-    // Execute the action and its sub-actions
-    let exec_start = Instant::now();
-    let result = execute_sub_action(cpi_system, action_def, &all_params, &provider.name)?;
-    let exec_duration = exec_start.elapsed();
-    println!(
-        "[TIMING] Action '{}' execution (excluding setup/validation): {:?}",
-        action_name, exec_duration
-    );
-
-    let duration = start.elapsed();
-    info!("Action '{}' completed in {:?}", action_name, duration);
-    println!(
-        "[TIMING] Total time for action '{}': {:?}",
-        action_name, duration
-    );
-
-    Ok(result)
+/// Executes plugin actions through the event system
+#[derive(Debug)]
+pub struct PluginExecutor {
+    event_system: Arc<EventSystem>,
+    feature_registry: Arc<FeatureRegistry>,
+    argument_manager: Arc<ArgumentManager>,
+    pending_requests: Arc<RwLock<HashMap<Uuid, PendingRequest>>>,
 }
 
-// Helper function to show truncated output in logs
-fn truncate_output(output: &str, max_len: usize) -> String {
-    if output.len() <= max_len {
-        output.to_string()
-    } else {
-        format!(
-            "{}... [truncated, {} bytes total]",
-            &output[..max_len],
-            output.len()
-        )
+/// Represents a pending action request
+#[derive(Debug)]
+pub struct PendingRequest {
+    pub request_id: Uuid,
+    pub feature: String,
+    pub action: String,
+    pub arguments: HashMap<String, Value>,
+    pub start_time: Instant,
+    pub timeout: Duration,
+    pub response_sender: tokio::sync::oneshot::Sender<Result<Value, PluginError>>,
+}
+
+/// Execution context for actions
+#[derive(Debug, Clone)]
+pub struct ExecutionContext {
+    pub request_id: Uuid,
+    pub plugin_name: String,
+    pub feature: String,
+    pub action: String,
+    pub start_time: Instant,
+    pub timeout: Duration,
+}
+
+/// Execution result with timing information
+#[derive(Debug, Clone)]
+pub struct ExecutionResult {
+    pub request_id: Uuid,
+    pub result: Result<Value, PluginError>,
+    pub execution_time: Duration,
+    pub plugin_name: String,
+}
+
+impl PluginExecutor {
+    pub fn new(
+        event_system: Arc<EventSystem>,
+        feature_registry: Arc<FeatureRegistry>,
+        argument_manager: Arc<ArgumentManager>,
+    ) -> Self {
+        Self {
+            event_system,
+            feature_registry,
+            argument_manager,
+            pending_requests: Arc::new(RwLock::new(HashMap::new())),
+        }
     }
-}
 
-// Helper function to fill in a command template with params
-fn fill_template(template: &str, params: &HashMap<String, Value>) -> Result<String, CpiError> {
-    trace!("Filling template: {}", template);
-    let mut result = template.to_string();
+    /// Initialize the executor by registering for completion events
+    pub async fn initialize(&self) -> Result<(), PluginError> {
+        let pending_requests = Arc::clone(&self.pending_requests);
+        
+        // Register handler for action completion events
+        self.event_system.on_event::<FeatureActionCompleteEvent, _>(
+            "feature:action:complete",
+            move |event| {
+                let pending_requests = Arc::clone(&pending_requests);
+                tokio::spawn(async move {
+                    Self::handle_action_complete(pending_requests, event).await
+                });
+                Ok(())
+            }
+        ).await
+            .map_err(|e| PluginError::EventError(e.to_string()))?;
 
-    for (key, value) in params {
-        let placeholder = format!("{{{}}}", key);
-        let value_str = match value {
-            Value::String(s) => s.clone(),
-            Value::Number(n) => n.to_string(),
-            Value::Bool(b) => b.to_string(),
-            _ => value.to_string(),
+        Ok(())
+    }
+
+    /// Execute a feature action
+    pub async fn execute_action(
+        &self,
+        feature: &str,
+        action: &str,
+        arguments: HashMap<String, Value>,
+        timeout: Option<Duration>,
+    ) -> Result<Value, PluginError> {
+        let request_id = Uuid::new_v4();
+        let start_time = Instant::now();
+        let timeout = timeout.unwrap_or(Duration::from_secs(30));
+
+        // Validate that the feature and action exist
+        self.feature_registry.validate_action(feature, action, &arguments).await?;
+
+        // Create execution context
+        let (response_sender, response_receiver) = tokio::sync::oneshot::channel();
+        
+        let pending_request = PendingRequest {
+            request_id,
+            feature: feature.to_string(),
+            action: action.to_string(),
+            arguments: arguments.clone(),
+            start_time,
+            timeout,
+            response_sender,
         };
 
-        result = result.replace(&placeholder, &value_str);
-    }
+        // Store the pending request
+        {
+            let mut pending = self.pending_requests.write().await;
+            pending.insert(request_id, pending_request);
+        }
 
-    trace!("Filled template: {}", result);
-    Ok(result)
-}
+        // Emit the feature action event
+        let event = FeatureActionEvent {
+            feature: feature.to_string(),
+            action: action.to_string(),
+            arguments,
+            request_id,
+        };
 
-// Helper function to execute a command using run_script
-fn execute_command(cmd: &str) -> Result<String, CpiError> {
-    debug!("Executing shell command: {}", cmd);
-    let start = Instant::now();
+        let event_key = format!("feature:{}:{}", feature, action);
+        self.event_system.emit_event(&event_key, &event).await
+            .map_err(|e| PluginError::EventError(e.to_string()))?;
 
-    // Configure script options
-    let options = ScriptOptions::new();
-
-    // No arguments needed
-    let args: Vec<String> = vec![];
-
-    // Run the script using run_script crate
-    match run_script::run(cmd, &args, &options) {
-        Ok((code, output, error)) => {
-            let duration = start.elapsed();
-
-            debug!("Command completed in {:?}", duration);
-            debug!("Exit code: {}", code);
-
-            if !error.is_empty() {
-                trace!("Command stderr: {}", truncate_output(&error, 200));
-            }
-
-            if code == 0 {
-                debug!("Command succeeded with output: {} bytes", output.len());
-                trace!("Command output: {}", truncate_output(&output, 200));
-                Ok(output)
-            } else {
-                error!("Command failed with exit code: {}", code);
-                error!("Command error output: {}", truncate_output(&error, 500));
-
-                Err(CpiError::ExecutionFailed(format!(
-                    "Command failed with exit code {}: {}\nError: {}",
-                    code, cmd, error
-                )))
+        // Wait for response with timeout
+        match tokio::time::timeout(timeout, response_receiver).await {
+            Ok(Ok(result)) => result,
+            Ok(Err(_)) => {
+                // Response sender was dropped
+                self.cleanup_request(request_id).await;
+                Err(PluginError::ExecutionFailed("Response channel closed".to_string()))
+            },
+            Err(_) => {
+                // Timeout occurred
+                self.cleanup_request(request_id).await;
+                Err(PluginError::ExecutionFailed(format!("Action timed out after {:?}", timeout)))
             }
         }
-        Err(e) => {
-            error!("Failed to execute command: {}", e);
-            Err(CpiError::ExecutionFailed(format!(
-                "Failed to execute command '{}': {}",
-                cmd, e
-            )))
-        }
     }
-}
 
-/// Execute a command on a remote VM via SSH using the ssh2 crate
-/// 
-/// Retrieves SSH credentials from environment variables:
-/// - OMNI_SSH_HOST: Hostname or IP address
-/// - OMNI_SSH_USER: SSH username
-/// - OMNI_SSH_PASSWORD: SSH password
-/// 
-/// # Arguments
-/// * `command` - The command to execute on the remote VM
-/// 
-/// # Returns
-/// * The command output as a string if successful
-/// * A CpiError if any part of the operation fails
-pub fn execute_command_vm(command: &str) -> Result<String, CpiError> {
-    println!("Executing command on VM: {}", command);
+    /// Execute multiple actions in parallel
+    pub async fn execute_batch(
+        &self,
+        batch: Vec<(String, String, HashMap<String, Value>)>, // feature, action, args
+        timeout: Option<Duration>,
+    ) -> Vec<Result<Value, PluginError>> {
+        let futures = batch.into_iter().map(|(feature, action, args)| {
+            let executor = self;
+            let timeout = timeout;
+            async move {
+                executor.execute_action(&feature, &action, args, timeout).await
+            }
+        });
 
+        futures::future::join_all(futures).await
+    }
 
-    // TODO: Here we load osme VM details from the environment, we would
-    // actually requisition these details from the orchestrator API
-
-
-    // Get SSH credentials from environment variables
-    let host = env::var("OMNI_SSH_HOST").map_err(|_| {
-        let err_msg = "Missing OMNI_SSH_HOST environment variable";
-        error!("{}", err_msg);
-        CpiError::ExecutionFailed(err_msg.to_string())
-    })?;
-    
-    let username = env::var("OMNI_SSH_USER").map_err(|_| {
-        let err_msg = "Missing OMNI_SSH_USER environment variable";
-        error!("{}", err_msg);
-        CpiError::ExecutionFailed(err_msg.to_string())
-    })?;
-    
-    let password = env::var("OMNI_SSH_PASSWORD").map_err(|_| {
-        let err_msg = "Missing OMNI_SSH_PASSWORD environment variable";
-        error!("{}", err_msg);
-        CpiError::ExecutionFailed(err_msg.to_string())
-    })?;
-    
-
-
-
-    debug!("Executing VM command on host '{}' as user '{}'", host, username);
-    let start = Instant::now();
-
-    // Connect with timeout
-    let tcp = match TcpStream::connect_timeout(
-        &format!("{}:22", host).parse().map_err(|e| {
-            error!("Invalid host address: {}", e);
-            CpiError::ExecutionFailed(format!("Invalid host address: {}", e))
-        })?,
-        Duration::from_secs(10)
+    /// Handle action completion events
+    async fn handle_action_complete(
+        pending_requests: Arc<RwLock<HashMap<Uuid, PendingRequest>>>,
+        event: FeatureActionCompleteEvent,
     ) {
-        Ok(stream) => {
-            // Set read/write timeouts
-            let _ = stream.set_read_timeout(Some(Duration::from_secs(30)));
-            let _ = stream.set_write_timeout(Some(Duration::from_secs(30)));
-            stream
-        },
-        Err(e) => {
-            error!("Failed to connect to SSH server: {}", e);
-            return Err(CpiError::ExecutionFailed(
-                format!("Failed to connect to SSH server {}: {}", host, e)
-            ));
-        }
-    };
+        let mut pending = pending_requests.write().await;
+        
+        if let Some(pending_request) = pending.remove(&event.request_id) {
+            let result = match event.result {
+                Ok(value) => Ok(value),
+                Err(error_msg) => Err(PluginError::ExecutionFailed(error_msg)),
+            };
 
-    // Create SSH session
-    let mut sess = Session::new().map_err(|e| {
-        error!("Failed to create SSH session: {}", e);
-        CpiError::ExecutionFailed(format!("Failed to create SSH session: {}", e))
-    })?;
-
-    sess.set_tcp_stream(tcp);
-    sess.handshake().map_err(|e| {
-        error!("SSH handshake failed: {}", e);
-        CpiError::ExecutionFailed(format!("SSH handshake failed: {}", e))
-    })?;
-
-    // Authenticate with password
-    sess.userauth_password(&username, &password).map_err(|e| {
-        error!("SSH authentication failed: {}", e);
-        CpiError::ExecutionFailed(format!("SSH authentication failed: {}", e))
-    })?;
-
-    // Execute command
-    debug!("Opening SSH channel");
-    let mut channel = sess.channel_session().map_err(|e| {
-        error!("Failed to open SSH channel: {}", e);
-        CpiError::ExecutionFailed(format!("Failed to open SSH channel: {}", e))
-    })?;
-
-    debug!("Executing command: {}", command);
-    channel.exec(command).map_err(|e| {
-        error!("Failed to execute command: {}", e);
-        CpiError::ExecutionFailed(format!("Failed to execute command: {}", e))
-    })?;
-
-    // Read output
-    let mut output = String::new();
-    channel.read_to_string(&mut output).map_err(|e| {
-        error!("Failed to read command output: {}", e);
-        CpiError::ExecutionFailed(format!("Failed to read command output: {}", e))
-    })?;
-
-    // Read stderr
-    let mut stderr = String::new();
-    channel.stderr().read_to_string(&mut stderr).map_err(|e| {
-        error!("Failed to read stderr: {}", e);
-        CpiError::ExecutionFailed(format!("Failed to read stderr: {}", e))
-    })?;
-
-    // Get exit status
-    channel.wait_close().map_err(|e| {
-        error!("Failed to close SSH channel: {}", e);
-        CpiError::ExecutionFailed(format!("Failed to close SSH channel: {}", e))
-    })?;
-
-    let exit_status = channel.exit_status().map_err(|e| {
-        error!("Failed to get exit status: {}", e);
-        CpiError::ExecutionFailed(format!("Failed to get exit status: {}", e))
-    })?;
-
-    let duration = start.elapsed();
-    debug!("Command completed in {:?} with status {}", duration, exit_status);
-
-    if !stderr.is_empty() {
-        debug!("Command stderr: {}", truncate_output(&stderr, 200));
-    }
-
-    if exit_status == 0 {
-        debug!("Command succeeded with output: {} bytes", output.len());
-        trace!("Command output: {}", truncate_output(&output, 200));
-        Ok(output)
-    } else {
-        error!("Command failed with exit code: {}", exit_status);
-        error!("Command stderr: {}", truncate_output(&stderr, 500));
-        Err(CpiError::ExecutionFailed(format!(
-            "Command failed with exit code {}: {}",
-            exit_status, stderr
-        )))
-    }
-}
-
-
-// Merge default provider settings with supplied parameters
-fn merge_params(
-    provider: &Provider,
-    params: HashMap<String, Value>,
-) -> Result<HashMap<String, Value>, CpiError> {
-    let mut all_params = HashMap::new();
-
-    // Apply default settings if available
-    if let Some(defaults) = &provider.default_settings {
-        debug!("Applying {} default settings from provider", defaults.len());
-        for (key, value) in defaults {
-            all_params.insert(key.clone(), value.clone());
+            // Send the result back to the waiting executor
+            let _ = pending_request.response_sender.send(result);
         }
     }
 
-    // Apply the provided params, which override defaults
-    debug!("Applying {} user-provided parameters", params.len());
-    for (key, value) in params {
-        all_params.insert(key, value);
+    /// Clean up a request that timed out or failed
+    async fn cleanup_request(&self, request_id: Uuid) {
+        let mut pending = self.pending_requests.write().await;
+        pending.remove(&request_id);
     }
 
-    trace!(
-        "Final parameter set contains {} parameters",
-        all_params.len()
-    );
-    Ok(all_params)
-}
-
-// Validate parameters against action requirements
-fn validate_params(
-    action_def: &ActionDef,
-    params: &HashMap<String, Value>,
-) -> Result<(), CpiError> {
-    if let Some(required_params) = &action_def.params {
-        debug!("Validating {} required parameters", required_params.len());
-
-        for param in required_params {
-            if !params.contains_key(param) {
-                warn!("Missing required parameter: {}", param);
-                return Err(CpiError::MissingParameter(param.clone()));
+    /// Get statistics about current executions
+    pub async fn get_execution_stats(&self) -> ExecutionStats {
+        let pending = self.pending_requests.read().await;
+        let pending_count = pending.len();
+        
+        let mut total_wait_time = Duration::ZERO;
+        let mut oldest_request = None;
+        
+        for request in pending.values() {
+            let wait_time = request.start_time.elapsed();
+            total_wait_time += wait_time;
+            
+            if oldest_request.is_none() || wait_time > oldest_request.unwrap() {
+                oldest_request = Some(wait_time);
             }
         }
+        
+        let average_wait_time = if pending_count > 0 {
+            total_wait_time / pending_count as u32
+        } else {
+            Duration::ZERO
+        };
 
-        trace!("All required parameters present");
-    } else {
-        trace!("No required parameters specified for this action");
-    }
-
-    Ok(())
-}
-
-// Execute a single action or sub-action
-fn execute_sub_action(
-    cpi_system: Arc<CpiSystem>,
-    action_def: &ActionDef,
-    params: &HashMap<String, Value>,
-    provider_name: &str,
-) -> Result<Value, CpiError> {
-    let start = Instant::now();
-
-    // Execute pre-exec actions if any
-    if let Some(pre_actions) = &action_def.pre_exec {
-        debug!("Executing {} pre-exec actions", pre_actions.len());
-        for (index, sub_action) in pre_actions.iter().enumerate() {
-            trace!("Executing pre-exec action #{}", index + 1);
-            validate_params(sub_action, params)?;
-            execute_sub_action(cpi_system.clone(), sub_action, params, provider_name)?;
+        ExecutionStats {
+            pending_requests: pending_count,
+            average_wait_time,
+            oldest_request_age: oldest_request.unwrap_or(Duration::ZERO),
         }
     }
 
-    // Execute the main command
-    debug!("Executing main command");
+    /// Cancel a pending request
+    pub async fn cancel_request(&self, request_id: Uuid) -> Result<(), PluginError> {
+        let mut pending = self.pending_requests.write().await;
+        
+        if let Some(request) = pending.remove(&request_id) {
+            let _ = request.response_sender.send(Err(PluginError::ExecutionFailed("Request cancelled".to_string())));
+            Ok(())
+        } else {
+            Err(PluginError::ExecutionFailed("Request not found".to_string()))
+        }
+    }
 
-    let result: Value;
-    match &action_def.target {
-        ActionTarget::Command(command) => {
-            let cmd = fill_template(&command.command, params)?;
+    /// Get all pending request IDs
+    pub async fn get_pending_requests(&self) -> Vec<Uuid> {
+        let pending = self.pending_requests.read().await;
+        pending.keys().copied().collect()
+    }
 
-            // Check if this is an extension command
-            if is_extension_command(&cmd) {
-                if let Some(action) = extract_extension_action(&cmd) {
-                    // *** MODIFIED: Call the extension and directly use the result without parsing ***
-                    debug!("Calling extension '{}' action '{}'", provider_name, action);
-                    
-                    match cpi_system.extensions.execute_action(provider_name, action, params.clone()) {
-                        Ok(result) => {
-                            // Log the extension result for debugging
-                            debug!("Extension result: {}", serde_json::to_string(&result).unwrap_or_else(|_| "{}".to_string()));
-                            
-                            // Return the extension result directly without parsing
-                            let duration = start.elapsed();
-                            debug!("Sub-action execution completed in {:?}", duration);
-                            return Ok(result);
-                        },
-                        Err(e) => return Err(e),
-                    }
-                } else {
-                    return Err(CpiError::ExecutionFailed(
-                        "Invalid extension command".to_string()
-                    ));
-                }
+    /// Cancel all pending requests
+    pub async fn cancel_all_requests(&self) -> Result<usize, PluginError> {
+        let mut pending = self.pending_requests.write().await;
+        let count = pending.len();
+        
+        for (_, request) in pending.drain() {
+            let _ = request.response_sender.send(Err(PluginError::ExecutionFailed("System shutdown".to_string())));
+        }
+        
+        Ok(count)
+    }
+
+    /// Execute an action with argument resolution
+    pub async fn execute_with_context(
+        &self,
+        context: Arc<dyn ServerContext>,
+        plugin_name: &str,
+        feature: &str,
+        action: &str,
+        user_arguments: HashMap<String, Value>,
+        timeout: Option<Duration>,
+    ) -> Result<Value, PluginError> {
+        let request_id = Uuid::new_v4();
+        
+        // Get action definition to resolve arguments
+        let action_args = self.feature_registry.get_action_arguments(feature, action).await?;
+        
+        // Resolve all arguments using the argument manager
+        let resolved_args = self.argument_manager.resolve_action_arguments(
+            plugin_name,
+            &action_args,
+            &user_arguments,
+            Some(&request_id.to_string()),
+        ).await?;
+        
+        // Convert resolved arguments back to simple values
+        let final_args: HashMap<String, Value> = resolved_args
+            .into_iter()
+            .map(|(name, arg_value)| (name, arg_value.value))
+            .collect();
+        
+        // Execute the action
+        self.execute_action(feature, action, final_args, timeout).await
+    }
+
+    /// Execute an action and emit completion event (for use by plugins)
+    pub async fn complete_action(
+        &self,
+        request_id: Uuid,
+        result: Result<Value, String>,
+        execution_time_ms: u64,
+    ) -> Result<(), PluginError> {
+        let completion_event = FeatureActionCompleteEvent {
+            request_id,
+            result,
+            execution_time_ms,
+        };
+
+        self.event_system.emit_event("feature:action:complete", &completion_event).await
+            .map_err(|e| PluginError::EventError(e.to_string()))?;
+
+        Ok(())
+    }
+
+    /// Get execution context for a request
+    pub async fn get_execution_context(&self, request_id: Uuid) -> Option<ExecutionContext> {
+        let pending = self.pending_requests.read().await;
+        pending.get(&request_id).map(|request| {
+            ExecutionContext {
+                request_id,
+                plugin_name: "".to_string(), // Would need to track this separately
+                feature: request.feature.clone(),
+                action: request.action.clone(),
+                start_time: request.start_time,
+                timeout: request.timeout,
             }
-            
-            // Execute regular command (non-extension)
-            let output = if command.in_vm.unwrap_or(false) {
-                // VM command execution
-                execute_command_vm(&cmd)?
-            } else {
-                // Local command execution
-                execute_command(&cmd)?
-            };
+        })
+    }
 
-            // Parse the output according to the parse rules
-            debug!("Parsing command output ({} bytes)", output.len());
-            result = match parser::parse_output(&output, &action_def.parse_rules, params) {
-                Ok(value) => value,
-                Err(e) => {
-                    error!("Failed to parse command output: {}", e);
-                    error!("Command output was: {}", truncate_output(&output, 1000));
-                    return Err(e);
-                }
-            };
-        }
-        ActionTarget::Endpoint {
-            url,
-            method,
-            headers,
-            body,
-        } => {
-            // Fill the URL and body templates with parameters
-            let filled_url = fill_template(url, params)?;
-            let filled_body = match body {
-                Some(body_template) => Some(fill_template(body_template, params)?),
-                None => None,
-            };
+    /// Set up cleanup task for expired requests
+    pub async fn start_cleanup_task(&self) -> tokio::task::JoinHandle<()> {
+        let pending_requests = Arc::clone(&self.pending_requests);
+        
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(Duration::from_secs(30));
             
-            let filled_headers = headers
-                .as_ref()
-                .map(|h| {
-                    h.iter()
-                        .map(|(key, value)| {
-                            let filled_key = fill_template(key, params)?;
-                            let filled_value = fill_template(value, params)?;
-                            Ok((filled_key, filled_value))
-                        })
-                        .collect::<Result<HashMap<_, _>, CpiError>>()
-                })
-                .transpose()?;
-
-            // Execute the HTTP request
-            debug!(
-                "Executing HTTP request to {} with method {:?}",
-                filled_url, method
-            );
-            
-            // Create the request builder
-            let mut request_builder = reqwest::blocking::Client::new()
-                .request(
-                    method.to_reqwest_method()?,
-                    &filled_url,
-                );
+            loop {
+                interval.tick().await;
                 
-            // Add headers if present
-            if let Some(headers) = filled_headers {
-                for (key, value) in headers {
-                    request_builder = request_builder.header(key, value);
+                let mut pending = pending_requests.write().await;
+                let now = Instant::now();
+                
+                // Find expired requests
+                let expired_ids: Vec<Uuid> = pending
+                    .iter()
+                    .filter(|(_, request)| now.duration_since(request.start_time) > request.timeout)
+                    .map(|(id, _)| *id)
+                    .collect();
+                
+                // Remove and notify expired requests
+                for id in expired_ids {
+                    if let Some(request) = pending.remove(&id) {
+                        let _ = request.response_sender.send(Err(PluginError::ExecutionFailed("Request expired".to_string())));
+                    }
                 }
             }
-            
-            // Add body if present
-            if let Some(body) = filled_body {
-                if !body.is_empty() {
-                    request_builder = request_builder.body(body);
-                }
-            }
-            
-            // Send the request
-            let response = request_builder
-                .send()
-                .map_err(|e| CpiError::ExecutionFailed(format!("HTTP request failed: {}", e)))?;
+        })
+    }
+}
 
-            // Check for HTTP errors
-            if !response.status().is_success() {
-                return Err(CpiError::ExecutionFailed(format!(
-                    "HTTP request failed with status: {}",
-                    response.status()
-                )));
-            }
-            
-            // Parse the response body
-            let response_body = response.text().map_err(|e| {
-                CpiError::ExecutionFailed(format!("Failed to read response body: {}", e))
-            })?;
-            
-            debug!(
-                "HTTP response body: {}",
-                truncate_output(&response_body, 1000)
-            );
+/// Statistics about plugin executions
+#[derive(Debug, Clone)]
+pub struct ExecutionStats {
+    pub pending_requests: usize,
+    pub average_wait_time: Duration,
+    pub oldest_request_age: Duration,
+}
 
-            // Parse the response according to the parse rules
-            result = match parser::parse_output(&response_body, &action_def.parse_rules, params) {
-                Ok(value) => value,
-                Err(e) => {
-                    error!("Failed to parse HTTP response: {}", e);
-                    error!(
-                        "Response body was: {}",
-                        truncate_output(&response_body, 1000)
-                    );
-                    return Err(e);
-                }
-            };
+/// Helper for building execution requests
+#[derive(Debug)]
+pub struct ExecutionRequestBuilder {
+    feature: Option<String>,
+    action: Option<String>,
+    arguments: HashMap<String, Value>,
+    timeout: Option<Duration>,
+    plugin_name: Option<String>,
+}
+
+impl ExecutionRequestBuilder {
+    pub fn new() -> Self {
+        Self {
+            feature: None,
+            action: None,
+            arguments: HashMap::new(),
+            timeout: None,
+            plugin_name: None,
         }
     }
 
-    // Execute post-exec actions if any
-    if let Some(post_actions) = &action_def.post_exec {
-        debug!("Executing {} post-exec actions", post_actions.len());
-        for (index, sub_action) in post_actions.iter().enumerate() {
-            trace!("Executing post-exec action #{}", index + 1);
-            validate_params(sub_action, params)?;
-            execute_sub_action(cpi_system.clone(), sub_action, params, provider_name)?;
-        }
+    pub fn feature(mut self, feature: impl Into<String>) -> Self {
+        self.feature = Some(feature.into());
+        self
     }
 
-    let duration = start.elapsed();
-    debug!("Sub-action execution completed in {:?}", duration);
+    pub fn action(mut self, action: impl Into<String>) -> Self {
+        self.action = Some(action.into());
+        self
+    }
 
-    Ok(result)
+    pub fn argument(mut self, name: impl Into<String>, value: Value) -> Self {
+        self.arguments.insert(name.into(), value);
+        self
+    }
+
+    pub fn arguments(mut self, arguments: HashMap<String, Value>) -> Self {
+        self.arguments.extend(arguments);
+        self
+    }
+
+    pub fn timeout(mut self, timeout: Duration) -> Self {
+        self.timeout = Some(timeout);
+        self
+    }
+
+    pub fn plugin_name(mut self, plugin_name: impl Into<String>) -> Self {
+        self.plugin_name = Some(plugin_name.into());
+        self
+    }
+
+    pub async fn execute(self, executor: &PluginExecutor) -> Result<Value, PluginError> {
+        let feature = self.feature.ok_or_else(|| PluginError::InvalidArgument("Feature not specified".to_string()))?;
+        let action = self.action.ok_or_else(|| PluginError::InvalidArgument("Action not specified".to_string()))?;
+
+        executor.execute_action(&feature, &action, self.arguments, self.timeout).await
+    }
+
+    pub async fn execute_with_context(
+        self, 
+        executor: &PluginExecutor, 
+        context: Arc<dyn ServerContext>
+    ) -> Result<Value, PluginError> {
+        let feature = self.feature.ok_or_else(|| PluginError::InvalidArgument("Feature not specified".to_string()))?;
+        let action = self.action.ok_or_else(|| PluginError::InvalidArgument("Action not specified".to_string()))?;
+        let plugin_name = self.plugin_name.ok_or_else(|| PluginError::InvalidArgument("Plugin name not specified".to_string()))?;
+
+        executor.execute_with_context(context, &plugin_name, &feature, &action, self.arguments, self.timeout).await
+    }
+}
+
+impl Default for ExecutionRequestBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Macro for easy execution request building
+#[macro_export]
+macro_rules! execute_action {
+    (
+        executor: $executor:expr,
+        feature: $feature:expr,
+        action: $action:expr,
+        args: { $($arg_name:expr => $arg_value:expr),* $(,)? }
+        $(, timeout: $timeout:expr)?
+        $(, plugin: $plugin:expr)?
+    ) => {{
+        let mut builder = $crate::ExecutionRequestBuilder::new()
+            .feature($feature)
+            .action($action);
+        
+        $(
+            builder = builder.argument($arg_name, $arg_value);
+        )*
+        
+        $(
+            builder = builder.timeout($timeout);
+        )?
+        
+        $(
+            builder = builder.plugin_name($plugin);
+        )?
+        
+        builder.execute($executor).await
+    }};
+}
+
+/// Macro for execution with context
+#[macro_export]
+macro_rules! execute_action_with_context {
+    (
+        executor: $executor:expr,
+        context: $context:expr,
+        plugin: $plugin:expr,
+        feature: $feature:expr,
+        action: $action:expr,
+        args: { $($arg_name:expr => $arg_value:expr),* $(,)? }
+        $(, timeout: $timeout:expr)?
+    ) => {{
+        let mut builder = $crate::ExecutionRequestBuilder::new()
+            .feature($feature)
+            .action($action)
+            .plugin_name($plugin);
+        
+        $(
+            builder = builder.argument($arg_name, $arg_value);
+        )*
+        
+        $(
+            builder = builder.timeout($timeout);
+        )?
+        
+        builder.execute_with_context($executor, $context).await
+    }};
 }
