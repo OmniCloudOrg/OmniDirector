@@ -1,109 +1,116 @@
-// error.rs - Enhanced error handling
-use std::error::Error;
 use std::fmt;
+use thiserror::Error;
 
-#[derive(Debug)]
-pub enum CpiError {
-    ProviderNotFound(String),
-    ActionNotFound(String),
+#[derive(Debug, Error)]
+pub enum PluginError {
+    #[error("Plugin initialization failed: {0}")]
+    InitializationFailed(String),
+    
+    #[error("Plugin runtime error: {0}")]
+    Runtime(String),
+    
+    #[error("Event system error: {0}")]
+    EventSystem(String),
+    
+    #[error("Plugin not found: {0}")]
+    PluginNotFound(String),
+    
+    #[error("Feature not supported: {0}")]
+    FeatureNotSupported(String),
+    
+    #[error("Missing required parameter: {0}")]
     MissingParameter(String),
-    InvalidParameterType(String, String),
-    ExecutionFailed(String),
-    ParseError(String),
-    InvalidPath(String),
-    InvalidCpiFormat(String),
-    NoProvidersLoaded,
-    IoError(std::io::Error),
-    SerdeError(Box<dyn std::error::Error + Send + Sync>),
-    RegexError(regex::Error),
+    
+    #[error("Invalid parameter type for {param}: expected {expected}, got {actual}")]
+    InvalidParameterType {
+        param: String,
+        expected: String,
+        actual: String,
+    },
+    
+    #[error("Event handler execution failed: {0}")]
+    HandlerExecution(String),
+    
+    #[error("Serialization error: {0}")]
+    Serialization(#[from] serde_json::Error),
+    
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
+    
+    #[error("Dynamic library error: {0}")]
+    LibLoading(String),
+    
+    #[error("Plugin validation failed: {0}")]
+    ValidationFailed(String),
+    
+    #[error("Timeout waiting for event response: {0}")]
     Timeout(String),
-    FileError(String),
+    
+    #[error("Plugin dependency not satisfied: {0}")]
+    DependencyNotSatisfied(String),
 }
 
-impl fmt::Display for CpiError {
+impl From<libloading::Error> for PluginError {
+    fn from(err: libloading::Error) -> Self {
+        PluginError::LibLoading(err.to_string())
+    }
+}
+
+pub type PluginResult<T> = Result<T, PluginError>;
+
+/// Plugin-specific error with context
+#[derive(Debug)]
+pub struct PluginErrorContext {
+    pub plugin_name: String,
+    pub feature: Option<String>,
+    pub event_key: Option<String>,
+    pub error: PluginError,
+}
+
+impl fmt::Display for PluginErrorContext {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            CpiError::ProviderNotFound(name) => write!(f, "Provider not found: {}", name),
-            CpiError::ActionNotFound(name) => write!(f, "Action not found: {}", name),
-            CpiError::MissingParameter(name) => write!(f, "Missing required parameter: {}", name),
-            CpiError::InvalidParameterType(name, expected) => write!(
-                        f,
-                        "Invalid parameter type for {}, expected {}",
-                        name, expected
-                    ),
-            CpiError::ExecutionFailed(reason) => write!(f, "Command execution failed: {}", reason),
-            CpiError::ParseError(reason) => write!(f, "Failed to parse command output: {}", reason),
-            CpiError::InvalidPath(reason) => write!(f, "Invalid path: {}", reason),
-            CpiError::InvalidCpiFormat(reason) => write!(f, "Invalid CPI format: {}", reason),
-            CpiError::NoProvidersLoaded => write!(f, "No CPI providers were successfully loaded"),
-            CpiError::IoError(e) => write!(f, "IO error: {}", e),
-            CpiError::SerdeError(e) => write!(f, "JSON error: {}", e),
-            CpiError::RegexError(e) => write!(f, "Regex error: {}", e),
-            CpiError::Timeout(cmd) => write!(f, "Command timed out: {}", cmd),
-            CpiError::FileError(_) => write!(f, "File error"),
+        write!(f, "Plugin '{}': ", self.plugin_name)?;
+        
+        if let Some(feature) = &self.feature {
+            write!(f, "Feature '{}': ", feature)?;
         }
-    }
-}
-
-impl Error for CpiError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            CpiError::IoError(e) => Some(e),
-            CpiError::SerdeError(e) => Some(e.as_ref()),
-            CpiError::RegexError(e) => Some(e),
-            _ => None,
+        
+        if let Some(event_key) = &self.event_key {
+            write!(f, "Event '{}': ", event_key)?;
         }
+        
+        write!(f, "{}", self.error)
     }
 }
 
-impl From<std::io::Error> for CpiError {
-    fn from(err: std::io::Error) -> Self {
-        CpiError::IoError(err)
+impl std::error::Error for PluginErrorContext {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.error)
     }
 }
 
-impl From<serde_json::Error> for CpiError {
-    fn from(err: serde_json::Error) -> Self {
-        CpiError::SerdeError(Box::new(err))
-    }
+/// Helper trait for adding context to plugin errors
+pub trait PluginErrorExt<T> {
+    fn with_plugin_context(
+        self,
+        plugin_name: impl Into<String>,
+        feature: Option<impl Into<String>>,
+        event_key: Option<impl Into<String>>,
+    ) -> Result<T, PluginErrorContext>;
 }
 
-impl From<regex::Error> for CpiError {
-    fn from(err: regex::Error) -> Self {
-        CpiError::RegexError(err)
-    }
-}
-
-// Helper function to get a user-friendly error message
-pub fn user_friendly_error(err: &CpiError) -> String {
-    match err {
-        CpiError::ProviderNotFound(name) => 
-                format!("The CPI provider '{}' could not be found. Please check the provider name and ensure it's correctly installed.", name),
-        CpiError::ActionNotFound(name) => 
-                format!("The action '{}' could not be found. Please check the action name and provider documentation.", name),
-        CpiError::MissingParameter(name) => 
-                format!("The required parameter '{}' was not provided. Please include this parameter and try again.", name),
-        CpiError::InvalidParameterType(name, expected) => 
-                format!("The parameter '{}' has an invalid type. Expected {}.", name, expected),
-        CpiError::ExecutionFailed(reason) => 
-                format!("The command failed to execute: {}", reason),
-        CpiError::ParseError(reason) => 
-                format!("Failed to parse the command output: {}", reason),
-        CpiError::InvalidPath(reason) => 
-                format!("Invalid path: {}", reason),
-        CpiError::InvalidCpiFormat(reason) => 
-                format!("The CPI file has an invalid format: {}", reason),
-        CpiError::NoProvidersLoaded => 
-                "No CPI providers were successfully loaded. Please check the CPIs directory and ensure valid provider files exist.".to_string(),
-        CpiError::IoError(e) => 
-                format!("I/O error occurred: {}", e),
-        CpiError::SerdeError(e) => 
-                format!("JSON parsing error: {}", e),
-        CpiError::RegexError(e) => 
-                format!("Regular expression error: {}", e),
-        CpiError::Timeout(cmd) => 
-                format!("The command '{}' timed out. Please check if it's hanging or taking too long.", cmd),
-        CpiError::FileError(_) => 
-                format!("File error"),
+impl<T> PluginErrorExt<T> for PluginResult<T> {
+    fn with_plugin_context(
+        self,
+        plugin_name: impl Into<String>,
+        feature: Option<impl Into<String>>,
+        event_key: Option<impl Into<String>>,
+    ) -> Result<T, PluginErrorContext> {
+        self.map_err(|error| PluginErrorContext {
+            plugin_name: plugin_name.into(),
+            feature: feature.map(|f| f.into()),
+            event_key: event_key.map(|e| e.into()),
+            error,
+        })
     }
 }

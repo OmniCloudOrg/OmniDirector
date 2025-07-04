@@ -1,0 +1,481 @@
+{
+  "name": "VM_Manage",
+  "description": "Virtual Machine management capabilities including creation, deletion, configuration, and lifecycle management",
+  "version": "1.0.0",
+  "actions": {
+    "create_vm": {
+      "name": "create_vm",
+      "description": "Create a new virtual machine with specified configuration",
+      "arguments": [
+        {
+          "name": "name",
+          "description": "Unique name for the virtual machine",
+          "arg_type": {
+            "type": "String",
+            "max_length": 255
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": {
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          }
+        },
+        {
+          "name": "memory_mb",
+          "description": "Memory allocation in megabytes",
+          "arg_type": {
+            "type": "Number",
+            "min": 512,
+            "max": 1048576
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": null
+        },
+        {
+          "name": "cpu_count",
+          "description": "Number of virtual CPUs",
+          "arg_type": {
+            "type": "Number",
+            "min": 1,
+            "max": 64
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": null
+        },
+        {
+          "name": "disk_size_gb",
+          "description": "Primary disk size in gigabytes",
+          "arg_type": {
+            "type": "Number",
+            "min": 1,
+            "max": 2048
+          },
+          "required": false,
+          "default_value": 20,
+          "constraints": null
+        },
+        {
+          "name": "os_type",
+          "description": "Operating system type for optimization",
+          "arg_type": {
+            "type": "Enum",
+            "values": [
+              "Linux_64",
+              "Windows10_64",
+              "Windows11_64",
+              "Ubuntu_64",
+              "RedHat_64",
+              "Other_64"
+            ]
+          },
+          "required": false,
+          "default_value": "Linux_64",
+          "constraints": null
+        },
+        {
+          "name": "network_adapter",
+          "description": "Network adapter configuration",
+          "arg_type": {
+            "type": "Enum",
+            "values": [
+              "NAT",
+              "Bridged",
+              "Host-only",
+              "Internal"
+            ]
+          },
+          "required": false,
+          "default_value": "NAT",
+          "constraints": null
+        },
+        {
+          "name": "enable_audio",
+          "description": "Enable audio support",
+          "arg_type": {
+            "type": "Boolean"
+          },
+          "required": false,
+          "default_value": false,
+          "constraints": null
+        },
+        {
+          "name": "enable_usb",
+          "description": "Enable USB controller",
+          "arg_type": {
+            "type": "Boolean"
+          },
+          "required": false,
+          "default_value": true,
+          "constraints": null
+        }
+      ],
+      "return_type": {
+        "type": "Object",
+        "schema": {
+          "vm_id": {
+            "type": "String",
+            "max_length": null
+          },
+          "name": {
+            "type": "String",
+            "max_length": null
+          },
+          "status": {
+            "type": "String",
+            "max_length": null
+          },
+          "memory_mb": {
+            "type": "Number",
+            "min": null,
+            "max": null
+          },
+          "cpu_count": {
+            "type": "Number",
+            "min": null,
+            "max": null
+          },
+          "disk_size_gb": {
+            "type": "Number",
+            "min": null,
+            "max": null
+          },
+          "network_info": {
+            "type": "Object",
+            "properties": {
+              "adapter_type": {
+                "type": "String",
+                "max_length": null
+              },
+              "mac_address": {
+                "type": "String",
+                "max_length": null
+              }
+            }
+          }
+        }
+      },
+      "is_mutating": true,
+      "estimated_duration_ms": 30000
+    },
+    "delete_vm": {
+      "name": "delete_vm",
+      "description": "Delete a virtual machine and all associated resources",
+      "arguments": [
+        {
+          "name": "vm_id",
+          "description": "Virtual machine identifier or name",
+          "arg_type": {
+            "type": "String",
+            "max_length": 255
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": null
+        },
+        {
+          "name": "delete_files",
+          "description": "Delete associated VM files from disk",
+          "arg_type": {
+            "type": "Boolean"
+          },
+          "required": false,
+          "default_value": true,
+          "constraints": null
+        }
+      ],
+      "return_type": {
+        "type": "Boolean"
+      },
+      "is_mutating": true,
+      "estimated_duration_ms": 15000
+    },
+    "start_vm": {
+      "name": "start_vm",
+      "description": "Start a stopped virtual machine",
+      "arguments": [
+        {
+          "name": "vm_id",
+          "description": "Virtual machine identifier or name",
+          "arg_type": {
+            "type": "String",
+            "max_length": 255
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": null
+        },
+        {
+          "name": "headless",
+          "description": "Start VM in headless mode (no GUI)",
+          "arg_type": {
+            "type": "Boolean"
+          },
+          "required": false,
+          "default_value": false,
+          "constraints": null
+        }
+      ],
+      "return_type": {
+        "type": "Object",
+        "schema": {
+          "vm_id": {
+            "type": "String",
+            "max_length": null
+          },
+          "status": {
+            "type": "String",
+            "max_length": null
+          },
+          "started_at": {
+            "type": "String",
+            "max_length": null
+          }
+        }
+      },
+      "is_mutating": true,
+      "estimated_duration_ms": 10000
+    },
+    "stop_vm": {
+      "name": "stop_vm",
+      "description": "Stop a running virtual machine",
+      "arguments": [
+        {
+          "name": "vm_id",
+          "description": "Virtual machine identifier or name",
+          "arg_type": {
+            "type": "String",
+            "max_length": 255
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": null
+        },
+        {
+          "name": "force",
+          "description": "Force stop the VM (power off)",
+          "arg_type": {
+            "type": "Boolean"
+          },
+          "required": false,
+          "default_value": false,
+          "constraints": null
+        }
+      ],
+      "return_type": {
+        "type": "Object",
+        "schema": {
+          "vm_id": {
+            "type": "String",
+            "max_length": null
+          },
+          "status": {
+            "type": "String",
+            "max_length": null
+          },
+          "stopped_at": {
+            "type": "String",
+            "max_length": null
+          }
+        }
+      },
+      "is_mutating": true,
+      "estimated_duration_ms": 8000
+    },
+    "get_vm_info": {
+      "name": "get_vm_info",
+      "description": "Get detailed information about a virtual machine",
+      "arguments": [
+        {
+          "name": "vm_id",
+          "description": "Virtual machine identifier or name",
+          "arg_type": {
+            "type": "String",
+            "max_length": 255
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": null
+        }
+      ],
+      "return_type": {
+        "type": "Object",
+        "schema": {
+          "vm_id": {
+            "type": "String",
+            "max_length": null
+          },
+          "name": {
+            "type": "String",
+            "max_length": null
+          },
+          "status": {
+            "type": "String",
+            "max_length": null
+          },
+          "memory_mb": {
+            "type": "Number",
+            "min": null,
+            "max": null
+          },
+          "cpu_count": {
+            "type": "Number",
+            "min": null,
+            "max": null
+          },
+          "disk_info": {
+            "type": "Array",
+            "item_type": {
+              "type": "Object",
+              "properties": {}
+            }
+          },
+          "network_adapters": {
+            "type": "Array",
+            "item_type": {
+              "type": "Object",
+              "properties": {}
+            }
+          },
+          "snapshots": {
+            "type": "Array",
+            "item_type": {
+              "type": "String",
+              "max_length": null
+            }
+          }
+        }
+      },
+      "is_mutating": false,
+      "estimated_duration_ms": 2000
+    },
+    "list_vms": {
+      "name": "list_vms",
+      "description": "List all virtual machines",
+      "arguments": [
+        {
+          "name": "include_running_only",
+          "description": "Only return running VMs",
+          "arg_type": {
+            "type": "Boolean"
+          },
+          "required": false,
+          "default_value": false,
+          "constraints": null
+        }
+      ],
+      "return_type": {
+        "type": "Array",
+        "item_type": {
+          "type": "Object",
+          "schema": {
+            "vm_id": {
+              "type": "String",
+              "max_length": null
+            },
+            "name": {
+              "type": "String",
+              "max_length": null
+            },
+            "status": {
+              "type": "String",
+              "max_length": null
+            }
+          }
+        }
+      },
+      "is_mutating": false,
+      "estimated_duration_ms": 3000
+    },
+    "create_snapshot": {
+      "name": "create_snapshot",
+      "description": "Create a snapshot of the virtual machine state",
+      "arguments": [
+        {
+          "name": "vm_id",
+          "description": "Virtual machine identifier or name",
+          "arg_type": {
+            "type": "String",
+            "max_length": 255
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": null
+        },
+        {
+          "name": "snapshot_name",
+          "description": "Name for the snapshot",
+          "arg_type": {
+            "type": "String",
+            "max_length": 255
+          },
+          "required": true,
+          "default_value": null,
+          "constraints": {
+            "pattern": "^[a-zA-Z0-9_-\\s]+$"
+          }
+        },
+        {
+          "name": "description",
+          "description": "Optional description for the snapshot",
+          "arg_type": {
+            "type": "String",
+            "max_length": 1024
+          },
+          "required": false,
+          "default_value": null,
+          "constraints": null
+        }
+      ],
+      "return_type": {
+        "type": "Object",
+        "schema": {
+          "snapshot_id": {
+            "type": "String",
+            "max_length": null
+          },
+          "snapshot_name": {
+            "type": "String",
+            "max_length": null
+          },
+          "vm_id": {
+            "type": "String",
+            "max_length": null
+          },
+          "created_at": {
+            "type": "String",
+            "max_length": null
+          }
+        }
+      },
+      "is_mutating": true,
+      "estimated_duration_ms": 20000
+    }
+  },
+  "global_settings": {
+    "default_vm_folder": {
+      "name": "default_vm_folder",
+      "description": "Default folder for storing VM files",
+      "arg_type": {
+        "type": "String",
+        "max_length": 512
+      },
+      "required": false,
+      "default_value": null,
+      "constraints": null
+    },
+    "max_concurrent_vms": {
+      "name": "max_concurrent_vms",
+      "description": "Maximum number of VMs that can run simultaneously",
+      "arg_type": {
+        "type": "Number",
+        "min": 1,
+        "max": 100
+      },
+      "required": false,
+      "default_value": 10,
+      "constraints": null
+    }
+  }
+}

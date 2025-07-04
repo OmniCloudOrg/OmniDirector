@@ -5,3 +5,6 @@ server.log
 server.log
 Extensions/virtualbox_extension.dll
 /Extensions
+/Extensions
+/plugins
+*.glue
