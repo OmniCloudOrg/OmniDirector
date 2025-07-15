@@ -68,6 +68,49 @@ impl Plugin for EventDrivenPlugin {
 unsafe impl Send for EventDrivenPlugin {}
 unsafe impl Sync for EventDrivenPlugin {}
 
+/// Feature plugin implementation that wraps the feature interface
+struct FeaturePlugin {
+    name: String,
+    version: String,
+    declared_features: Vec<String>,
+    operations: Vec<String>,
+    library_path: String,
+}
+
+#[async_trait::async_trait]
+impl Plugin for FeaturePlugin {
+    fn name(&self) -> &str {
+        &self.name
+    }
+    
+    fn version(&self) -> &str {
+        &self.version
+    }
+    
+    fn declared_features(&self) -> Vec<String> {
+        self.declared_features.clone()
+    }
+    
+    async fn pre_init(&mut self, _context: Arc<dyn super::ServerContext>) -> Result<(), PluginError> {
+        println!("🔧 Pre-initializing feature plugin: {}", self.name);
+        Ok(())
+    }
+    
+    async fn init(&mut self, _context: Arc<dyn super::ServerContext>) -> Result<(), PluginError> {
+        println!("✅ Initialized feature plugin: {}", self.name);
+        println!("📋 Available operations: {:?}", self.operations);
+        Ok(())
+    }
+    
+    async fn shutdown(&mut self, _context: Arc<dyn super::ServerContext>) -> Result<(), PluginError> {
+        println!("🛑 Shutting down feature plugin: {}", self.name);
+        Ok(())
+    }
+}
+
+unsafe impl Send for FeaturePlugin {}
+unsafe impl Sync for FeaturePlugin {}
+
 /// Registry for managing loaded plugins
 #[derive(Debug)]
 pub struct PluginRegistry {
@@ -134,7 +177,7 @@ impl PluginRegistry {
     ) -> Result<(), PluginError> {
         let library_path = library_path.as_ref();
 
-        println!("Loading CPI from file: {:?}", library_path);
+        println!("Loading plugin from file: {:?}", library_path);
 
         // Load the library
         let lib = unsafe {
@@ -147,6 +190,32 @@ impl PluginRegistry {
         };
 
         println!("Successfully loaded library: {:?}", library_path);
+
+        // Try to determine if this is a CPI or a Feature based on available functions
+        let is_cpi = unsafe { lib.get::<Symbol<unsafe extern "C" fn() -> *mut PluginWrapper>>(b"create_plugin").is_ok() };
+        let is_feature = unsafe { lib.get::<Symbol<unsafe extern "C" fn() -> *const std::os::raw::c_char>>(b"get_feature_name").is_ok() };
+
+        if is_cpi {
+            println!("Detected CPI plugin");
+            return self.load_cpi_plugin(lib, library_path, context).await;
+        } else if is_feature {
+            println!("Detected Feature plugin");
+            return self.load_feature_plugin(lib, library_path, context).await;
+        } else {
+            return Err(PluginError::InitializationFailed(
+                "Library does not contain recognized plugin interface (neither CPI nor Feature)".to_string()
+            ));
+        }
+    }
+
+    /// Load a CPI plugin
+    async fn load_cpi_plugin<P: AsRef<Path>>(
+        &self,
+        lib: Library,
+        library_path: P,
+        context: Arc<dyn super::ServerContext>,
+    ) -> Result<(), PluginError> {
+        let library_path = library_path.as_ref();
 
         // Try to register handlers with the global event system (optional)
         let register_handlers_result: Result<Symbol<unsafe extern "C" fn()>, _> = unsafe {
@@ -221,6 +290,7 @@ impl PluginRegistry {
             "Plugin created: {} (version: {}, features: {:?})",
             plugin_name, plugin_version, plugin_features
         );
+        
         // Create metadata with file path
         let metadata = PluginMetadata::new(plugin_name.clone(), plugin_version, plugin_features)
             .with_file_path(library_path.to_string_lossy().to_string());
@@ -254,6 +324,117 @@ impl PluginRegistry {
         }
 
         println!("Loaded plugin: {} from {:?}", plugin_name, library_path);
+        Ok(())
+    }
+
+    /// Load a Feature plugin
+    async fn load_feature_plugin<P: AsRef<Path>>(
+        &self,
+        lib: Library,
+        library_path: P,
+        context: Arc<dyn super::ServerContext>,
+    ) -> Result<(), PluginError> {
+        let library_path = library_path.as_ref();
+
+        // Get feature name
+        let get_feature_name: Symbol<unsafe extern "C" fn() -> *const std::os::raw::c_char> = unsafe {
+            lib.get(b"get_feature_name").map_err(|e| {
+                PluginError::InitializationFailed(format!(
+                    "Failed to find get_feature_name function: {}",
+                    e
+                ))
+            })?
+        };
+
+        let name_ptr = unsafe { get_feature_name() };
+        let feature_name = if !name_ptr.is_null() {
+            unsafe { 
+                std::ffi::CStr::from_ptr(name_ptr)
+                    .to_str()
+                    .unwrap_or("Unknown Feature")
+                    .to_string()
+            }
+        } else {
+            "Unknown Feature".to_string()
+        };
+
+        // Get operations
+        let register_operations: Symbol<unsafe extern "C" fn() -> *const std::os::raw::c_char> = unsafe {
+            lib.get(b"register_operations").map_err(|e| {
+                PluginError::InitializationFailed(format!(
+                    "Failed to find register_operations function: {}",
+                    e
+                ))
+            })?
+        };
+
+        let operations_ptr = unsafe { register_operations() };
+        let operations_json = if !operations_ptr.is_null() {
+            unsafe { 
+                std::ffi::CStr::from_ptr(operations_ptr)
+                    .to_str()
+                    .unwrap_or("[]")
+                    .to_string()
+            }
+        } else {
+            "[]".to_string()
+        };
+
+        let operations: Vec<String> = serde_json::from_str(&operations_json).unwrap_or_else(|_| vec![]);
+
+        println!("Feature loaded: {} with operations: {:?}", feature_name, operations);
+
+        // Create a feature-based plugin that wraps the feature interface
+        let plugin: Box<dyn Plugin> = Box::new(FeaturePlugin {
+            name: feature_name.clone(),
+            version: "1.0.0".to_string(),
+            declared_features: vec![feature_name.clone()],
+            operations,
+            library_path: library_path.to_string_lossy().to_string(),
+        });
+
+        let plugin_name = plugin.name().to_string();
+        let plugin_version = plugin.version().to_string();
+        let plugin_features = plugin.declared_features();
+
+        println!(
+            "Feature plugin created: {} (version: {}, features: {:?})",
+            plugin_name, plugin_version, plugin_features
+        );
+        
+        // Create metadata with file path
+        let metadata = PluginMetadata::new(plugin_name.clone(), plugin_version, plugin_features)
+            .with_file_path(library_path.to_string_lossy().to_string());
+
+        // Create plugin instance
+        let mut plugin_instance = PluginInstance::new(plugin, metadata);
+        plugin_instance.set_state(PluginState::Loading);
+
+        // Call pre_init and init
+        plugin_instance.set_state(PluginState::PreInitialized);
+        plugin_instance.plugin_mut().pre_init(Arc::clone(&context)).await?;
+        plugin_instance.set_state(PluginState::Initialized);
+        plugin_instance.plugin_mut().init(Arc::clone(&context)).await?;
+        plugin_instance.set_state(PluginState::Running);
+
+        // Store the library and plugin
+        {
+            let mut libraries = self.libraries.write().await;
+            libraries.push(lib);
+        }
+
+        {
+            let mut plugins = self.plugins.write().await;
+            if plugins.contains_key(&plugin_name) {
+                return Err(PluginError::InitializationFailed(format!(
+                    "Feature plugin with name '{}' already loaded",
+                    plugin_name
+                )));
+            }
+            plugins.insert(plugin_name.clone(), Arc::new(tokio::sync::RwLock::new(plugin_instance)));
+        }
+
+        println!("Loaded feature plugin: {} from {:?}", plugin_name, library_path);
         Ok(())
     }
 

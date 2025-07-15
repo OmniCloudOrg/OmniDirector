@@ -27,6 +27,7 @@ pub mod dynamic_api;
 pub mod enum_features;
 pub mod enhanced_executor;
 pub mod event_executor;
+pub mod feature_registration;
 
 pub use events::*;
 pub use features::*;
@@ -39,6 +40,7 @@ pub use dynamic_api::*;
 pub use enum_features::*;
 pub use enhanced_executor::*;
 pub use event_executor::*;
+pub use feature_registration::*;
 
 /// Main plugin system that manages events, plugins, and features
 #[derive(Debug)]
@@ -83,9 +85,6 @@ impl PluginSystem {
 
     /// Initialize the plugin system by loading feature schemas and plugins
     pub async fn initialize(&self) -> Result<(), PluginError> {
-        // Load feature schemas from JSON files
-        self.feature_registry.load_schemas("./features").await?;
-
         // Initialize enhanced features
         {
             let mut enhanced_features = self.enhanced_features.write().await;
@@ -95,6 +94,13 @@ impl PluginSystem {
         // Load plugins from the plugins directory, passing the main context
         self.plugin_registry.load_plugins(
             "./plugins",
+            Arc::clone(&self.event_system),
+            Arc::clone(&self.server_context),
+        ).await?;
+
+        // Load plugins from the features directory as well
+        self.plugin_registry.load_plugins(
+            "./features",
             Arc::clone(&self.event_system),
             Arc::clone(&self.server_context),
         ).await?;
