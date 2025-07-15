@@ -38,9 +38,13 @@ async fn main() -> Result<()> {
     println!("📦 Initializing Plugin System...");
     let plugin_system = Arc::new(PluginSystem::new(server_context.clone() as Arc<dyn cpis::context::ServerContext>));
     
-    // Load features and plugins
+    // Load features and plugins with detailed tracking
+    println!("📦 Loading plugins and collecting startup stats...");
     match plugin_system.initialize().await {
-        Ok(_) => println!("✅ Plugin system initialized successfully"),
+        Ok(_) => {
+            println!("✅ Plugin system initialized successfully");
+            display_plugin_startup_stats(&plugin_system).await?;
+        },
         Err(e) => {
             eprintln!("❌ Failed to initialize plugin system: {}", e);
             return Err(anyhow::anyhow!("Plugin system initialization failed: {}", e));
@@ -79,6 +83,94 @@ async fn main() -> Result<()> {
     // Launch the API server
     println!("🌐 Starting API server...");
     api::launch_rocket(plugin_system, executor).await;
+    
+    Ok(())
+}
+
+/// Display plugin startup statistics showing what each plugin added
+async fn display_plugin_startup_stats(plugin_system: &Arc<PluginSystem>) -> Result<()> {
+    println!("\n📊 Plugin Startup Statistics");
+    println!("{}", "=".repeat(60));
+    
+    // Get loaded plugins
+    let plugin_names = plugin_system.get_loaded_plugins().await;
+    println!("🔌 Loaded Plugins ({}):", plugin_names.len());
+    
+    for plugin_name in &plugin_names {
+        println!("\n  📦 Plugin: {}", plugin_name);
+        
+        // Get plugin metadata to show declared features
+        if let Some(metadata) = plugin_system.get_plugin_metadata(&plugin_name).await {
+            // Show file path
+            if let Some(file_path) = &metadata.file_path {
+                println!("    📂 File Path: {}", file_path);
+            }
+            
+            println!("    🎯 Declared Features ({}):", metadata.features.len());
+            for feature in &metadata.features {
+                println!("      • {}", feature);
+                
+                // Show actions for each declared feature
+                if let Ok(actions) = plugin_system.get_feature_actions(feature).await {
+                    if !actions.is_empty() {
+                        println!("        Actions: {}", actions.join(", "));
+                    }
+                }
+            }
+            
+            if let Some(description) = &metadata.description {
+                println!("    📝 Description: {}", description);
+            }
+            println!("    📅 Version: {}", metadata.version);
+        }
+        
+        // Show plugin state
+        if let Some(state) = plugin_system.get_plugin_state(&plugin_name).await {
+            println!("    ⚡ State: {:?}", state);
+        }
+    }
+    
+    // Show global event handlers added
+    let event_stats = plugin_system.event_system.get_stats().await;
+    println!("\n📡 Event System Contributions:");
+    println!("  Total Event Handlers: {}", event_stats.total_handlers);
+    println!("  Events Emitted: {}", event_stats.events_emitted);
+    
+    // Show enhanced features (plugin-based features only)
+    let enhanced_stats = {
+        let enhanced_features = plugin_system.enhanced_features.read().await;
+        enhanced_features.get_stats()
+    };
+    
+    if enhanced_stats.total_features > 0 {
+        println!("\n🔧 Enhanced Plugin Features:");
+        println!("  Total Enhanced Features: {}", enhanced_stats.total_features);
+        println!("  Total Enhanced Operations: {}", enhanced_stats.total_operations);
+        for (feature, op_count) in enhanced_stats.features {
+            println!("    📋 {}: {} operations", feature, op_count);
+            
+            // Show the available operations for each enhanced feature
+            let enhanced_features = plugin_system.enhanced_features.read().await;
+            if let Ok(operations) = enhanced_features.get_feature_operations(&feature) {
+                for operation in operations {
+                    println!("        • {}", operation);
+                }
+            }
+        }
+    } else {
+        println!("\n🔧 Enhanced Plugin Features:");
+        println!("  ✅ No built-in features - using plugins only");
+    }
+    
+    // Show argument contributions
+    let arg_stats = plugin_system.argument_manager.get_argument_stats().await;
+    println!("\n📝 Argument Contributions:");
+    println!("  Global Arguments: {}", arg_stats.global_arguments);
+    println!("  Plugin Arguments: {}", arg_stats.plugin_arguments);
+    println!("  Sensitive Arguments: {}", arg_stats.sensitive_arguments);
+    
+    println!("{}", "=".repeat(60));
+    println!("✅ Plugin startup analysis complete!\n");
     
     Ok(())
 }

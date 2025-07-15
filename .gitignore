@@ -8,3 +8,4 @@ Extensions/virtualbox_extension.dll
 /Extensions
 /plugins
 *.glue
+/features

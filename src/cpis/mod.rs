@@ -204,6 +204,21 @@ impl PluginSystem {
         // Fall back to legacy features
         self.feature_registry.get_action_arguments(feature, action).await
     }
+    
+    /// Get list of all loaded plugin names
+    pub async fn get_loaded_plugins(&self) -> Vec<String> {
+        self.plugin_registry.list_plugins().await
+    }
+    
+    /// Get plugin metadata by name
+    pub async fn get_plugin_metadata(&self, name: &str) -> Option<PluginMetadata> {
+        self.plugin_registry.get_plugin_metadata(name).await
+    }
+    
+    /// Get plugin state by name
+    pub async fn get_plugin_state(&self, name: &str) -> Option<PluginState> {
+        self.plugin_registry.get_plugin_state(name).await
+    }
 
     /// Shutdown the plugin system gracefully
     pub async fn shutdown(&self) -> Result<(), PluginError> {

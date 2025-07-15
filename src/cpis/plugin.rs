@@ -181,6 +181,7 @@ pub struct PluginMetadata {
     pub author: Option<String>,
     pub license: Option<String>,
     pub dependencies: Vec<String>,
+    pub file_path: Option<String>,
 }
 
 impl PluginMetadata {
@@ -193,6 +194,7 @@ impl PluginMetadata {
             author: None,
             license: None,
             dependencies: Vec::new(),
+            file_path: None,
         }
     }
 
@@ -213,6 +215,11 @@ impl PluginMetadata {
 
     pub fn with_dependencies(mut self, dependencies: Vec<String>) -> Self {
         self.dependencies = dependencies;
+        self
+    }
+
+    pub fn with_file_path(mut self, file_path: String) -> Self {
+        self.file_path = Some(file_path);
         self
     }
 }

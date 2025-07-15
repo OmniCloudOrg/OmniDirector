@@ -148,18 +148,20 @@ impl PluginRegistry {
 
         println!("Successfully loaded library: {:?}", library_path);
 
-        // First register handlers with the global event system
-        let register_handlers: Symbol<unsafe extern "C" fn()> = unsafe {
-            lib.get(b"register_handlers").map_err(|e| {
-                PluginError::InitializationFailed(format!(
-                    "Failed to find register_handlers function: {}",
-                    e
-                ))
-            })?
+        // Try to register handlers with the global event system (optional)
+        let register_handlers_result: Result<Symbol<unsafe extern "C" fn()>, _> = unsafe {
+            lib.get(b"register_handlers")
         };
 
-        println!("Found register_handlers function, registering handlers...");
-        unsafe { register_handlers() };
+        match register_handlers_result {
+            Ok(register_handlers) => {
+                println!("Found register_handlers function, registering handlers...");
+                unsafe { register_handlers() };
+            }
+            Err(_) => {
+                println!("No register_handlers function found, skipping handler registration...");
+            }
+        }
 
         // Get the plugin factory function (returns *mut PluginWrapper)
         let create_plugin: Symbol<unsafe extern "C" fn() -> *mut PluginWrapper> = unsafe {
@@ -219,8 +221,9 @@ impl PluginRegistry {
             "Plugin created: {} (version: {}, features: {:?})",
             plugin_name, plugin_version, plugin_features
         );
-        // Create metadata
-        let metadata = PluginMetadata::new(plugin_name.clone(), plugin_version, plugin_features);
+        // Create metadata with file path
+        let metadata = PluginMetadata::new(plugin_name.clone(), plugin_version, plugin_features)
+            .with_file_path(library_path.to_string_lossy().to_string());
 
         // Create plugin instance
         let mut plugin_instance = PluginInstance::new(plugin, metadata);
@@ -260,8 +263,9 @@ impl PluginRegistry {
         let plugin_version = plugin.version().to_string();
         let plugin_features = plugin.declared_features();
 
-        // Create metadata
-        let metadata = PluginMetadata::new(plugin_name.clone(), plugin_version, plugin_features);
+        // Create metadata (in-process plugins don't have a file path)
+        let metadata = PluginMetadata::new(plugin_name.clone(), plugin_version, plugin_features)
+            .with_file_path("<in-process>".to_string());
 
         // Create plugin instance
         let plugin_instance = PluginInstance::new(plugin, metadata);

@@ -145,32 +145,10 @@ impl EnhancedFeatureManager {
         Ok(())
     }
 
-    /// Register built-in features for development
+    /// Register built-in features for development (disabled - using plugins only)
     async fn register_builtin_features(&mut self) -> Result<(), PluginError> {
-        // Register worker management feature
-        let worker_ops = vec![
-            "StartWorker".to_string(),
-            "StopWorker".to_string(),
-            "DeleteWorker".to_string(),
-            "ListWorkers".to_string(),
-            "GetWorkerStatus".to_string(),
-            "ScaleWorkers".to_string(),
-        ];
-        
-        self.loaded_features.insert("worker_management".to_string(), worker_ops);
-        
-        // Add more features as needed
-        let vm_ops = vec![
-            "CreateVM".to_string(),
-            "DeleteVM".to_string(),
-            "StartVM".to_string(),
-            "StopVM".to_string(),
-            "ListVMs".to_string(),
-            "GetVMStatus".to_string(),
-        ];
-        
-        self.loaded_features.insert("vm_management".to_string(), vm_ops);
-        
+        // No built-in features - all functionality comes from plugins
+        println!("📦 No built-in features registered - using plugins only");
         Ok(())
     }
 
