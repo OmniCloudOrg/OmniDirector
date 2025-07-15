@@ -7,7 +7,12 @@
       "Bash(mkdir:*)",
       "Bash(rm:*)",
       "Bash(ls:*)",
-      "Bash(cargo:*)"
+      "Bash(cargo:*)",
+      "Bash(dir:*)",
+      "Bash(cp:*)",
+      "Bash(./target/debug/omni-director.exe)",
+      "Bash(C:UsersredstOneDriveDocumentsGitHubOmniCloud-FullcratesOmniDirectortargetdebugomni-director.exe)",
+      "Bash(target/debug/omni-director.exe:*)"
     ],
     "deny": []
   }

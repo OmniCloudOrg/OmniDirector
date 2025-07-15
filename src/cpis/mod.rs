@@ -105,7 +105,44 @@ impl PluginSystem {
             Arc::clone(&self.server_context),
         ).await?;
 
+        // Register loaded feature plugins with the enhanced feature manager
+        self.register_feature_plugins_with_enhanced_manager().await?;
+
         // No need to call initialize_plugin again, as plugins are now initialized at load time
+        Ok(())
+    }
+
+    /// Register loaded feature plugins with the enhanced feature manager
+    async fn register_feature_plugins_with_enhanced_manager(&self) -> Result<(), PluginError> {
+        let plugin_names = self.plugin_registry.list_plugins().await;
+        let mut enhanced_features = self.enhanced_features.write().await;
+        
+        for plugin_name in plugin_names {
+            // Check if this plugin is a feature plugin by checking if it has feature-like metadata
+            if let Some(metadata) = self.plugin_registry.get_plugin_metadata(&plugin_name).await {
+                // Check if this plugin's path suggests it's a feature (from features directory)
+                if metadata.file_path.as_ref().map_or(false, |path| path.contains("features")) {
+                    // This is a feature plugin - register it with the enhanced feature manager
+                    // We'll use the first declared feature as the feature name, or the plugin name
+                    let feature_name = metadata.features.first().unwrap_or(&plugin_name).clone();
+                    
+                    // For now, we'll register common operations - ideally this would query the actual operations
+                    // from the plugin, but the current plugin interface doesn't expose this
+                    let operations = vec![
+                        "StartWorker".to_string(),
+                        "StopWorker".to_string(),
+                        "DeleteWorker".to_string(),
+                        "ListWorkers".to_string(),
+                        "GetWorkerStatus".to_string(),
+                        "ScaleWorkers".to_string(),
+                    ];
+                    
+                    enhanced_features.loaded_features.insert(feature_name.clone(), operations);
+                    println!("📋 Registered feature plugin '{}' as feature '{}' with enhanced feature manager", plugin_name, feature_name);
+                }
+            }
+        }
+        
         Ok(())
     }
 
