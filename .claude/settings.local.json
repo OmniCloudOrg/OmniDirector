@@ -12,7 +12,9 @@
       "Bash(cp:*)",
       "Bash(./target/debug/omni-director.exe)",
       "Bash(C:UsersredstOneDriveDocumentsGitHubOmniCloud-FullcratesOmniDirectortargetdebugomni-director.exe)",
-      "Bash(target/debug/omni-director.exe:*)"
+      "Bash(target/debug/omni-director.exe:*)",
+      "Bash(mv:*)",
+      "Bash(timeout 10 cargo run --release)"
     ],
     "deny": []
   }
