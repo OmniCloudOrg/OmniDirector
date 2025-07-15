@@ -4,7 +4,7 @@
 
 use super::responses::*;
 use crate::routing::{Router, Route};
-use crate::providers::{ProviderError, ProviderRegistry, ProviderRegistryStats};
+use crate::providers::{ProviderError, ProviderRegistry, ProviderRegistryStats, EventRegistry};
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
@@ -21,6 +21,7 @@ use std::time::{SystemTime, UNIX_EPOCH, Instant};
 pub struct AppState {
     pub router: Arc<Router>,
     pub registry: Arc<ProviderRegistry>,
+    pub event_registry: Arc<EventRegistry>,
     pub start_time: SystemTime,
 }
 
@@ -35,6 +36,20 @@ pub struct ExecuteQuery {
 /// Request body for operation execution
 #[derive(Debug, Deserialize)]
 pub struct ExecuteRequest {
+    /// Operation arguments
+    #[serde(default)]
+    pub args: HashMap<String, serde_json::Value>,
+}
+
+/// Request body for unified exec_action endpoint
+#[derive(Debug, Deserialize)]
+pub struct ExecActionRequest {
+    /// Provider name
+    pub provider: String,
+    /// Feature name
+    pub feature: String,
+    /// Operation name
+    pub operation: String,
     /// Operation arguments
     #[serde(default)]
     pub args: HashMap<String, serde_json::Value>,
@@ -269,6 +284,46 @@ pub async fn get_stats(State(state): State<AppState>) -> Json<ApiResponse<serde_
     // Convert to JSON to avoid trait issues
     let stats_json = serde_json::to_value(stats).unwrap_or_default();
     Json(ApiResponse::success(stats_json))
+}
+
+/// Unified action execution endpoint
+/// POST /exec_action
+pub async fn exec_action(
+    State(state): State<AppState>,
+    Json(request): Json<ExecActionRequest>,
+) -> Result<Json<ApiResponse<ExecutionResult>>, StatusCode> {
+    let start_time = Instant::now();
+    
+    // Create event name from feature and operation
+    let event_name = format!("{}.{}", request.feature, request.operation);
+    
+    // Convert args to serde_json::Value
+    let args_value = serde_json::to_value(request.args).unwrap_or_default();
+
+    match state.event_registry.execute(&event_name, args_value).await {
+        Ok(result) => {
+            let execution_time = start_time.elapsed().as_millis() as u64;
+            
+            let execution_result = ExecutionResult {
+                provider: request.provider,
+                feature: request.feature,
+                operation: request.operation,
+                result,
+                execution_time_ms: execution_time,
+            };
+            
+            Ok(Json(ApiResponse::success(execution_result)))
+        }
+        Err(e) => {
+            let error = if e.contains("not found") {
+                ApiError::new("EVENT_NOT_FOUND", &e)
+            } else {
+                ApiError::new("EXECUTION_FAILED", &e)
+            };
+            
+            Ok(Json(ApiResponse::error(error)))
+        }
+    }
 }
 
 /// Get memory usage (simplified version)

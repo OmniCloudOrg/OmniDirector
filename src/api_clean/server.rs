@@ -5,7 +5,7 @@
 use super::handlers::*;
 use super::middleware::*;
 use crate::routing::Router;
-use crate::providers::ProviderRegistry;
+use crate::providers::{ProviderRegistry, EventRegistry};
 use axum::{
     middleware,
     routing::{get, post},
@@ -44,11 +44,13 @@ impl Default for ServerConfig {
 pub fn create_server(
     registry: Arc<ProviderRegistry>,
     router: Arc<Router>,
+    event_registry: Arc<EventRegistry>,
     config: ServerConfig,
 ) -> AxumRouter {
     let state = AppState {
         router,
         registry,
+        event_registry,
         start_time: SystemTime::now(),
     };
 
@@ -70,6 +72,9 @@ pub fn create_server(
             "/providers/:provider/features/:feature/operations/:operation",
             get(get_operation).post(execute_operation),
         )
+        
+        // Unified action execution endpoint
+        .route("/exec_action", post(exec_action))
         
         // Add application state
         .with_state(state);
@@ -94,9 +99,10 @@ pub fn create_server(
 pub async fn start_server(
     registry: Arc<ProviderRegistry>,
     router: Arc<Router>,
+    event_registry: Arc<EventRegistry>,
     config: ServerConfig,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let app = create_server(registry, router, config.clone());
+    let app = create_server(registry, router, event_registry, config.clone());
 
     println!("🚀 Starting OmniDirector API server on {}", config.bind_address);
     println!("📚 API Documentation:");

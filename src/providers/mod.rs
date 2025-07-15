@@ -7,11 +7,15 @@ pub mod registry;
 pub mod loader;
 pub mod metadata;
 pub mod context;
+pub mod feature_registry;
+pub mod event_registry;
 
 pub use registry::*;
 pub use loader::*;
 pub use metadata::*;
 pub use context::*;
+pub use feature_registry::*;
+pub use event_registry::*;
 
 use std::collections::HashMap;
 use serde_json::Value;

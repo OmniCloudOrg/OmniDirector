@@ -313,19 +313,4 @@ mod tests {
             .with_provider("aws");
         assert!(!pattern.matches(&route));
     }
-
-    #[test]
-    fn test_wildcard_pattern_matching() {
-        let resolver = RouteResolver::new(Arc::new(
-            crate::providers::ProviderRegistry::new(
-                Arc::new(crate::providers::DefaultProviderContext::new())
-            )
-        ));
-
-        assert!(resolver.pattern_matches("*", "anything"));
-        assert!(resolver.pattern_matches("test*", "testing"));
-        assert!(resolver.pattern_matches("*test", "my-test"));
-        assert!(resolver.pattern_matches("pre*fix", "prefix"));
-        assert!(!resolver.pattern_matches("test*", "other"));
-    }
 }

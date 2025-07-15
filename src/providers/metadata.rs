@@ -31,6 +31,9 @@ pub struct ProviderMetadata {
     
     /// File path (for loaded providers)
     pub file_path: Option<String>,
+    
+    /// Raw metadata from provider (for validation)
+    pub metadata: Option<serde_json::Value>,
 }
 
 /// Feature metadata within a provider
@@ -138,6 +141,7 @@ impl ProviderMetadata {
             features: Vec::new(),
             settings_schema: None,
             file_path: None,
+            metadata: None,
         }
     }
     
