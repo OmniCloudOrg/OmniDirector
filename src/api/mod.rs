@@ -1,4 +1,4 @@
-use crate::cpis::{PluginSystem, PluginExecutor, PluginError};
+use crate::cpis::{PluginSystem, EnhancedPluginExecutor, PluginError};
 use rocket::{self, get, post, response::Responder, routes, serde::json::Json};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, env, sync::Arc, time::Duration};
@@ -6,11 +6,12 @@ use serde_json::Value;
 
 // Create the index module
 pub mod index;
+pub mod dynamic_endpoints;
 
 // Plugin System state stored in application state
 pub struct CpiState {
     pub plugin_system: Arc<PluginSystem>,
-    pub executor: Arc<PluginExecutor>,
+    pub executor: Arc<EnhancedPluginExecutor>,
 }
 
 // Request format for plugin actions
@@ -92,17 +93,15 @@ async fn execute_action(
 
     let start_time = std::time::Instant::now();
     
-    // Execute the plugin action (now with provider)
+    // Execute the plugin action using the enhanced executor
     let timeout = Duration::from_secs(request.timeout_seconds);
-    // Use ExecutionRequestBuilder to ensure provider is set
-    let result = crate::cpis::executor::ExecutionRequestBuilder::new()
-        .plugin_name(&request.provider)
-        .feature(&request.feature)
-        .action(&request.action)
-        .arguments(request.params)
-        .timeout(timeout)
-        .execute(&cpi_state.executor)
-        .await;
+    let result = cpi_state.executor.execute_action(
+        Some(&request.provider),
+        &request.feature,
+        &request.action,
+        request.params,
+        Some(timeout)
+    ).await;
 
     let execution_time_ms = start_time.elapsed().as_millis() as u64;
 
@@ -244,10 +243,10 @@ async fn execute_batch(
     let start_time = std::time::Instant::now();
     let timeout = Duration::from_secs(request.timeout_seconds);
 
-    // Convert to the format expected by executor
-    let batch_actions: Vec<(String, String, String, HashMap<String, Value>)> = request.actions
+    // Convert to the format expected by enhanced executor
+    let batch_actions: Vec<(Option<String>, String, String, HashMap<String, Value>)> = request.actions
         .iter()
-        .map(|req| (req.provider.clone(), req.feature.clone(), req.action.clone(), req.params.clone()))
+        .map(|req| (Some(req.provider.clone()), req.feature.clone(), req.action.clone(), req.params.clone()))
         .collect();
 
     // Execute batch (now with provider)
@@ -388,7 +387,7 @@ async fn get_provider_action_params_compat(
 
 pub async fn rocket(
     plugin_system: Arc<PluginSystem>,
-    executor: Arc<PluginExecutor>,
+    executor: Arc<EnhancedPluginExecutor>,
 ) -> rocket::Rocket<rocket::Build> {
     // Load environment variables
     let host = env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
@@ -434,7 +433,7 @@ pub async fn rocket(
 
 pub async fn launch_rocket(
     plugin_system: Arc<PluginSystem>,
-    executor: Arc<PluginExecutor>,
+    executor: Arc<EnhancedPluginExecutor>,
 ) {
     // Set up graceful shutdown handler
     let plugin_system_clone = Arc::clone(&plugin_system);

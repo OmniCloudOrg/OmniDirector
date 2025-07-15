@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;
 use uuid::Uuid;
+use super::PluginError;
 
 /// Core event trait that all events must implement
 pub trait Event: Send + Sync + Any + Debug {
@@ -265,7 +266,7 @@ impl Event for FeatureActionEvent {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FeatureActionCompleteEvent {
     pub request_id: Uuid,
-    pub result: Result<Value, String>,
+    pub result: Result<Value, PluginError>,
     pub execution_time_ms: u64,
 }
 

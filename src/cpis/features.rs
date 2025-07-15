@@ -1,7 +1,7 @@
-//! # Features System
+//! # Generic Features System
 //!
 //! Manages feature definitions, schemas, and capabilities that plugins can declare.
-//! Features are loaded from JSON files and define what actions are available.
+//! Features are completely generic and not hardcoded into the core system.
 
 use std::collections::HashMap;
 use std::path::Path;
@@ -9,11 +9,12 @@ use tokio::sync::RwLock;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use super::PluginError;
+// Legacy feature system - replaced by enum_features
 
-/// Feature definition loaded from JSON schema
+/// Feature definition loaded from external sources (JSON, plugins, etc.)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FeatureDef {
-    /// Feature name (e.g., "VM_Manage", "File_Storage")
+    /// Feature name (completely generic)
     pub name: String,
     /// Human-readable description
     pub description: String,
@@ -25,10 +26,10 @@ pub struct FeatureDef {
     pub global_settings: Option<HashMap<String, ArgumentDef>>,
 }
 
-/// Action definition within a feature
+/// Action definition within a feature (generic)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActionDef {
-    /// Action name (e.g., "create_vm", "delete_file")
+    /// Action name (completely generic)
     pub name: String,
     /// Human-readable description
     pub description: String,
@@ -43,24 +44,18 @@ pub struct ActionDef {
 }
 
 /// Argument definition for actions
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ArgumentDef {
-    /// Argument name
     pub name: String,
-    /// Argument description
     pub description: String,
-    /// Argument type
     pub arg_type: ArgumentType,
-    /// Whether this argument is required
     pub required: bool,
-    /// Default value if not required
-    pub default_value: Option<Value>,
-    /// Validation constraints
+    pub default_value: Option<serde_json::Value>,
     pub constraints: Option<ArgumentConstraints>,
 }
 
-/// Types of arguments that can be used
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Argument types
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type")]
 pub enum ArgumentType {
     String { max_length: Option<usize> },
@@ -69,23 +64,20 @@ pub enum ArgumentType {
     Array { item_type: Box<ArgumentType> },
     Object { properties: HashMap<String, ArgumentType> },
     Enum { values: Vec<String> },
+    Any,
 }
 
 /// Validation constraints for arguments
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ArgumentConstraints {
-    /// Regex pattern for string validation
     pub pattern: Option<String>,
-    /// Minimum value for numbers
     pub min: Option<f64>,
-    /// Maximum value for numbers
     pub max: Option<f64>,
-    /// Allowed values for enums
-    pub allowed_values: Option<Vec<Value>>,
+    pub allowed_values: Option<Vec<serde_json::Value>>,
 }
 
 /// Expected return type for actions
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type")]
 pub enum ReturnType {
     Void,
@@ -94,6 +86,7 @@ pub enum ReturnType {
     Boolean,
     Object { schema: HashMap<String, ArgumentType> },
     Array { item_type: Box<ReturnType> },
+    Any,
 }
 
 /// Registry for managing feature definitions
@@ -110,13 +103,13 @@ impl FeatureRegistry {
         }
     }
 
-    /// Load feature schemas from a directory
+    /// Load feature schemas from a directory (generic schema loader)
     pub async fn load_schemas<P: AsRef<Path>>(&self, schemas_dir: P) -> Result<usize, PluginError> {
         let schemas_dir = schemas_dir.as_ref();
         
         if !schemas_dir.exists() {
             tokio::fs::create_dir_all(schemas_dir).await?;
-            self.create_default_schemas(schemas_dir).await?;
+            return Ok(0); // No schemas to load, no defaults created
         }
 
         let mut loaded_count = 0;
@@ -147,129 +140,19 @@ impl FeatureRegistry {
         Ok(())
     }
 
-    /// Create default feature schemas
-    async fn create_default_schemas<P: AsRef<Path>>(&self, schemas_dir: P) -> Result<(), PluginError> {
-        let vm_manage_schema = FeatureDef {
-            name: "VM_Manage".to_string(),
-            description: "Virtual Machine management capabilities".to_string(),
-            version: "1.0.0".to_string(),
-            actions: HashMap::from([
-                ("create_vm".to_string(), ActionDef {
-                    name: "create_vm".to_string(),
-                    description: "Create a new virtual machine".to_string(),
-                    arguments: vec![
-                        ArgumentDef {
-                            name: "name".to_string(),
-                            description: "VM name".to_string(),
-                            arg_type: ArgumentType::String { max_length: Some(255) },
-                            required: true,
-                            default_value: None,
-                            constraints: None,
-                        },
-                        ArgumentDef {
-                            name: "memory_mb".to_string(),
-                            description: "Memory in megabytes".to_string(),
-                            arg_type: ArgumentType::Number { min: Some(512.0), max: Some(1048576.0) },
-                            required: true,
-                            default_value: None,
-                            constraints: None,
-                        },
-                        ArgumentDef {
-                            name: "cpu_count".to_string(),
-                            description: "Number of CPUs".to_string(),
-                            arg_type: ArgumentType::Number { min: Some(1.0), max: Some(64.0) },
-                            required: true,
-                            default_value: None,
-                            constraints: None,
-                        },
-                    ],
-                    return_type: ReturnType::Object {
-                        schema: HashMap::from([
-                            ("vm_id".to_string(), ArgumentType::String { max_length: None }),
-                            ("status".to_string(), ArgumentType::String { max_length: None }),
-                        ]),
-                    },
-                    is_mutating: true,
-                    estimated_duration_ms: Some(30000),
-                }),
-                ("delete_vm".to_string(), ActionDef {
-                    name: "delete_vm".to_string(),
-                    description: "Delete a virtual machine".to_string(),
-                    arguments: vec![
-                        ArgumentDef {
-                            name: "vm_id".to_string(),
-                            description: "VM identifier".to_string(),
-                            arg_type: ArgumentType::String { max_length: None },
-                            required: true,
-                            default_value: None,
-                            constraints: None,
-                        },
-                    ],
-                    return_type: ReturnType::Boolean,
-                    is_mutating: true,
-                    estimated_duration_ms: Some(15000),
-                }),
-            ]),
-            global_settings: Some(HashMap::from([
-                ("default_resource_pool".to_string(), ArgumentDef {
-                    name: "default_resource_pool".to_string(),
-                    description: "Default resource pool for VMs".to_string(),
-                    arg_type: ArgumentType::String { max_length: None },
-                    required: false,
-                    default_value: Some(Value::String("default".to_string())),
-                    constraints: None,
-                }),
-            ])),
-        };
-
-        let file_storage_schema = FeatureDef {
-            name: "File_Storage".to_string(),
-            description: "File storage management capabilities".to_string(),
-            version: "1.0.0".to_string(),
-            actions: HashMap::from([
-                ("upload_file".to_string(), ActionDef {
-                    name: "upload_file".to_string(),
-                    description: "Upload a file to storage".to_string(),
-                    arguments: vec![
-                        ArgumentDef {
-                            name: "file_path".to_string(),
-                            description: "Local file path".to_string(),
-                            arg_type: ArgumentType::String { max_length: None },
-                            required: true,
-                            default_value: None,
-                            constraints: None,
-                        },
-                        ArgumentDef {
-                            name: "destination".to_string(),
-                            description: "Storage destination path".to_string(),
-                            arg_type: ArgumentType::String { max_length: None },
-                            required: true,
-                            default_value: None,
-                            constraints: None,
-                        },
-                    ],
-                    return_type: ReturnType::Object {
-                        schema: HashMap::from([
-                            ("file_id".to_string(), ArgumentType::String { max_length: None }),
-                            ("url".to_string(), ArgumentType::String { max_length: None }),
-                        ]),
-                    },
-                    is_mutating: true,
-                    estimated_duration_ms: Some(5000),
-                }),
-            ]),
-            global_settings: None,
-        };
-
-        // Write schemas to files
-        let vm_content = serde_json::to_string_pretty(&vm_manage_schema)?;
-        let file_content = serde_json::to_string_pretty(&file_storage_schema)?;
-
-        tokio::fs::write(schemas_dir.as_ref().join("vm_manage.json"), vm_content).await?;
-        tokio::fs::write(schemas_dir.as_ref().join("file_storage.json"), file_content).await?;
-
+    /// Register a feature definition dynamically (for plugins to use)
+    pub async fn register_feature(&self, feature: FeatureDef) -> Result<(), PluginError> {
+        let mut features = self.features.write().await;
+        if features.contains_key(&feature.name) {
+            return Err(PluginError::InitializationFailed(
+                format!("Feature '{}' already registered", feature.name)
+            ));
+        }
+        features.insert(feature.name.clone(), feature);
         Ok(())
     }
+
+    // Note: register_feature_from_trait removed as Feature trait is deprecated in favor of enum-based system
 
     /// Check if a feature is supported
     pub async fn is_feature_supported(&self, feature_name: &str) -> bool {

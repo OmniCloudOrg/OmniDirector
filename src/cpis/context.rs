@@ -56,6 +56,28 @@ pub trait ServerContext: Send + Sync + Debug {
     async fn cancel_task(&self, task_id: Uuid) -> Result<(), ServerError>;
 }
 
+/// Feature execution context for value resolution
+#[async_trait]
+pub trait FeatureContext: Send + Sync {
+    /// Get a value from the execution context
+    async fn get_value(&self, key: &str) -> Option<Value>;
+    
+    /// Set a value in the execution context
+    async fn set_value(&self, key: &str, value: Value) -> Result<(), PluginError>;
+    
+    /// Get environment variable
+    async fn get_env(&self, key: &str) -> Option<String>;
+    
+    /// Log a message
+    async fn log(&self, level: LogLevel, message: &str);
+    
+    /// Get current execution ID
+    fn execution_id(&self) -> &str;
+    
+    /// Get plugin name
+    fn plugin_name(&self) -> &str;
+}
+
 /// Log levels for the logging system
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LogLevel {

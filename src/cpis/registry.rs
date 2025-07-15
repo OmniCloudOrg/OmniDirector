@@ -6,12 +6,67 @@
 use super::{
     EventSystem, Plugin, PluginError, PluginInstance, PluginMetadata, PluginState,
 };
+use omni_event_registry::*;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use std::ffi::c_void;
 use libloading::{Library, Symbol};
 use std::collections::HashMap;
 use std::path::Path;
+
+// Plugin wrapper structure from the macros
+#[repr(C)]
+struct PluginWrapper {
+    _data: [u8; 0],
+}
+
+/// Event-driven plugin implementation that dispatches to the global registry
+struct EventDrivenPlugin {
+    name: String,
+    version: String,
+    declared_features: Vec<String>,
+    wrapper_ptr: *mut PluginWrapper,
+}
+
+#[async_trait::async_trait]
+impl Plugin for EventDrivenPlugin {
+    fn name(&self) -> &str {
+        &self.name
+    }
+    
+    fn version(&self) -> &str {
+        &self.version
+    }
+    
+    fn declared_features(&self) -> Vec<String> {
+        self.declared_features.clone()
+    }
+    
+    async fn pre_init(&mut self, _context: Arc<dyn super::ServerContext>) -> Result<(), PluginError> {
+        println!("🔧 Pre-initializing event-driven plugin: {}", self.name);
+        Ok(())
+    }
+    
+    async fn init(&mut self, _context: Arc<dyn super::ServerContext>) -> Result<(), PluginError> {
+        println!("✅ Initialized event-driven plugin: {}", self.name);
+        println!("📋 Registered handlers in global event registry");
+        
+        // List registered handlers
+        let handlers = get_global_registry().list_handlers();
+        for handler in &handlers {
+            println!("   • {}", handler);
+        }
+        
+        Ok(())
+    }
+    
+    async fn shutdown(&mut self, _context: Arc<dyn super::ServerContext>) -> Result<(), PluginError> {
+        println!("🛑 Shutting down event-driven plugin: {}", self.name);
+        Ok(())
+    }
+}
+
+unsafe impl Send for EventDrivenPlugin {}
+unsafe impl Sync for EventDrivenPlugin {}
 
 /// Registry for managing loaded plugins
 #[derive(Debug)]
@@ -34,7 +89,7 @@ impl PluginRegistry {
     pub async fn load_plugins<P: AsRef<Path>>(
         &self,
         plugins_dir: P,
-        event_system: Arc<EventSystem>,
+        _event_system: Arc<EventSystem>,
         context: Arc<dyn super::ServerContext>,
     ) -> Result<usize, PluginError> {
         let plugins_dir = plugins_dir.as_ref();
@@ -93,8 +148,21 @@ impl PluginRegistry {
 
         println!("Successfully loaded library: {:?}", library_path);
 
-        // Get the plugin factory function (returns *mut dyn Plugin)
-        let create_plugin: Symbol<unsafe extern "C" fn() -> *mut dyn Plugin> = unsafe {
+        // First register handlers with the global event system
+        let register_handlers: Symbol<unsafe extern "C" fn()> = unsafe {
+            lib.get(b"register_handlers").map_err(|e| {
+                PluginError::InitializationFailed(format!(
+                    "Failed to find register_handlers function: {}",
+                    e
+                ))
+            })?
+        };
+
+        println!("Found register_handlers function, registering handlers...");
+        unsafe { register_handlers() };
+
+        // Get the plugin factory function (returns *mut PluginWrapper)
+        let create_plugin: Symbol<unsafe extern "C" fn() -> *mut PluginWrapper> = unsafe {
             lib.get(b"create_plugin").map_err(|e| {
                 PluginError::InitializationFailed(format!(
                     "Failed to find create_plugin function: {}",
@@ -108,12 +176,40 @@ impl PluginRegistry {
         println!("Creating plugin instance...");
 
         // Create the plugin instance
-        let raw_ptr = unsafe { create_plugin() };
-        if raw_ptr.is_null() {
+        let wrapper_ptr = unsafe { create_plugin() };
+        if wrapper_ptr.is_null() {
             return Err(PluginError::InitializationFailed("create_plugin returned null pointer".to_string()));
         }
-        // SAFETY: The plugin must be implemented as Box<dyn Plugin> in the plugin crate
-        let plugin: Box<dyn Plugin> = unsafe { Box::from_raw(raw_ptr) };
+
+        // Get plugin info via FFI
+        let get_plugin_name: Symbol<unsafe extern "C" fn(*mut PluginWrapper) -> *const std::os::raw::c_char> = unsafe {
+            lib.get(b"get_plugin_name").map_err(|e| {
+                PluginError::InitializationFailed(format!(
+                    "Failed to find get_plugin_name function: {}",
+                    e
+                ))
+            })?
+        };
+
+        let name_ptr = unsafe { get_plugin_name(wrapper_ptr) };
+        let plugin_name = if !name_ptr.is_null() {
+            unsafe { 
+                std::ffi::CStr::from_ptr(name_ptr)
+                    .to_str()
+                    .unwrap_or("Unknown Plugin")
+                    .to_string()
+            }
+        } else {
+            "Unknown Plugin".to_string()
+        };
+
+        // For now, create a dummy plugin implementation that uses the event system
+        let plugin: Box<dyn Plugin> = Box::new(EventDrivenPlugin {
+            name: plugin_name.clone(),
+            version: "1.0.0".to_string(),
+            declared_features: vec!["VmManagement".to_string(), "VmControl".to_string(), "VmMonitoring".to_string()],
+            wrapper_ptr,
+        });
 
         let plugin_name = plugin.name().to_string();
         let plugin_version = plugin.version().to_string();

@@ -10,11 +10,9 @@
 //! - **Dynamic Arguments**: Plugin-specific parameters managed centrally
 //! - **No Case Statements**: All routing handled through event callbacks
 
-use std::any::{Any, TypeId};
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use tokio::sync::RwLock as AsyncRwLock;
-use async_trait::async_trait;
 use serde_json::Value;
 use thiserror::Error;
 use uuid::Uuid;
@@ -25,16 +23,22 @@ pub mod plugin;
 pub mod registry;
 pub mod context;
 pub mod arguments;
-pub mod executor;
+pub mod dynamic_api;
+pub mod enum_features;
+pub mod enhanced_executor;
+pub mod event_executor;
 
 pub use events::*;
 pub use features::*;
 pub use plugin::*;
 pub use plugin::Plugin; // Bring the Plugin trait into scope for method resolution
 pub use registry::*;
-pub use context::*;
+pub use context::{ServerContext, ServerContextBuilder, FeatureContext};
 pub use arguments::*;
-pub use executor::*;
+pub use dynamic_api::*;
+pub use enum_features::*;
+pub use enhanced_executor::*;
+pub use event_executor::*;
 
 /// Main plugin system that manages events, plugins, and features
 #[derive(Debug)]
@@ -47,6 +51,10 @@ pub struct PluginSystem {
     pub feature_registry: Arc<FeatureRegistry>,
     /// Argument manager for handling dynamic parameters
     pub argument_manager: Arc<ArgumentManager>,
+    /// Enhanced feature manager for enum-based features
+    pub enhanced_features: Arc<AsyncRwLock<EnhancedFeatureManager>>,
+    /// Event-driven executor for direct command execution
+    pub event_executor: Arc<EventDrivenExecutor>,
     /// Server context for plugin operations
     server_context: Arc<dyn ServerContext>,
 }
@@ -59,12 +67,16 @@ impl PluginSystem {
         let plugin_registry = Arc::new(PluginRegistry::new());
         let feature_registry = Arc::new(FeatureRegistry::new());
         let argument_manager = Arc::new(ArgumentManager::new());
+        let enhanced_features = Arc::new(AsyncRwLock::new(EnhancedFeatureManager::new()));
+        let event_executor = Arc::new(EventDrivenExecutor::new());
 
         Self {
             event_system,
             plugin_registry,
             feature_registry,
             argument_manager,
+            enhanced_features,
+            event_executor,
             server_context,
         }
     }
@@ -73,6 +85,12 @@ impl PluginSystem {
     pub async fn initialize(&self) -> Result<(), PluginError> {
         // Load feature schemas from JSON files
         self.feature_registry.load_schemas("./features").await?;
+
+        // Initialize enhanced features
+        {
+            let mut enhanced_features = self.enhanced_features.write().await;
+            enhanced_features.initialize().await?;
+        }
 
         // Load plugins from the plugins directory, passing the main context
         self.plugin_registry.load_plugins(
@@ -88,7 +106,7 @@ impl PluginSystem {
     /// Initialize a specific plugin
     async fn initialize_plugin(&self, plugin_name: &str) -> Result<(), PluginError> {
         // Get plugin instance Arc
-        let plugin_arc = self.plugin_registry.get_plugin(plugin_name).await
+        let _plugin_arc = self.plugin_registry.get_plugin(plugin_name).await
             .ok_or_else(|| PluginError::PluginNotFound(plugin_name.to_string()))?;
 
         // SAFETY: We must get a mutable reference to the plugin instance for initialization.
@@ -120,18 +138,70 @@ impl PluginSystem {
         Ok(Value::Bool(true))
     }
 
+    /// Execute a command directly through the event-driven executor
+    pub async fn execute_command(
+        &self,
+        provider: &str,
+        feature: &str,
+        method: &str,
+        payload: Value,
+    ) -> Result<Value, PluginError> {
+        self.event_executor.execute_command(provider, feature, method, payload).await
+    }
+
+    /// List all available event handlers
+    pub fn list_event_handlers(&self) -> Vec<String> {
+        self.event_executor.list_available_handlers()
+    }
+
     /// Get available features
     pub async fn get_available_features(&self) -> Vec<String> {
-        self.feature_registry.list_features().await
+        let mut features = self.feature_registry.list_features().await;
+        
+        // Add enhanced features
+        let enhanced_features = self.enhanced_features.read().await;
+        features.extend(enhanced_features.get_available_features());
+        
+        features
     }
 
     /// Get available actions for a feature
     pub async fn get_feature_actions(&self, feature: &str) -> Result<Vec<String>, PluginError> {
+        // First try enhanced features
+        let enhanced_features = self.enhanced_features.read().await;
+        if let Ok(actions) = enhanced_features.get_feature_operations(feature) {
+            return Ok(actions);
+        }
+        
+        // Fall back to legacy features
         self.feature_registry.get_feature_actions(feature).await
     }
 
     /// Get required arguments for a feature action
     pub async fn get_action_arguments(&self, feature: &str, action: &str) -> Result<Vec<ArgumentDef>, PluginError> {
+        // First try enhanced features
+        let enhanced_features = self.enhanced_features.read().await;
+        if let Ok(args) = enhanced_features.get_operation_arguments(feature, action) {
+            // Convert from Args to ArgumentDef
+            let arg_defs: Vec<ArgumentDef> = args.into_iter().map(|(name, rust_type)| {
+                ArgumentDef {
+                    name,
+                    description: format!("Parameter of type {}", rust_type),
+                    arg_type: match rust_type.as_str() {
+                        "String" => ArgumentType::String { max_length: None },
+                        "i32" => ArgumentType::Number { min: None, max: None },
+                        "bool" => ArgumentType::Boolean,
+                        _ => ArgumentType::Any,
+                    },
+                    required: true,
+                    default_value: None,
+                    constraints: None,
+                }
+            }).collect();
+            return Ok(arg_defs);
+        }
+        
+        // Fall back to legacy features
         self.feature_registry.get_action_arguments(feature, action).await
     }
 
@@ -143,7 +213,7 @@ impl PluginSystem {
 }
 
 /// Errors that can occur in the plugin system
-#[derive(Error, Debug, Clone)]
+#[derive(Error, Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub enum PluginError {
     #[error("Plugin not found: {0}")]
     PluginNotFound(String),
@@ -164,21 +234,21 @@ pub enum PluginError {
     InvalidArgument(String),
     
     #[error("I/O error: {0}")]
-    IoError(Arc<std::io::Error>),
+    IoError(String),
     
     #[error("JSON error: {0}")]
-    JsonError(Arc<serde_json::Error>),
+    JsonError(String),
 }
 
 impl From<std::io::Error> for PluginError {
     fn from(err: std::io::Error) -> Self {
-        PluginError::IoError(Arc::new(err))
+        PluginError::IoError(err.to_string())
     }
 }
 
 impl From<serde_json::Error> for PluginError {
     fn from(err: serde_json::Error) -> Self {
-        PluginError::JsonError(Arc::new(err))
+        PluginError::JsonError(err.to_string())
     }
 }
 

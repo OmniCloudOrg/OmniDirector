@@ -7,7 +7,8 @@ use std::collections::HashMap;
 use tokio::sync::RwLock;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use super::{PluginError, ArgumentDef, ArgumentType};
+use super::{PluginError};
+use super::features::{ArgumentDef, ArgumentType};
 
 /// Manages plugin arguments dynamically
 #[derive(Debug)]

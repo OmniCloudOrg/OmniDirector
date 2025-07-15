@@ -6,7 +6,7 @@ pub mod proposal;
 
 use anyhow::Result;
 use std::sync::Arc;
-use cpis::{PluginSystem, PluginExecutor, ServerContextBuilder};
+use cpis::{PluginSystem, EnhancedPluginExecutor, ServerContextBuilder};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -36,7 +36,7 @@ async fn main() -> Result<()> {
 
     // Initialize the new plugin system, using the event system from the context
     println!("📦 Initializing Plugin System...");
-    let plugin_system = Arc::new(PluginSystem::new(server_context as Arc<dyn cpis::context::ServerContext>));
+    let plugin_system = Arc::new(PluginSystem::new(server_context.clone() as Arc<dyn cpis::context::ServerContext>));
     
     // Load features and plugins
     match plugin_system.initialize().await {
@@ -47,12 +47,14 @@ async fn main() -> Result<()> {
         }
     }
 
-    // Create plugin executor
-    println!("⚡ Setting up Plugin Executor...");
-    let executor = Arc::new(PluginExecutor::new(
+    // Create enhanced plugin executor
+    println!("⚡ Setting up Enhanced Plugin Executor...");
+    let executor = Arc::new(EnhancedPluginExecutor::new(
         plugin_system.event_system.clone(),
         plugin_system.feature_registry.clone(),
         plugin_system.argument_manager.clone(),
+        plugin_system.enhanced_features.clone(),
+        server_context.clone(),
     ));
 
     if let Err(e) = executor.initialize().await {
@@ -84,7 +86,7 @@ async fn main() -> Result<()> {
 /// Display comprehensive system status
 async fn display_system_status(
     plugin_system: &Arc<PluginSystem>,
-    executor: &Arc<PluginExecutor>,
+    executor: &Arc<EnhancedPluginExecutor>,
 ) -> Result<()> {
     println!("\n🎯 System Status Report");
     println!("{}", "=".repeat(50));
@@ -109,6 +111,18 @@ async fn display_system_status(
     println!("  Request arguments: {}", arg_stats.request_arguments);
     println!("  Sensitive arguments: {}", arg_stats.sensitive_arguments);
     
+    // Enhanced feature stats
+    let enhanced_stats = {
+        let enhanced_features = plugin_system.enhanced_features.read().await;
+        enhanced_features.get_stats()
+    };
+    println!("\n🔧 Enhanced Feature Statistics:");
+    println!("  Total features: {}", enhanced_stats.total_features);
+    println!("  Total operations: {}", enhanced_stats.total_operations);
+    for (feature, op_count) in enhanced_stats.features {
+        println!("    {}: {} operations", feature, op_count);
+    }
+    
     // Event system stats
     let event_stats = plugin_system.event_system.get_stats().await;
     println!("\n📡 Event System Statistics:");
@@ -131,7 +145,7 @@ async fn display_system_status(
 /// Graceful shutdown handler
 pub async fn shutdown_system(
     plugin_system: Arc<PluginSystem>,
-    executor: Arc<PluginExecutor>,
+    executor: Arc<EnhancedPluginExecutor>,
 ) -> Result<()> {
     println!("\n🛑 Initiating graceful shutdown...");
     
@@ -187,13 +201,15 @@ mod tests {
             .build()
             .expect("Failed to create server context");
 
-        let plugin_system = Arc::new(PluginSystem::new(server_context));
+        let plugin_system = Arc::new(PluginSystem::new(server_context.clone()));
         plugin_system.initialize().await.expect("Plugin system init failed");
 
-        let executor = PluginExecutor::new(
+        let executor = EnhancedPluginExecutor::new(
             plugin_system.event_system.clone(),
             plugin_system.feature_registry.clone(),
             plugin_system.argument_manager.clone(),
+            plugin_system.enhanced_features.clone(),
+            server_context,
         );
 
         assert!(executor.initialize().await.is_ok());
