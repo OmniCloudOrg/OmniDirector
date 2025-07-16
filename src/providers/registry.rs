@@ -176,9 +176,9 @@ impl ProviderRegistry {
     /// Initialize all providers
     pub async fn initialize_all(&self) -> ProviderResult<()> {
         let providers = self.providers.read().await;
-        let mut errors: Vec<String> = Vec::new();
+        let errors: Vec<String> = Vec::new();
         
-        for (name, provider) in providers.iter() {
+        for (name, _provider) in providers.iter() {
             // We need to get a mutable reference, but we can't do that with Arc<dyn Provider>
             // This is a limitation of the current design - we'll need to handle initialization differently
             println!("🔧 Initializing provider: {}", name);
@@ -197,9 +197,9 @@ impl ProviderRegistry {
     /// Shutdown all providers
     pub async fn shutdown_all(&self) -> ProviderResult<()> {
         let providers = self.providers.read().await;
-        let mut errors: Vec<String> = Vec::new();
+        let errors: Vec<String> = Vec::new();
         
-        for (name, provider) in providers.iter() {
+        for (name, _provider) in providers.iter() {
             println!("🛑 Shutting down provider: {}", name);
             // TODO: Implement proper shutdown pattern
         }

@@ -106,7 +106,6 @@ async fn validate_cpi_implementations(
     feature_registry: &FeatureRegistry,
     event_registry: &EventRegistry,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    use std::collections::HashSet;
     
     let provider_list = registry.list_providers().await;
     

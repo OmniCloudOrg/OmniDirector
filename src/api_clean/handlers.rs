@@ -4,17 +4,16 @@
 
 use super::responses::*;
 use crate::routing::{Router, Route};
-use crate::providers::{ProviderError, ProviderRegistry, ProviderRegistryStats, EventRegistry};
+use crate::providers::{ProviderError, ProviderRegistry, EventRegistry};
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::Json,
-    Extension,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::time::{SystemTime, UNIX_EPOCH, Instant};
+use std::time::{SystemTime, Instant};
 
 /// Application state shared across handlers
 #[derive(Clone)]
@@ -330,7 +329,7 @@ pub async fn exec_action(
 fn get_memory_usage_mb() -> f64 {
     // This is a simplified implementation
     // In a real application, you might use a crate like `sysinfo` for accurate memory reporting
-    let process = std::process::Command::new("tasklist")
+    let _process = std::process::Command::new("tasklist")
         .args(&["/FI", "PID eq {}", "/FO", "CSV"])
         .output();
     

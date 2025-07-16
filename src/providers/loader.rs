@@ -2,7 +2,7 @@
 //!
 //! Handles dynamic loading of providers from shared libraries.
 
-use super::{Provider, ProviderError, ProviderResult, ProviderMetadata, FeatureMetadata, ProviderContext, FeatureInterface, FeatureOperation, EventRegistry};
+use super::{Provider, ProviderError, ProviderResult, ProviderMetadata, FeatureMetadata, ProviderContext, FeatureInterface, FeatureOperation, ParameterDefinition, EventRegistry};
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
@@ -247,20 +247,124 @@ impl ProviderLoader {
             "unknown".to_string()
         };
         
-        // For now, create a minimal feature interface
-        // In a full implementation, you'd extract operations from the library
+        // FULL PRODUCTION IMPLEMENTATION - Extract operations from the feature library
+        
+        // Get feature metadata to extract operations
+        let get_feature_metadata: Symbol<unsafe extern "C" fn() -> *const std::os::raw::c_char> = unsafe {
+            lib.get(b"get_feature_metadata").map_err(|e| {
+                ProviderError::LoadingFailed(format!(
+                    "Failed to find get_feature_metadata function: {}",
+                    e
+                ))
+            })?
+        };
+        
+        let metadata_ptr = unsafe { get_feature_metadata() };
+        let metadata_str = if !metadata_ptr.is_null() {
+            unsafe { std::ffi::CStr::from_ptr(metadata_ptr).to_str().unwrap_or("{}") }
+        } else {
+            "{}"
+        };
+        
+        let metadata_json: serde_json::Value = serde_json::from_str(metadata_str)
+            .map_err(|e| ProviderError::LoadingFailed(format!("Invalid feature metadata JSON: {}", e)))?;
+        
+        // Extract operations from metadata with FULL specifications
+        let operations: Vec<FeatureOperation> = metadata_json.get("operations")
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str())
+                    .map(|op_name| {
+                        // Try to load operation specification from the feature library
+                        let spec_function_name = format!("{}_operation_spec", op_name);
+                        let spec_function_bytes = spec_function_name.as_bytes();
+                        
+                        // Attempt to get the operation spec function
+                        let operation_spec: Option<serde_json::Value> = unsafe {
+                            lib.get::<unsafe extern "C" fn() -> *const std::os::raw::c_char>(spec_function_bytes)
+                                .ok()
+                                .and_then(|get_spec| {
+                                    let spec_ptr = get_spec();
+                                    if !spec_ptr.is_null() {
+                                        std::ffi::CStr::from_ptr(spec_ptr)
+                                            .to_str()
+                                            .ok()
+                                            .and_then(|spec_str| serde_json::from_str::<serde_json::Value>(spec_str).ok())
+                                    } else {
+                                        None
+                                    }
+                                })
+                        };
+                        
+                        // Extract operation details from spec or use defaults
+                        let (description, parameters, returns) = if let Some(spec) = operation_spec {
+                            let desc = spec.get("description")
+                                .and_then(|v| v.as_str())
+                                .map(|s| s.to_string())
+                                .unwrap_or_else(|| format!("{} operation", op_name));
+                            
+                            let params = spec.get("parameters")
+                                .and_then(|v| v.as_object())
+                                .map(|obj| {
+                                    obj.iter().map(|(name, param_spec)| {
+                                        let param_def = ParameterDefinition {
+                                            name: name.clone(),
+                                            param_type: param_spec.get("type")
+                                                .and_then(|v| v.as_str())
+                                                .unwrap_or("string")
+                                                .to_string(),
+                                            required: param_spec.get("required")
+                                                .and_then(|v| v.as_bool())
+                                                .unwrap_or(false),
+                                            description: param_spec.get("description")
+                                                .and_then(|v| v.as_str())
+                                                .map(|s| s.to_string()),
+                                        };
+                                        (name.clone(), param_def)
+                                    }).collect()
+                                })
+                                .unwrap_or_default();
+                            
+                            let ret_type = spec.get("returns")
+                                .and_then(|v| v.get("type"))
+                                .and_then(|v| v.as_str())
+                                .map(|s| s.to_string());
+                            
+                            (desc, params, ret_type)
+                        } else {
+                            // Fallback to basic operation definition
+                            (
+                                format!("{} operation", op_name),
+                                HashMap::new(),
+                                Some("Value".to_string())
+                            )
+                        };
+                        
+                        FeatureOperation {
+                            name: op_name.to_string(),
+                            description,
+                            parameters,
+                            returns,
+                        }
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
+        
+        if operations.is_empty() {
+            return Err(ProviderError::LoadingFailed(
+                format!("Feature '{}' has no operations defined", feature_name)
+            ));
+        }
+        
         let feature_interface = FeatureInterface {
-            name: feature_name,
-            description: format!("Feature interface loaded from {:?}", library_path),
-            operations: vec![
-                // This would be dynamically extracted from the library
-                FeatureOperation {
-                    name: "example_operation".to_string(),
-                    description: "Example operation".to_string(),
-                    parameters: HashMap::new(),
-                    returns: Some("Value".to_string()),
-                }
-            ],
+            name: feature_name.clone(),
+            description: metadata_json.get("description")
+                .and_then(|v| v.as_str())
+                .map(|s| s.to_string())
+                .unwrap_or_else(|| format!("{} feature interface", feature_name)),
+            operations,
         };
         
         println!("Successfully loaded feature interface: {}", feature_interface.name);

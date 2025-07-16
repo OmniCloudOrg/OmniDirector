@@ -19,7 +19,10 @@
       "Bash(curl:*)",
       "Bash(pkill:*)",
       "Bash(taskkill:*)",
-      "Bash(timeout 15 cargo run --release)"
+      "Bash(timeout 15 cargo run --release)",
+      "Bash(rustc:*)",
+      "Bash(targetdebugomni-director.exe)",
+      "Bash(.targetdebugomni-director.exe)"
     ],
     "deny": []
   }

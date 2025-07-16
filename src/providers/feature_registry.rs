@@ -4,7 +4,6 @@
 //! Features define the minimum API surface that CPIs must implement
 
 use std::collections::HashMap;
-use serde_json::Value;
 
 /// Feature interface definition
 #[derive(Debug, Clone)]

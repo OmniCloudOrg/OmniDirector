@@ -26,6 +26,7 @@ axum-test = "15.0"
 
 # Local dependencies (only keep what's needed)
 omni-feature-traits = { path = "../shared/feature-traits" }
+omni-ffi-macros = { path = "../shared/ffi-macros" }
 
 [profile.dev]
 codegen-units = 32

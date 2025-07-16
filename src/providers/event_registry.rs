@@ -3,7 +3,6 @@
 //! Central registry for dynamic event registration and dispatch
 
 use std::collections::HashMap;
-use std::sync::Arc;
 use serde_json::Value;
 use tokio::sync::RwLock;
 
