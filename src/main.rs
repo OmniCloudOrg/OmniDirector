@@ -55,6 +55,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         feature_registry.register_feature(feature_interface);
     }
 
+    // Wait for async event registration to complete
+    println!("⏳ Waiting for event registration to complete...");
+    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+
     // Validate CPIs against feature interfaces
     println!("🔍 Validating CPI implementations against feature interfaces...");
     validate_cpi_implementations(&registry, &feature_registry, &event_registry).await?;
@@ -109,8 +113,36 @@ async fn validate_cpi_implementations(
     
     let provider_list = registry.list_providers().await;
     
+    println!("🔍 DEBUG: Starting CPI validation");
+    println!("🔍 DEBUG: Provider pool contains {} providers: {:?}", provider_list.len(), provider_list);
+    
+    // Debug: Show all available features in the registry
+    println!("🔍 DEBUG: Available features in registry:");
+    let feature_list = feature_registry.list_features();
+    println!("🔍 DEBUG: Feature registry contains {} features", feature_list.len());
+    for feature_name in feature_list {
+        if let Some(feature_interface) = feature_registry.get_feature(feature_name) {
+            println!("  - {}: {} operations", feature_name, feature_interface.operations.len());
+            for op in &feature_interface.operations {
+                println!("    * {}", op.name);
+            }
+        }
+    }
+    
+    // Debug: Show event registry state
+    let event_list = event_registry.list_events().await;
+    println!("🔍 DEBUG: Event registry contains {} events", event_list.len());
+    for event_name in event_list {
+        println!("  - {}", event_name);
+    }
+    
     for provider_name in provider_list {
+        println!("🔍 DEBUG: Processing provider '{}'", provider_name);
+        
         if let Some(metadata) = registry.get_metadata(&provider_name).await {
+            println!("🔍 DEBUG: Provider '{}' metadata found", provider_name);
+            println!("🔍 DEBUG: Raw metadata: {:?}", metadata.metadata);
+            
             // Get the features this CPI claims to support
             let supported_features = metadata.metadata
                 .as_ref()
@@ -123,11 +155,16 @@ async fn validate_cpi_implementations(
                 })
                 .unwrap_or_default();
             
+            println!("🔍 DEBUG: Extracted supported features: {:?}", supported_features);
             println!("  🔍 Validating provider '{}' supports features: {:?}", provider_name, supported_features);
             
             for feature_name in &supported_features {
+                println!("🔍 DEBUG: Checking feature '{}' for provider '{}'", feature_name, provider_name);
+                
                 // Get the feature interface definition
                 if let Some(feature_interface) = feature_registry.get_feature(feature_name) {
+                    println!("🔍 DEBUG: Feature '{}' interface found with {} operations", 
+                             feature_name, feature_interface.operations.len());
                     println!("    📋 Checking feature '{}' with {} required operations", 
                              feature_name, feature_interface.operations.len());
                     
@@ -137,12 +174,21 @@ async fn validate_cpi_implementations(
                     
                     for operation in &feature_interface.operations {
                         let event_name = format!("{}.{}", feature_name, operation.name);
+                        println!("🔍 DEBUG: Checking for event '{}'", event_name);
+                        
                         if event_registry.has_event(&event_name).await {
+                            println!("🔍 DEBUG: ✅ Event '{}' found", event_name);
                             found_operations.push(operation.name.clone());
                         } else {
+                            println!("🔍 DEBUG: ❌ Event '{}' NOT found", event_name);
                             missing_operations.push(operation.name.clone());
                         }
                     }
+                    
+                    println!("🔍 DEBUG: Summary for feature '{}': {} found, {} missing", 
+                             feature_name, found_operations.len(), missing_operations.len());
+                    println!("🔍 DEBUG: Found operations: {:?}", found_operations);
+                    println!("🔍 DEBUG: Missing operations: {:?}", missing_operations);
                     
                     if missing_operations.is_empty() {
                         println!("    ✅ Feature '{}' fully implemented ({} operations)", 
@@ -156,14 +202,20 @@ async fn validate_cpi_implementations(
                         ).into());
                     }
                 } else {
+                    println!("🔍 DEBUG: Feature '{}' interface NOT found in registry", feature_name);
                     println!("    ⚠️  Feature '{}' interface not found", feature_name);
                 }
             }
             
             if supported_features.is_empty() {
+                println!("🔍 DEBUG: Provider '{}' has no supported features", provider_name);
                 println!("    ⚠️  Provider '{}' does not declare any supported features", provider_name);
             }
+        } else {
+            println!("🔍 DEBUG: Provider '{}' metadata NOT found", provider_name);
         }
+        
+        println!("🔍 DEBUG: Finished processing provider '{}'", provider_name);
     }
     
     println!("✅ All CPI implementations validated successfully");

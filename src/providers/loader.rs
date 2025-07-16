@@ -473,8 +473,30 @@ impl ProviderLoader {
         if let Some(registry) = event_registry {
             // Create a registry adapter that bridges the FFI interface to our event registry
             let mut registry_adapter = Box::new(RegistryAdapter::new());
-            registry_adapter.set_registry(registry);
+            registry_adapter.set_registry(Arc::clone(&registry));
             let registry_ptr = Box::into_raw(registry_adapter) as *mut std::ffi::c_void;
+            
+            // Set the FFI interface on the provider (required)
+            let set_registry_interface: Symbol<unsafe extern "C" fn(*mut std::ffi::c_void, *const FFIRegistryInterface) -> bool> = unsafe {
+                lib.get(b"set_registry_interface").map_err(|e| {
+                    ProviderError::LoadingFailed(format!(
+                        "Provider must implement set_registry_interface function: {}",
+                        e
+                    ))
+                })?
+            };
+            
+            // Create FFI interface with the registration callback
+            let ffi_interface = FFIRegistryInterface {
+                register_fn: ffi_register_event,
+            };
+            
+            let interface_success = unsafe { set_registry_interface(provider_ptr, &ffi_interface) };
+            if !interface_success {
+                return Err(ProviderError::InitializationFailed(
+                    "Failed to set registry interface on provider".to_string()
+                ));
+            }
             
             let init_success = unsafe { initialize_provider(provider_ptr, registry_ptr) };
             if !init_success {
@@ -633,6 +655,66 @@ enum ProviderType {
 struct RegistryAdapter {
     // This will be filled with the actual event registry when needed
     registry: Option<Arc<EventRegistry>>,
+}
+
+/// FFI callback function for event registration
+unsafe extern "C" fn ffi_register_event(
+    registry: *mut std::ffi::c_void,
+    event_name: *const std::os::raw::c_char,
+    handler: unsafe extern "C" fn(data: *const std::os::raw::c_char) -> *const std::os::raw::c_char,
+) {
+    if registry.is_null() || event_name.is_null() {
+        eprintln!("FFI: Invalid parameters for event registration");
+        return;
+    }
+    
+    let adapter = registry as *mut RegistryAdapter;
+    let adapter_ref = &*adapter;
+    
+    if let Some(event_registry) = &adapter_ref.registry {
+        let event_name_str = match std::ffi::CStr::from_ptr(event_name).to_str() {
+            Ok(s) => s,
+            Err(_) => {
+                eprintln!("FFI: Invalid event name string");
+                return;
+            }
+        };
+        
+        println!("🔍 DEBUG: FFI registering event: {}", event_name_str);
+        
+        // Create a wrapper that converts the FFI handler to our EventHandler type
+        let event_handler = Box::new(move |data: serde_json::Value| -> Result<serde_json::Value, String> {
+            let data_str = data.to_string();
+            let data_cstr = std::ffi::CString::new(data_str).map_err(|_| "Failed to create C string")?;
+            
+            unsafe {
+                let result_ptr = handler(data_cstr.as_ptr());
+                if result_ptr.is_null() {
+                    return Err("Handler returned null".to_string());
+                }
+                
+                let result_str = std::ffi::CStr::from_ptr(result_ptr).to_str()
+                    .map_err(|_| "Invalid result string")?;
+                
+                serde_json::from_str(result_str)
+                    .map_err(|e| format!("Invalid JSON result: {}", e))
+            }
+        });
+        
+        // Register using spawn to avoid nested runtime issue
+        if let Ok(handle) = tokio::runtime::Handle::try_current() {
+            let registry_clone = Arc::clone(event_registry);
+            let event_name_owned = event_name_str.to_string();
+            
+            handle.spawn(async move {
+                registry_clone.register(&event_name_owned, event_handler).await;
+            });
+        } else {
+            eprintln!("FFI: No tokio runtime available for event registration");
+        }
+    } else {
+        eprintln!("FFI: No event registry available");
+    }
 }
 
 impl RegistryAdapter {
