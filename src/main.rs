@@ -1,247 +1,223 @@
-mod api;
-mod cpis;
-mod logging;
+//! # OmniDirector - Unified Provider System
+//!
+//! Main entry point using the clean unified architecture.
 
-pub mod proposal;
-
-use anyhow::Result;
+use omni_director::{
+    providers::{ProviderRegistry, ProviderLoader, DefaultProviderContext, ProviderContext, FeatureRegistry, EventRegistry},
+    routing::Router,
+    api::{start_server, ServerConfig},
+};
 use std::sync::Arc;
-use cpis::{PluginSystem, PluginExecutor, ServerContextBuilder};
+use tokio;
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize logging
-    println!("🚀 Starting OmniDirector with Event-Driven Plugin System...");
-    
-    // initialize event system
-    println!("🔄 Initializing Event System...");
-    let event_system = std::sync::Arc::new(cpis::events::EventSystem::new());
+    env_logger::init();
 
-    // Initialize feature registry
-    println!("🔍 Initializing Feature Registry...");
-    let feature_registry = Arc::new(cpis::features::FeatureRegistry::new());
+    println!("🚀 Starting OmniDirector with unified architecture...");
 
-    // Initialize argument manager
-    println!("🛠️ Initializing Argument Manager...");
-    let argument_manager = Arc::new(cpis::arguments::ArgumentManager::new());
+    // Create provider context
+    let context = Arc::new(DefaultProviderContext::new());
+    println!("✅ Created provider context");
 
-    // Create server context
-    let server_context = ServerContextBuilder::new()
-        .with_region_id("default".to_string())
-        .with_event_system(event_system.clone())
-        .with_feature_registry(feature_registry)
-        .with_argument_manager(argument_manager)
-        .build()
-        .map_err(|e| anyhow::anyhow!("Failed to create server context: {}", e))?;
+    // Create provider registry
+    let registry = Arc::new(ProviderRegistry::new(Arc::clone(&context) as Arc<dyn ProviderContext>));
+    println!("✅ Created provider registry");
 
-    // Initialize the new plugin system, using the event system from the context
-    println!("📦 Initializing Plugin System...");
-    let plugin_system = Arc::new(PluginSystem::new(server_context as Arc<dyn cpis::context::ServerContext>));
-    
-    // Load features and plugins
-    match plugin_system.initialize().await {
-        Ok(_) => println!("✅ Plugin system initialized successfully"),
-        Err(e) => {
-            eprintln!("❌ Failed to initialize plugin system: {}", e);
-            return Err(anyhow::anyhow!("Plugin system initialization failed: {}", e));
+    // Create event registry
+    let event_registry = Arc::new(EventRegistry::new());
+    println!("✅ Created event registry");
+
+    // Create provider loader
+    let loader = ProviderLoader::new();
+    println!("✅ Created provider loader");
+
+    // Load providers from plugins directory
+    println!("📂 Loading providers from ./plugins...");
+    let plugin_providers = loader
+        .load_from_directory_with_registry("./plugins", Arc::clone(&context) as Arc<dyn ProviderContext>, Some(Arc::clone(&event_registry)))
+        .await?;
+
+    for (provider, metadata) in plugin_providers {
+        registry.register_provider(provider, metadata).await?;
+    }
+
+    // Load feature interfaces from features directory (not as callable providers)
+    println!("📂 Loading feature interfaces from ./features...");
+    let mut feature_registry = FeatureRegistry::new();
+    let feature_interfaces = loader
+        .load_features_from_directory("./features")
+        .await?;
+
+    for feature_interface in feature_interfaces {
+        println!("✅ Loaded feature interface: {}", feature_interface.name);
+        feature_registry.register_feature(feature_interface);
+    }
+
+    // Wait for async event registration to complete
+    println!("⏳ Waiting for event registration to complete...");
+    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+
+    // Validate CPIs against feature interfaces
+    println!("🔍 Validating CPI implementations against feature interfaces...");
+    validate_cpi_implementations(&registry, &feature_registry, &event_registry).await?;
+
+    // Create router
+    let router = Arc::new(Router::new(Arc::clone(&registry)));
+    println!("✅ Created router");
+
+    // Get final statistics
+    let stats = registry.get_statistics().await;
+    println!("📊 Loaded {} providers with {} features and {} operations",
+             stats.total_providers, stats.total_features, stats.total_operations);
+
+    // Print loaded providers
+    for (name, provider_stats) in &stats.provider_stats {
+        println!("  🔌 {}: {} features, {} operations", 
+                 name, provider_stats.feature_count, provider_stats.operation_count);
+    }
+
+    // Print available routes
+    if let Ok(routes) = router.get_available_routes().await {
+        println!("\n🔗 Available API routes:");
+        for route in routes.iter().take(10) { // Show first 10
+            println!("  • {}", route.to_url_path());
+        }
+        if routes.len() > 10 {
+            println!("  ... and {} more routes", routes.len() - 10);
         }
     }
 
-    // Create plugin executor
-    println!("⚡ Setting up Plugin Executor...");
-    let executor = Arc::new(PluginExecutor::new(
-        plugin_system.event_system.clone(),
-        plugin_system.feature_registry.clone(),
-        plugin_system.argument_manager.clone(),
-    ));
+    // Create server configuration
+    let config = ServerConfig {
+        bind_address: "127.0.0.1:8080".to_string(),
+        enable_cors: true,
+        enable_logging: true,
+        request_timeout_seconds: 30,
+    };
 
-    if let Err(e) = executor.initialize().await {
-        eprintln!("❌ Failed to initialize executor: {}", e);
-        return Err(anyhow::anyhow!("Executor initialization failed: {}", e));
-    }
-
-    // Load global arguments from environment
-    println!("🔧 Loading configuration from environment...");
-    match plugin_system.argument_manager.load_from_environment("OMNI_").await {
-        Ok(count) => println!("📝 Loaded {} arguments from environment", count),
-        Err(e) => eprintln!("⚠️  Warning: Failed to load environment arguments: {}", e),
-    }
-
-    // Display system status
-    display_system_status(&plugin_system, &executor).await?;
-
-    // Start cleanup task for expired requests
-    println!("🧹 Starting cleanup task...");
-    let _cleanup_handle = executor.start_cleanup_task().await;
-
-    // Launch the API server
+    // Start the API server
     println!("🌐 Starting API server...");
-    api::launch_rocket(plugin_system, executor).await;
-    
+    start_server(registry, router, event_registry, config).await?;
+
     Ok(())
 }
 
-/// Display comprehensive system status
-async fn display_system_status(
-    plugin_system: &Arc<PluginSystem>,
-    executor: &Arc<PluginExecutor>,
-) -> Result<()> {
-    println!("\n🎯 System Status Report");
-    println!("{}", "=".repeat(50));
+/// Validate that CPIs implement the minimum API surface defined by their supported features
+async fn validate_cpi_implementations(
+    registry: &ProviderRegistry,
+    feature_registry: &FeatureRegistry,
+    event_registry: &EventRegistry,
+) -> Result<(), Box<dyn std::error::Error>> {
     
-    // Available features
-    let features = plugin_system.get_available_features().await;
-    println!("📋 Available Features ({}):", features.len());
-    for feature in &features {
-        println!("  🔹 {}", feature);
-        
-        // Show actions for each feature
-        if let Ok(actions) = plugin_system.get_feature_actions(feature).await {
-            println!("    Actions: {}", actions.join(", "));
+    let provider_list = registry.list_providers().await;
+    
+    println!("🔍 DEBUG: Starting CPI validation");
+    println!("🔍 DEBUG: Provider pool contains {} providers: {:?}", provider_list.len(), provider_list);
+    
+    // Debug: Show all available features in the registry
+    println!("🔍 DEBUG: Available features in registry:");
+    let feature_list = feature_registry.list_features();
+    println!("🔍 DEBUG: Feature registry contains {} features", feature_list.len());
+    for feature_name in feature_list {
+        if let Some(feature_interface) = feature_registry.get_feature(feature_name) {
+            println!("  - {}: {} operations", feature_name, feature_interface.operations.len());
+            for op in &feature_interface.operations {
+                println!("    * {}", op.name);
+            }
         }
     }
     
-    // Argument statistics
-    let arg_stats = plugin_system.argument_manager.get_argument_stats().await;
-    println!("\n📊 Argument Statistics:");
-    println!("  Global arguments: {}", arg_stats.global_arguments);
-    println!("  Plugin arguments: {}", arg_stats.plugin_arguments);
-    println!("  Request arguments: {}", arg_stats.request_arguments);
-    println!("  Sensitive arguments: {}", arg_stats.sensitive_arguments);
-    
-    // Event system stats
-    let event_stats = plugin_system.event_system.get_stats().await;
-    println!("\n📡 Event System Statistics:");
-    println!("  Total handlers: {}", event_stats.total_handlers);
-    println!("  Events emitted: {}", event_stats.events_emitted);
-    
-    // Execution stats
-    let exec_stats = executor.get_execution_stats().await;
-    println!("\n⚡ Execution Statistics:");
-    println!("  Pending requests: {}", exec_stats.pending_requests);
-    println!("  Average wait time: {:?}", exec_stats.average_wait_time);
-    println!("  Oldest request age: {:?}", exec_stats.oldest_request_age);
-    
-    println!("{}", "=".repeat(50));
-    println!("✅ System is ready to serve requests!\n");
-    
-    Ok(())
-}
-
-/// Graceful shutdown handler
-pub async fn shutdown_system(
-    plugin_system: Arc<PluginSystem>,
-    executor: Arc<PluginExecutor>,
-) -> Result<()> {
-    println!("\n🛑 Initiating graceful shutdown...");
-    
-    // Cancel pending requests
-    let cancelled_count = executor.cancel_all_requests().await
-        .unwrap_or_else(|e| {
-            eprintln!("⚠️  Warning: Failed to cancel requests: {}", e);
-            0
-        });
-    
-    if cancelled_count > 0 {
-        println!("🚫 Cancelled {} pending requests", cancelled_count);
+    // Debug: Show event registry state
+    let event_list = event_registry.list_events().await;
+    println!("🔍 DEBUG: Event registry contains {} events", event_list.len());
+    for event_name in event_list {
+        println!("  - {}", event_name);
     }
     
-    // Shutdown plugin system
-    if let Err(e) = plugin_system.shutdown().await {
-        eprintln!("⚠️  Warning: Plugin system shutdown error: {}", e);
-    } else {
-        println!("📦 Plugin system shutdown complete");
-    }
-    
-    println!("✅ Graceful shutdown completed");
-    Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::collections::HashMap;
-    use serde_json::Value;
-
-    #[tokio::test]
-    async fn test_plugin_system_initialization() {
-        let server_context = ServerContextBuilder::new()
-            .with_region_id("test".to_string())
-            .build()
-            .expect("Failed to create server context");
-
-        let plugin_system = Arc::new(PluginSystem::new(server_context));
+    for provider_name in provider_list {
+        println!("🔍 DEBUG: Processing provider '{}'", provider_name);
         
-        // Should initialize without error
-        assert!(plugin_system.initialize().await.is_ok());
-        
-        // Should have some features available
-        let features = plugin_system.get_available_features().await;
-        assert!(!features.is_empty());
-    }
-
-    #[tokio::test]
-    async fn test_executor_initialization() {
-        let server_context = ServerContextBuilder::new()
-            .with_region_id("test".to_string())
-            .build()
-            .expect("Failed to create server context");
-
-        let plugin_system = Arc::new(PluginSystem::new(server_context));
-        plugin_system.initialize().await.expect("Plugin system init failed");
-
-        let executor = PluginExecutor::new(
-            plugin_system.event_system.clone(),
-            plugin_system.feature_registry.clone(),
-            plugin_system.argument_manager.clone(),
-        );
-
-        assert!(executor.initialize().await.is_ok());
-    }
-
-    #[tokio::test]
-    async fn test_argument_management() {
-        let server_context = ServerContextBuilder::new()
-            .with_region_id("test".to_string())
-            .build()
-            .expect("Failed to create server context");
-
-        let plugin_system = Arc::new(PluginSystem::new(server_context));
-        plugin_system.initialize().await.expect("Plugin system init failed");
-
-        let args = &plugin_system.argument_manager;
-        
-        // Set a global argument
-        args.set_global_argument("test_arg", Value::String("test_value".to_string()), false)
-            .await
-            .expect("Failed to set global argument");
-
-        // Retrieve the argument
-        let result = args.get_argument("test_plugin", "test_arg", None, cpis::arguments::ArgumentResolution::GlobalOnly).await;
-        assert!(result.is_ok());
-        
-        let arg_value = result.unwrap();
-        assert_eq!(arg_value.value, Value::String("test_value".to_string()));
-    }
-
-    #[tokio::test]
-    async fn test_feature_validation() {
-        let server_context = ServerContextBuilder::new()
-            .with_region_id("test".to_string())
-            .build()
-            .expect("Failed to create server context");
-
-        let plugin_system = Arc::new(PluginSystem::new(server_context));
-        plugin_system.initialize().await.expect("Plugin system init failed");
-
-        // Test with valid feature
-        let features = plugin_system.get_available_features().await;
-        if !features.is_empty() {
-            let feature = &features[0];
-            assert!(plugin_system.feature_registry.is_feature_supported(feature).await);
+        if let Some(metadata) = registry.get_metadata(&provider_name).await {
+            println!("🔍 DEBUG: Provider '{}' metadata found", provider_name);
+            println!("🔍 DEBUG: Raw metadata: {:?}", metadata.metadata);
+            
+            // Get the features this CPI claims to support
+            let supported_features = metadata.metadata
+                .as_ref()
+                .and_then(|json| json.get("supports_features"))
+                .and_then(|v| v.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str())
+                        .collect::<Vec<_>>()
+                })
+                .unwrap_or_default();
+            
+            println!("🔍 DEBUG: Extracted supported features: {:?}", supported_features);
+            println!("  🔍 Validating provider '{}' supports features: {:?}", provider_name, supported_features);
+            
+            for feature_name in &supported_features {
+                println!("🔍 DEBUG: Checking feature '{}' for provider '{}'", feature_name, provider_name);
+                
+                // Get the feature interface definition
+                if let Some(feature_interface) = feature_registry.get_feature(feature_name) {
+                    println!("🔍 DEBUG: Feature '{}' interface found with {} operations", 
+                             feature_name, feature_interface.operations.len());
+                    println!("    📋 Checking feature '{}' with {} required operations", 
+                             feature_name, feature_interface.operations.len());
+                    
+                    // Check if all required operations are registered
+                    let mut missing_operations = Vec::new();
+                    let mut found_operations = Vec::new();
+                    
+                    for operation in &feature_interface.operations {
+                        let event_name = format!("{}.{}", feature_name, operation.name);
+                        println!("🔍 DEBUG: Checking for event '{}'", event_name);
+                        
+                        if event_registry.has_event(&event_name).await {
+                            println!("🔍 DEBUG: ✅ Event '{}' found", event_name);
+                            found_operations.push(operation.name.clone());
+                        } else {
+                            println!("🔍 DEBUG: ❌ Event '{}' NOT found", event_name);
+                            missing_operations.push(operation.name.clone());
+                        }
+                    }
+                    
+                    println!("🔍 DEBUG: Summary for feature '{}': {} found, {} missing", 
+                             feature_name, found_operations.len(), missing_operations.len());
+                    println!("🔍 DEBUG: Found operations: {:?}", found_operations);
+                    println!("🔍 DEBUG: Missing operations: {:?}", missing_operations);
+                    
+                    if missing_operations.is_empty() {
+                        println!("    ✅ Feature '{}' fully implemented ({} operations)", 
+                                 feature_name, found_operations.len());
+                    } else {
+                        println!("    ❌ Feature '{}' missing operations: {:?}", 
+                                 feature_name, missing_operations);
+                        return Err(format!(
+                            "CPI '{}' claims to support feature '{}' but is missing required operations: {:?}",
+                            provider_name, feature_name, missing_operations
+                        ).into());
+                    }
+                } else {
+                    println!("🔍 DEBUG: Feature '{}' interface NOT found in registry", feature_name);
+                    println!("    ⚠️  Feature '{}' interface not found", feature_name);
+                }
+            }
+            
+            if supported_features.is_empty() {
+                println!("🔍 DEBUG: Provider '{}' has no supported features", provider_name);
+                println!("    ⚠️  Provider '{}' does not declare any supported features", provider_name);
+            }
+        } else {
+            println!("🔍 DEBUG: Provider '{}' metadata NOT found", provider_name);
         }
-
-        // Test with invalid feature
-        assert!(!plugin_system.feature_registry.is_feature_supported("NonExistentFeature").await);
+        
+        println!("🔍 DEBUG: Finished processing provider '{}'", provider_name);
     }
+    
+    println!("✅ All CPI implementations validated successfully");
+    Ok(())
 }

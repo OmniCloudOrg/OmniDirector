@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(cargo check:*)",
+      "Bash(cargo run:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(ls:*)",
+      "Bash(cargo:*)",
+      "Bash(dir:*)",
+      "Bash(cp:*)",
+      "Bash(./target/debug/omni-director.exe)",
+      "Bash(C:UsersredstOneDriveDocumentsGitHubOmniCloud-FullcratesOmniDirectortargetdebugomni-director.exe)",
+      "Bash(target/debug/omni-director.exe:*)",
+      "Bash(mv:*)",
+      "Bash(timeout 10 cargo run --release)",
+      "Bash(timeout 10 cargo run)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout 15 cargo run --release)",
+      "Bash(rustc:*)",
+      "Bash(targetdebugomni-director.exe)",
+      "Bash(.targetdebugomni-director.exe)"
+    ],
+    "deny": []
+  }
+}
