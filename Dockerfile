@@ -38,9 +38,6 @@ FROM debian:bookworm-slim AS final
 # Install SSL library
 RUN apt-get update && apt-get install -y libssl3 && rm -rf /var/lib/apt/lists/*
 
-# Copy the CPIs directory from the source to the final image
-COPY ./CPIs /CPIs
-
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/server /bin/
 
